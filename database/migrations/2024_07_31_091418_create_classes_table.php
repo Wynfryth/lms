@@ -23,7 +23,6 @@ return new class extends Migration
             $table->date('start_eff_date')->nullable()->default(null);
             $table->date('end_eff_date')->nullable()->default(null);
             $table->unsignedBigInteger('loc_type_id')->nullable()->default(null);
-            $table->unsignedBigInteger('loc_id')->nullable()->default(null);
             $table->string('created_by')->nullable()->default(null);
             $table->softDeletes();
             $table->timestamps();
