@@ -12,7 +12,7 @@ class ClassCatController extends Controller
      */
     public function index()
     {
-        //
+        return view('academy_admin.classcat.index');
     }
 
     /**

@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('tm_training_center', function (Blueprint $table) {
             $table->id();
+            $table->string('tc_name')->nullable()->default(null);
+            $table->string('tc_address')->nullable()->default(null);
+            $table->string('note')->nullable()->default(null);
+            $table->string('created_by')->nullable()->default(null);
             $table->timestamps();
         });
     }

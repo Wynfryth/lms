@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('tm_location_type', function (Blueprint $table) {
             $table->id();
+            $table->string('location_type')->nullable()->default(null);
+            $table->unsignedBigInteger('is_active')->default(1);
+            $table->string('created_by')->nullable()->default(null);
             $table->timestamps();
         });
     }

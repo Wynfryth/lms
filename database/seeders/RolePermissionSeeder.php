@@ -18,6 +18,7 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
+            'manage class category',
             'manage class',
             'manage employee',
             'view class',
