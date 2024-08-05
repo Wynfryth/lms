@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassCat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 class ClassCatController extends Controller
 {
@@ -12,7 +13,11 @@ class ClassCatController extends Controller
      */
     public function index()
     {
-        return view('academy_admin.classcat.index');
+        $classcat = ClassCat::orderByDesc('id')->paginate(10);
+        // dd($classcat);
+        return view('academy_admin.classcat.index', compact('classcat'));
+        // $routename = Route::currentRouteName();
+        // dd($routename);
     }
 
     /**
