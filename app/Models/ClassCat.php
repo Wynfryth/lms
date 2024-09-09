@@ -13,6 +13,9 @@ class ClassCat extends Model
 
     protected $table = 'tm_class_category';
 
+    public $timestamps = false;
+    protected $hidden = ['deleted_at'];
+
     protected $fillable = [
         'class_category',
         'desc',

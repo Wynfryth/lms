@@ -1,9 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Kelas > Kategori Kelas') }}
+            {{ __('Kelas > Daftar Kelas') }}
         </h2> --}}
-        <!-- Breadcrumb -->
         <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                 <li class="inline-flex items-center">
@@ -23,7 +22,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.classcat.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Kategori Kelas</a>
+                    <a href="{{ route('academy_admin.classes.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Kelas</a>
                     </div>
                 </li>
             </ol>
@@ -34,42 +33,38 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <x-add-button href="{{ route('academy_admin.classcat.create') }}">
+                    <x-add-button href="{{ route('academy_admin.classes.create') }}">
                         + Tambah
                     </x-add-button>
                     <x-table id="table_id" class="ui celled table">
                         <x-slot name="header">
-                            <x-table-column
-                                class="border-white dark:border-black text-white dark:text-black">#</x-table-column>
-                            <x-table-column
-                                class="border-white dark:border-black text-white dark:text-black">Nama</x-table-column>
-                            <x-table-column
-                                class="border-white dark:border-black text-white dark:text-black">Deskripsi</x-table-column>
-                            <x-table-column
-                                class="border-white dark:border-black text-white dark:text-black"></x-table-column>
+                            <x-table-column class="border-white dark:border-black text-white dark:text-black">#</x-table-column>
+                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Judul</x-table-column>
+                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Kategori</x-table-column>
+                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Periode</x-table-column>
+                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Mulai</x-table-column>
+                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Sampai</x-table-column>
+                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Aksi</x-table-column>
                         </x-slot>
-                        {{-- {{ dd($classcat) }} --}}
-                        @forelse ($classcat as $index => $item)
+                        {{-- {{ dd($classes) }} --}}
+                        @forelse ($classes as $index => $item)
+                            <?php // var_dump($item); ?>
                             <tr>
                                 <x-table-column class="text-center">{{ $index + 1 }}</x-table-column>
+                                <x-table-column>{{ $item->class_title }}</x-table-column>
                                 <x-table-column>{{ $item->class_category }}</x-table-column>
-                                <x-table-column>{{ $item->desc }}</x-table-column>
+                                <x-table-column>{{ $item->class_period }}</x-table-column>
+                                <x-table-column>{{ $item->start_eff_date }}</x-table-column>
+                                <x-table-column>{{ $item->end_eff_date }}</x-table-column>
                                 <x-table-column width="20%">
                                     <div class="hidden md:flex flex-row items-center gap-x-3">
-                                        <x-edit-button href="{{ route('academy_admin.classcat.edit', $item->id) }}">
+                                        {{-- {{var_dump($item)}}S --}}
+                                        <x-edit-button href="{{ route('academy_admin.classes.edit', $item->id) }}">
                                             Ubah
                                         </x-edit-button>
                                         <x-delete-button class="delete" data-id="{{ $item->id }}">
                                             Hapus
                                         </x-delete-button>
-                                        {{-- <form action="{{ route('academy_admin.classcat.destroy', $item) }}"
-                                            method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <x-delete-button>
-                                                Hapus
-                                            </x-delete-button>
-                                        </form> --}}
                                     </div>
                                 </x-table-column>
                             </tr>
@@ -98,7 +93,7 @@
     });
     $(document).off('click', '.delete').on('click', '.delete', function() {
         // console.log($(this).data('id'))
-        var classcat_id = $(this).data('id');
+        var classes_id = $(this).data('id');
         Swal.fire({
             icon: "question",
             title: "Hapus",
@@ -111,36 +106,31 @@
         })
         .then((response) => {
             if (response.isConfirmed) {
+                var url = '{{ route("academy_admin.classes.destroy", ":id") }}';
+                url = url.replace(':id', classes_id);
                 $.ajax({
-                    type: "POST",
-                    url: "{{route('academy_admin.classcat.delete')}}",
+                    async: false,
+                    type: "DELETE",
+                    url: url,
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        "id": classcat_id
+                        "method": "POST"
                     },
                     dataType: "JSON",
-                    success: function (response) {
+                    success: function(response) {
                         // console.log(response);
-                        if(response != 'failed to delete'){
+                        if(response > 0){
                             Swal.fire({
                                 icon: "success",
                                 title: "Berhasil!",
-                                text: "Berhasil menghapus data.",
+                                text: "Yakin untuk menghapus?",
                                 showConfirmButton: true,
                                 confirmButtonText: "OK",
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
-                                    window.location = "{{ route('academy_admin.classcat.index') }}";
+                                    window.location = "{{ route('academy_admin.classes.index') }}";
                                 }
-                            })
-                        }else{
-                            Swal.fire({
-                                icon: "error",
-                                title: "Gagal!",
-                                text: "Gagal menghapus data.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK",
                             })
                         }
                     }

@@ -18,26 +18,42 @@
                     {{-- <x-nav-link :href="route('academy_admin.classcat.index')" :active="request()->routeIs('academy_admin.classcat.index')">
                         {{ __('Class Category') }}
                     </x-nav-link> --}}
-                    <x-nav-link-parent :href="'#'" :active="request()->routeIs(['dashboard', 'academy_admin.classcat.index'])">
+                    <x-nav-link-parent :href="'#'" :active="request()->routeIs([])">
+                        <x-slot name="name">Pegawai</x-slot>
+                        <x-slot name="children">
+                            <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Master Pegawai</a>
+                            {{-- <span class="separator"></span> --}}
+                            <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Pegawai Terdaftar</a>
+                            <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Pegawai Batal</a>
+                        </x-slot>
+                    </x-nav-link-parent>
+                    <x-nav-link :href="route('dashboard')">
+                        {{ __('Pelatih') }}
+                    </x-nav-link>
+                    <x-nav-link-parent :href="'#'" :active="request()->routeIs(['academy_admin.classcat.index'])">
                         <x-slot name="name">Kelas</x-slot>
                         <x-slot name="children">
                             <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Master Kelas</a>
                             {{-- <span class="separator"></span> --}}
                             <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Kategori Kelas</a>
-                            {{-- <a href="#">Item C</a>
-                            <span class="separator"></span>
-                            <a href="#">Item D</a> --}}
+                            <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Bank Materi</a>
                         </x-slot>
                     </x-nav-link-parent>
-                    <x-nav-link-parent :href="'#'" :active="request()->routeIs('padron.*')">
-                        <x-slot name="name">Pusat Pelatihan</x-slot>
+                    <x-nav-link-parent :href="'#'" :active="request()->routeIs()">
+                        <x-slot name="name">Tes</x-slot>
                         <x-slot name="children">
-                            <a href="#">Item A</a>
-                            <span class="separator"></span>
-                            <a href="#">Item B</a>
-                            <a href="#">Item C</a>
-                            <span class="separator"></span>
-                            <a href="#">Item D</a>
+                            <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Master Tes</a>
+                            {{-- <span class="separator"></span> --}}
+                            <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Kategori Tes</a>
+                            <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Bank Soal Tes</a>
+                        </x-slot>
+                    </x-nav-link-parent>
+                    <x-nav-link-parent :href="'#'" :active="request()->routeIs()">
+                        <x-slot name="name">Laporan</x-slot>
+                        <x-slot name="children">
+                            <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Tingkat Kelulusan</a>
+                            {{-- <span class="separator"></span> --}}
+                            <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Mortalitas</a>
                         </x-slot>
                     </x-nav-link-parent>
                     {{-- <x-responsive-nav-link-parent :href="'#'" :active="request()->routeIs('padron.*')">
@@ -52,7 +68,7 @@
                         </x-slot>
                     </x-responsive-nav-link-parent> --}}
                     <!-- Dropdown Kelas -->
-                    <div class="hidden sm:flex sm:items-center sm:ms-6">
+                    {{-- <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
                                 <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
@@ -75,9 +91,9 @@
                                 </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
-                    </div>
+                    </div> --}}
                     <!-- Dropdown Pusat Pelatihan -->
-                    <div class="hidden sm:flex sm:items-center sm:ms-6">
+                    {{-- <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
                                 <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
@@ -100,7 +116,7 @@
                                 </x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
-                    </div>
+                    </div> --}}
                     <!-- Add this button right here -->
                     {{-- <button id="theme-toggle" type="button"
                         class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">

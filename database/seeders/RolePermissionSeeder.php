@@ -19,7 +19,7 @@ class RolePermissionSeeder extends Seeder
     {
         $permissions = [
             'manage class category',
-            'manage class',
+            'manage classes',
             'manage employee',
             'view class',
             'view employee'

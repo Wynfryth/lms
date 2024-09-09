@@ -10,19 +10,19 @@ class Classes extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 't_classes';
+    protected $table = 't_class_header';
 
     protected $fillable = [
-        'class_code',
+        // 'class_code',
         'class_category_id',
         'class_title',
         'class_desc',
         'class_period',
-        'tc_id',
+        // 'tc_id',
         'is_active',
         'start_eff_date',
         'end_eff_date',
-        'loc_type_id',
+        // 'loc_type_id',
         'created_by'
     ];
 
@@ -31,13 +31,13 @@ class Classes extends Model
         return $this->belongsTo(ClassCat::class, 'id');
     }
 
-    public function trainingCenter()
-    {
-        return $this->belongsTo(TrainCt::class, 'id');
-    }
+    // public function trainingCenter()
+    // {
+    //     return $this->belongsTo(TrainCt::class, 'id');
+    // }
 
-    public function locType()
-    {
-        return $this->belongsTo(LocType::class, 'id');
-    }
+    // public function locType()
+    // {
+    //     return $this->belongsTo(LocType::class, 'id');
+    // }
 }

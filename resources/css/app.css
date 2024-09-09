@@ -42,6 +42,14 @@
     color: #818cf8;
 }
 
+button.swal2-confirm {
+    background-color: #2563eb;
+}
+
+button.swal2-deny {
+    background-color: #dc2626;
+}
+
 @media (min-width: 768px) {
     .children {
         position: absolute;
