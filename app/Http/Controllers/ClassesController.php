@@ -23,7 +23,7 @@ class ClassesController extends Controller
             ->select('a.id', 'a.class_title', 'a.class_desc', 'a.class_period', 'a.start_eff_date', 'a.end_eff_date', 'b.class_category')
             ->where('a.is_active', 1)
             ->orderByDesc('a.id')
-            ->paginate(10);
+            ->get();
 
         $bulan = [
             'Januari',

@@ -20,6 +20,7 @@ class RolePermissionSeeder extends Seeder
         $permissions = [
             'manage class category',
             'manage classes',
+            'manage study category',
             'manage employee',
             'view class',
             'view employee'
@@ -35,9 +36,6 @@ class RolePermissionSeeder extends Seeder
         $academyAdminRole = Role::firstOrCreate([
             'name' => 'academy_admin'
         ]);
-        // $academyAdminRole = Role::firstOrCreate([
-        //     'name' => 'academy_admin'
-        // ]);
 
         $user = User::create([
             'name' => 'Academy Admin',

@@ -8,14 +8,10 @@
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                 <li class="inline-flex items-center">
                     <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        fill="currentColor" viewBox="0 0 24 24">
-                        <path fill-rule="evenodd"
-                            d="M10 2a3 3 0 0 0-3 3v1H5a3 3 0 0 0-3 3v2.382l1.447.723.005.003.027.013.12.056c.108.05.272.123.486.212.429.177 1.056.416 1.834.655C7.481 13.524 9.63 14 12 14c2.372 0 4.52-.475 6.08-.956.78-.24 1.406-.478 1.835-.655a14.028 14.028 0 0 0 .606-.268l.027-.013.005-.002L22 11.381V9a3 3 0 0 0-3-3h-2V5a3 3 0 0 0-3-3h-4Zm5 4V5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v1h6Zm6.447 7.894.553-.276V19a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-5.382l.553.276.002.002.004.002.013.006.041.02.151.07c.13.06.318.144.557.242.478.198 1.163.46 2.01.72C7.019 15.476 9.37 16 12 16c2.628 0 4.98-.525 6.67-1.044a22.95 22.95 0 0 0 2.01-.72 15.994 15.994 0 0 0 .707-.312l.041-.02.013-.006.004-.002.001-.001-.431-.866.432.865ZM12 10a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
-                            clip-rule="evenodd" />
+                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M6 2a2 2 0 0 0-2 2v15a3 3 0 0 0 3 3h12a1 1 0 1 0 0-2h-2v-2h2a1 1 0 0 0 1-1V4a2 2 0 0 0-2-2h-8v16h5v2H7a1 1 0 1 1 0-2h1V2H6Z" clip-rule="evenodd"/>
                     </svg>
-                    &nbsp;&nbsp;Kelas
+                    &nbsp;&nbsp;Materi
                     </a>
                 </li>
                 <li>
@@ -23,7 +19,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.classcat.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Kategori Kelas</a>
+                    <a href="{{ route('academy_admin.studycat.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Kategori Materi</a>
                     </div>
                 </li>
             </ol>
@@ -34,8 +30,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
-                    {{-- {{ Auth::user()->roles->pluck('name') }} --}}
-                    <x-add-button href="{{ route('academy_admin.classcat.create') }}">
+                    <x-add-button href="{{ route('academy_admin.studycat.create') }}">
                         + Tambah
                     </x-add-button>
                     <table id="table_id" class="table-auto">
@@ -48,14 +43,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($classcat as $index => $item)
+                            @forelse ($studycat as $index => $item)
                                 <tr>
                                     <td class="whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                    <td class="whitespace-nowrap">{{ $item->class_category }}</td>
+                                    <td class="whitespace-nowrap">{{ $item->study_material_category }}</td>
                                     <td class="whitespace-nowrap">{{ $item->desc }}</td>
                                     <td class="whitespace-nowrap">
                                         <div class="md:flex flex-row items-center gap-x-3">
-                                            <x-edit-button href="{{ route('academy_admin.classcat.edit', $item->id) }}">
+                                            <x-edit-button href="{{ route('academy_admin.studycat.edit', $item->id) }}">
                                                 Ubah
                                             </x-edit-button>
                                             <x-delete-button class="delete" data-id="{{ $item->id }}">
@@ -107,7 +102,7 @@
     });
     $(document).off('click', '.delete').on('click', '.delete', function() {
         // console.log($(this).data('id'))
-        var classcat_id = $(this).data('id');
+        var studycat_id = $(this).data('id');
         Swal.fire({
             icon: "question",
             title: "Hapus",
@@ -122,10 +117,10 @@
             if (response.isConfirmed) {
                 $.ajax({
                     type: "POST",
-                    url: "{{route('academy_admin.classcat.delete')}}",
+                    url: "{{route('academy_admin.studycat.delete')}}",
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        "id": classcat_id
+                        "id": studycat_id
                     },
                     dataType: "JSON",
                     success: function (response) {
@@ -140,7 +135,7 @@
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
-                                    window.location = "{{ route('academy_admin.classcat.index') }}";
+                                    window.location = "{{ route('academy_admin.studycat.index') }}";
                                 }
                             })
                         }else{

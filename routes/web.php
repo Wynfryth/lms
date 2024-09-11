@@ -3,6 +3,8 @@
 use App\Http\Controllers\ClassCatController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudiesController;
+use App\Http\Controllers\StudyCatController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +32,14 @@ Route::middleware('auth')->group(function () {
         Route::middleware('can:manage classes')->group(function () {
             Route::resource('classes', ClassesController::class);
             Route::post('classes/delete', [ClassesController::class, 'delete'])->name('classes.delete');
+        });
+        Route::middleware('can:manage study category')->group(function () {
+            Route::resource('studycat', StudyCatController::class);
+            Route::post('studycat/delete', [StudyCatController::class, 'delete'])->name('studycat.delete');
+        });
+        Route::middleware('can:manage studies')->group(function () {
+            Route::resource('studies', StudiesController::class);
+            Route::post('studies/delete', [StudiesController::class, 'delete'])->name('studies.delete');
         });
     });
 });

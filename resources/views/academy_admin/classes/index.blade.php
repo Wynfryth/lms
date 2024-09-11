@@ -31,49 +31,50 @@
 
     <div class="p-4 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
+            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
+                <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
                     <x-add-button href="{{ route('academy_admin.classes.create') }}">
                         + Tambah
                     </x-add-button>
-                    <x-table id="table_id" class="ui celled table">
-                        <x-slot name="header">
-                            <x-table-column class="border-white dark:border-black text-white dark:text-black">#</x-table-column>
-                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Judul</x-table-column>
-                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Kategori</x-table-column>
-                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Periode</x-table-column>
-                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Mulai</x-table-column>
-                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Sampai</x-table-column>
-                            <x-table-column class="border-white dark:border-black text-white dark:text-black">Aksi</x-table-column>
-                        </x-slot>
-                        {{-- {{ dd($classes) }} --}}
-                        @forelse ($classes as $index => $item)
-                            <?php // var_dump($item); ?>
+                    <table id="table_id" class="table-auto">
+                        <thead>
                             <tr>
-                                <x-table-column class="text-center">{{ $index + 1 }}</x-table-column>
-                                <x-table-column>{{ $item->class_title }}</x-table-column>
-                                <x-table-column>{{ $item->class_category }}</x-table-column>
-                                <x-table-column>{{ $item->class_period }}</x-table-column>
-                                <x-table-column>{{ $item->start_eff_date }}</x-table-column>
-                                <x-table-column>{{ $item->end_eff_date }}</x-table-column>
-                                <x-table-column width="20%">
-                                    <div class="hidden md:flex flex-row items-center gap-x-3">
-                                        {{-- {{var_dump($item)}}S --}}
-                                        <x-edit-button href="{{ route('academy_admin.classes.edit', $item->id) }}">
-                                            Ubah
-                                        </x-edit-button>
-                                        <x-delete-button class="delete" data-id="{{ $item->id }}">
-                                            Hapus
-                                        </x-delete-button>
-                                    </div>
-                                </x-table-column>
+                                <th class="whitespace-nowrap">#</th>
+                                <th class="whitespace-nowrap">Judul</th>
+                                <th class="whitespace-nowrap">Kategori</th>
+                                <th class="whitespace-nowrap">Periode</th>
+                                <th class="whitespace-nowrap">Mulai</th>
+                                <th class="whitespace-nowrap">Sampai</th>
+                                <th class="whitespace-nowrap">Aksi</th>
                             </tr>
-                        @empty
-                            {{-- <tr>
-                                <x-table-column class="text-center" colspan="100%">No data.</x-table-column>
-                            </tr> --}}
-                        @endforelse
-                    </x-table>
+                        </thead>
+                        <tbody>
+                            @forelse ($classes as $index => $item)
+                                <tr>
+                                    <td class="whitespace-nowrap text-center">{{ $index + 1 }}</td>
+                                    <td class="whitespace-nowrap">{{ $item->class_title }}</td>
+                                    <td class="whitespace-nowrap">{{ $item->class_category }}</td>
+                                    <td class="whitespace-nowrap">{{ $item->class_period }}</td>
+                                    <td class="whitespace-nowrap">{{ $item->start_eff_date }}</td>
+                                    <td class="whitespace-nowrap">{{ $item->end_eff_date }}</td>
+                                    <td class="whitespace-nowrap">
+                                        <div class="md:flex flex-row items-center gap-x-3">
+                                            <x-edit-button href="{{ route('academy_admin.classes.edit', $item->id) }}">
+                                                Ubah
+                                            </x-edit-button>
+                                            <x-delete-button class="delete" data-id="{{ $item->id }}">
+                                                Hapus
+                                            </x-delete-button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                {{-- <tr>
+                                    <x-table-column class="text-center" colspan="100%">No data.</x-table-column>
+                                </tr> --}}
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -82,12 +83,29 @@
 <script>
     $(document).ready(function() {
         $('#table_id').DataTable({
+            scrollX: true,
             language: {
-                // info: 'Showing page _PAGE_ of _PAGES_',
-                // infoEmpty: 'No records available',
-                // infoFiltered: '(filtered from _MAX_ total records)',
-                // lengthMenu: 'Display _MENU_ records per page',
-                // zeroRecords: 'Nothing found - sorry'
+                "emptyTable": "Tidak ada data",
+                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
+                "infoFiltered": "(disaring dari _MAX_ total data)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Tampilkan _MENU_ data",
+                "loadingRecords": "Memuat...",
+                "processing": "",
+                "search": "Cari:",
+                "zeroRecords": "Tidak ada data yang cocok",
+                "paginate": {
+                    "first": "Awal",
+                    "last": "Akhir",
+                    "next": ">",
+                    "previous": "<"
+                },
+                "aria": {
+                    "orderable": "Order by this column",
+                    "orderableReverse": "Reverse order this column"
+                }
             }
         });
     });

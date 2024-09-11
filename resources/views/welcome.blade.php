@@ -42,6 +42,7 @@
                     Bangun kemampuan dengan kursus, sertifikasi, dan gelar dari pelatihan terbaik oleh PPA.
                 </p>
                 <div class="flex flex-wrap gap-6">
+                    <a href="{{url('/login')}}"><button type="button" class="btn btn-red hover:bg-bookmark-white hover:text-black rounded-md px-7 py-3 uppercase">Masuk</button></a>
                     <button type="button" class="btn btn-purple hover:bg-bookmark-white hover:text-black">Daftar</button>
                     <button type="button" class="btn btn-white hover:bg-bookmark-purple hover:text-white">Kontak kami</button>
                 </div>

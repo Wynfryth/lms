@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Kelas | Tambah Kelas') }}
+            {{ __('Kelas | Edit Kelas') }}
         </h2> --}}
         <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -22,7 +22,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.classcat.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Kategori Kelas</a>
+                    <a href="{{ route('academy_admin.studies.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Bank Materi</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -30,34 +30,52 @@
                         <svg class="rtl:rotate-180  w-3 h-3 mx-1 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                         </svg>
-                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Tambah</span>
+                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Ubah</span>
                     </div>
                 </li>
             </ol>
         </nav>
     </x-slot>
-
     <div class="p-4 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <form method="post" action="{{ route('academy_admin.classcat.store') }}" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('academy_admin.studies.update', $item->id) }}" class="mt-6 space-y-6">
                     @csrf
                     {{-- @method('put') --}}
 
                     <div>
-                        <x-input-label for="kategori_kelas" :value="__('Kategori Kelas')" />
-                        <x-text-input id="kategori_kelas" name="kategori_kelas" type="text" class="mt-1 block w-full" value="{{ old('kategori_kelas') }}"/>
-                        @error('kategori_kelas')
+                        <x-input-label for="judul_materi" :value="__('Judul')" />
+                        <x-text-input id="judul_materi" name="judul_materi" type="text" class="mt-1 block w-full" value="{{ $item->study_material_title }}"/>
+                        @error('judul_materi')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
 
                     <div>
-                        <x-input-label for="deskripsi_kategori_kelas" :value="__('Deskripsi')" />
-                        <x-textarea-input id="deskripsi_kategori_kelas" name="deskripsi_kategori_kelas" type="text" class="mt-1 block w-full">
-                            {{ old('deskripsi_kategori_kelas') }}
-                        </x-textarea-input>
-                        @error('deskripsi_kategori_kelas')
+                        <x-input-label for="deskripsi_materi" :value="__('Deskripsi')" />
+                        <x-textarea-input id="deskripsi_materi" name="deskripsi_materi" class="mt-1 block w-full">{{ $item->study_material_desc }}</x-textarea-input>
+                        @error('deskripsi_materi')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="my-1">
+                        <x-input-label for="kategori_materi" :value="__('Kategori')"></x-input-label>
+                        <x-select-option id="kategori_materi" name="kategori_materi">
+                            <x-slot name="options">
+                                <option class="disabled" value="null" selected disabled>
+                                    Pilih Kategori ...
+                                </option>
+                                @forelse ($kategori as $index => $value)
+                                    <option value="{{ $value->id }}" {{ $item->category_id == $value->id ? 'selected' : '' }}>
+                                        {{ $value->study_material_category }}
+                                    </option>
+                                @empty
+                                    {{-- do nothing --}}
+                                @endforelse
+                            </x-slot>
+                        </x-select-option>
+                        @error('kategori_materi')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>

@@ -2,28 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ClassCat;
+use App\Models\StudyCat;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
-class ClassCatController extends Controller
+class StudyCatController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $classcat = DB::table('tm_class_category AS a')
+        $studycat = DB::table('tm_study_material_category AS a')
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'desc')
-            // ->paginate(10);
             ->get();
-        return view('academy_admin.classcat.index', compact('classcat'));
+
+        return view('academy_admin.studycat.index', compact('studycat'));
     }
 
     /**
@@ -31,7 +30,7 @@ class ClassCatController extends Controller
      */
     public function create()
     {
-        return view('academy_admin.classcat.create');
+        return view('academy_admin.studycat.create');
     }
 
     /**
@@ -42,12 +41,12 @@ class ClassCatController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'kategori_kelas' => 'required',
-                'deskripsi_kategori_kelas' => 'required'
+                'kategori_materi' => 'required',
+                'deskripsi_kategori_materi' => 'required'
             ],
             [
-                'kategori_kelas.required' => 'Kategori kelas belum terisi.',
-                'deskripsi_kategori_kelas.required' => 'Deskripsi kategori kelas belum terisi.'
+                'kategori_materi.required' => 'Kategori materi belum terisi.',
+                'deskripsi_kategori_materi.required' => 'Deskripsi kategori materi belum terisi.'
             ]
         );
 
@@ -55,20 +54,20 @@ class ClassCatController extends Controller
             return redirect()->back()->withErrors($validator)->withInput($request->all());
         }
 
-        $classcat = new ClassCat();
-        $classcat->class_category = $request->kategori_kelas;
-        $classcat->desc = $request->deskripsi_kategori_kelas;
-        $classcat->created_by = Auth::user()->name;
-        $classcat->created_date = Carbon::now();
-        $classcat->save();
+        $studycat = new StudyCat();
+        $studycat->study_material_category = $request->kategori_materi;
+        $studycat->desc = $request->deskripsi_kategori_materi;
+        $studycat->created_by = Auth::user()->name;
+        $studycat->created_date = Carbon::now();
+        $studycat->save();
 
-        return redirect()->route('academy_admin.classcat.index');
+        return redirect()->route('academy_admin.studycat.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(ClassCat $classCat)
+    public function show(StudyCat $studyCat)
     {
         //
     }
@@ -78,10 +77,10 @@ class ClassCatController extends Controller
      */
     public function edit($id)
     {
-        $item = DB::table('tm_class_category AS a')
+        $item = DB::table('tm_study_material_category AS a')
             ->where('a.id', $id)
             ->first();
-        return view('academy_admin.classcat.edit', compact('item'));
+        return view('academy_admin.studycat.edit', compact('item'));
     }
 
     /**
@@ -90,35 +89,25 @@ class ClassCatController extends Controller
     public function update(Request $request, $id)
     {
         $update_data = [
-            'class_category' => $request->kategori_kelas,
-            'desc' => $request->deskripsi_kategori_kelas,
+            'study_material_category' => $request->kategori_materi,
+            'desc' => $request->deskripsi_kategori_materi,
             'modified_by' => Auth::user()->name,
             'modified_date' => Carbon::now()
         ];
-        $update_affected = DB::table('tm_class_category AS a')
+        $update_affected = DB::table('tm_study_material_category AS a')
             ->where('a.id', $id)
             ->update($update_data);
         if ($update_affected > 0) {
-            return redirect()->route('academy_admin.classcat.index');
+            return redirect()->route('academy_admin.studycat.index');
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(StudyCat $studyCat)
     {
-        $delete_data = [
-            'is_active' => 0,
-            'modified_by' => Auth::user()->name,
-            'modified_date' => Carbon::now()
-        ];
-        $update_affected = DB::table('tm_class_category AS a')
-            ->where('a.id', $id)
-            ->update($delete_data);
-        if ($update_affected > 0) {
-            return redirect()->route('academy_admin.classcat.index');
-        }
+        //
     }
 
     public function delete(Request $request)
@@ -128,7 +117,7 @@ class ClassCatController extends Controller
             'modified_by' => Auth::user()->name,
             'modified_date' => Carbon::now()
         ];
-        $update_affected = DB::table('tm_class_category AS a')
+        $update_affected = DB::table('tm_study_material_category AS a')
             ->where('a.id', $request->id)
             ->update($delete_data);
         if ($update_affected > 0) {

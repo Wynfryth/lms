@@ -23,7 +23,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.classcat.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Kategori Kelas</a>
+                    <a href="{{ route('academy_admin.studies.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Bank Materi</a>
                     </div>
                 </li>
             </ol>
@@ -34,8 +34,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
-                    {{-- {{ Auth::user()->roles->pluck('name') }} --}}
-                    <x-add-button href="{{ route('academy_admin.classcat.create') }}">
+                    <x-add-button href="{{ route('academy_admin.studies.create') }}">
                         + Tambah
                     </x-add-button>
                     <table id="table_id" class="table-auto">
@@ -48,14 +47,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($classcat as $index => $item)
+                            @forelse ($studies as $index => $item)
                                 <tr>
                                     <td class="whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                    <td class="whitespace-nowrap">{{ $item->class_category }}</td>
-                                    <td class="whitespace-nowrap">{{ $item->desc }}</td>
+                                    <td class="whitespace-nowrap">{{ $item->study_material_title }}</td>
+                                    <td class="whitespace-nowrap">{{ $item->study_material_desc }}</td>
                                     <td class="whitespace-nowrap">
                                         <div class="md:flex flex-row items-center gap-x-3">
-                                            <x-edit-button href="{{ route('academy_admin.classcat.edit', $item->id) }}">
+                                            <x-edit-button href="{{ route('academy_admin.studies.edit', $item->id) }}">
                                                 Ubah
                                             </x-edit-button>
                                             <x-delete-button class="delete" data-id="{{ $item->id }}">
@@ -107,7 +106,7 @@
     });
     $(document).off('click', '.delete').on('click', '.delete', function() {
         // console.log($(this).data('id'))
-        var classcat_id = $(this).data('id');
+        var studies_id = $(this).data('id');
         Swal.fire({
             icon: "question",
             title: "Hapus",
@@ -122,10 +121,10 @@
             if (response.isConfirmed) {
                 $.ajax({
                     type: "POST",
-                    url: "{{route('academy_admin.classcat.delete')}}",
+                    url: "{{route('academy_admin.studies.delete')}}",
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        "id": classcat_id
+                        "id": studies_id
                     },
                     dataType: "JSON",
                     success: function (response) {
@@ -140,7 +139,7 @@
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
-                                    window.location = "{{ route('academy_admin.classcat.index') }}";
+                                    window.location = "{{ route('academy_admin.studies.index') }}";
                                 }
                             })
                         }else{
