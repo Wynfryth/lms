@@ -23,7 +23,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.studies.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Bank Materi</a>
+                    <a href="{{ route('academy_admin.studies.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Tajuk Materi</a>
                     </div>
                 </li>
             </ol>
@@ -43,30 +43,45 @@
                                 <th class="whitespace-nowrap">#</th>
                                 <th class="whitespace-nowrap">Nama</th>
                                 <th class="whitespace-nowrap">Deskripsi</th>
-                                <th class="whitespace-nowrap">Aksi</th>
+                                <th class="whitespace-nowrap" width="15%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($studies as $index => $item)
+                                @php
+                                    if($item->is_active == 1){
+                                        $row_color = 'bg-white';
+                                    }else{
+                                        $row_color = 'bg-zinc-300';
+                                    }
+                                @endphp
                                 <tr>
-                                    <td class="whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                    <td class="whitespace-nowrap">{{ $item->study_material_title }}</td>
-                                    <td class="whitespace-nowrap">{{ $item->study_material_desc }}</td>
-                                    <td class="whitespace-nowrap">
+                                    <td class="whitespace-nowrap text-center {{$row_color}}">{{ $index + 1 }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->study_material_title }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->study_material_desc }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">
                                         <div class="md:flex flex-row items-center gap-x-3">
-                                            <x-edit-button href="{{ route('academy_admin.studies.edit', $item->id) }}">
-                                                Ubah
-                                            </x-edit-button>
-                                            <x-delete-button class="delete" data-id="{{ $item->id }}">
-                                                Hapus
-                                            </x-delete-button>
+                                            @if ($item->is_active == 1)
+                                                <x-edit-button class="mx-auto" href="{{ route('academy_admin.studies.edit', $item->id) }}">
+                                                    Ubah
+                                                </x-edit-button>
+                                                <x-delete-button class="mx-auto delete" data-id="{{ $item->id }}">
+                                                    Hapus
+                                                </x-delete-button>
+                                                <x-recover-button class="mx-auto detail">
+                                                    Detail
+                                                </x-recover-button>
+                                            @else
+                                                <x-recover-button class="mx-auto w-full recover" data-id="{{ $item->id; }}">
+                                                    Pulihkan
+                                                </x-recover-button>
+                                            @endif
+
                                         </div>
                                     </td>
                                 </tr>
                             @empty
-                                {{-- <tr>
-                                    <x-table-column class="text-center" colspan="100%">No data.</x-table-column>
-                                </tr> --}}
+
                             @endforelse
                         </tbody>
                     </table>
@@ -74,7 +89,59 @@
             </div>
         </div>
     </div>
+    {{-- <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-2xl max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Terms of Service
+                    </h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="p-4 md:p-5 space-y-4">
+                    <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                        With less than a month to go before the European Union enacts new consumer privacy laws for its citizens, companies around the world are updating their terms of service agreements to comply.
+                    </p>
+                    <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                        The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant to ensure a common set of data rights in the European Union. It requires organizations to notify users as soon as possible of high-risk data breaches that could personally affect them.
+                    </p>
+                </div>
+                <!-- Modal footer -->
+                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                    <button data-modal-hide="default-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
+                    <button data-modal-hide="default-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
+                </div>
+            </div>
+        </div>
+    </div> --}}
 </x-app-layout>
+@if (session('status'))
+<script>
+    const Toast =   Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                        });
+                        Toast.fire({
+                        icon: "success",
+                        title: "{{session('status_message')}}"
+                    });
+</script>
+@endif
 <script>
     $(document).ready(function() {
         $('#table_id').DataTable({
@@ -136,6 +203,7 @@
                                 text: "Berhasil menghapus data.",
                                 showConfirmButton: true,
                                 confirmButtonText: "OK",
+                                allowOutsideClick: false
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
@@ -149,11 +217,119 @@
                                 text: "Gagal menghapus data.",
                                 showConfirmButton: true,
                                 confirmButtonText: "OK",
+                                allowOutsideClick: false
                             })
                         }
                     }
                 });
             }
+        })
+    });
+    $(document).off('click', '.recover').on('click', '.recover', function() {
+        var studies_id = $(this).data('id');
+        Swal.fire({
+            icon: "question",
+            title: "Pulihkan",
+            text: "Yakin untuk memulihkan data?",
+            showConfirmButton: true,
+            confirmButtonText: "Ya",
+            showDenyButton: true,
+            denyButtonText: "Tidak",
+            allowOutsideClick: false
+        })
+        .then((response) => {
+            if (response.isConfirmed) {
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    url: "{{ route('academy_admin.studies.recover') }}",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "id": studies_id
+                    },
+                    dataType: "JSON",
+                    success: function(response) {
+                        // console.log(response);
+                        if(response > 0){
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil!",
+                                text: "Berhasil memulihkan data.",
+                                showConfirmButton: true,
+                                confirmButtonText: "OK",
+                                allowOutsideClick: false
+                            })
+                            .then((feedback)=>{
+                                if(feedback.isConfirmed){
+                                    window.location = "{{ route('academy_admin.studies.index') }}";
+                                }
+                            })
+                        }else{
+                            Swal.fire({
+                                icon: "error",
+                                title: "Gagal!",
+                                text: "Gagal memulihkan data. Silahkan coba beberapa saat lagi.",
+                                showConfirmButton: true,
+                                confirmButtonText: "OK",
+                                allowOutsideClick: false
+                            })
+                        }
+                    }
+                });
+            }
+        })
+    });
+    $(document).off('click', '.detail').on('click', '.detail', function() {
+        var studies_id = $(this).data('id');
+        Swal.fire({
+            title: "Detail",
+            text: "Nanti di sini ada detail dari kompilasi materi",
+            showConfirmButton: true,
+            confirmButtonText: "Ya",
+            // showDenyButton: true,
+            // denyButtonText: "Tidak",
+            allowOutsideClick: false
+        })
+        .then((response) => {
+            // if (response.isConfirmed) {
+            //     $.ajax({
+            //         async: false,
+            //         type: "POST",
+            //         url: "{{ route('academy_admin.studies.recover') }}",
+            //         data: {
+            //             "_token": "{{ csrf_token() }}",
+            //             "id": studies_id
+            //         },
+            //         dataType: "JSON",
+            //         success: function(response) {
+            //             // console.log(response);
+            //             if(response > 0){
+            //                 Swal.fire({
+            //                     icon: "success",
+            //                     title: "Berhasil!",
+            //                     text: "Berhasil memulihkan data.",
+            //                     showConfirmButton: true,
+            //                     confirmButtonText: "OK",
+            //                     allowOutsideClick: false
+            //                 })
+            //                 .then((feedback)=>{
+            //                     if(feedback.isConfirmed){
+            //                         window.location = "{{ route('academy_admin.studies.index') }}";
+            //                     }
+            //                 })
+            //             }else{
+            //                 Swal.fire({
+            //                     icon: "error",
+            //                     title: "Gagal!",
+            //                     text: "Gagal memulihkan data. Silahkan coba beberapa saat lagi.",
+            //                     showConfirmButton: true,
+            //                     confirmButtonText: "OK",
+            //                     allowOutsideClick: false
+            //                 })
+            //             }
+            //         }
+            //     });
+            // }
         })
     });
 </script>

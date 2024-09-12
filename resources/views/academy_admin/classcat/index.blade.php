@@ -44,23 +44,37 @@
                                 <th class="whitespace-nowrap">#</th>
                                 <th class="whitespace-nowrap">Nama</th>
                                 <th class="whitespace-nowrap">Deskripsi</th>
-                                <th class="whitespace-nowrap">Aksi</th>
+                                <th class="whitespace-nowrap" width="15%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($classcat as $index => $item)
+                                @php
+                                    if($item->is_active == 1){
+                                        $row_color = 'bg-white';
+                                    }else{
+                                        $row_color = 'bg-zinc-300';
+                                    }
+                                @endphp
                                 <tr>
-                                    <td class="whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                    <td class="whitespace-nowrap">{{ $item->class_category }}</td>
-                                    <td class="whitespace-nowrap">{{ $item->desc }}</td>
-                                    <td class="whitespace-nowrap">
+                                    <td class="whitespace-nowrap text-center {{$row_color}}">{{ $index + 1 }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->class_category }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->desc }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">
                                         <div class="md:flex flex-row items-center gap-x-3">
-                                            <x-edit-button href="{{ route('academy_admin.classcat.edit', $item->id) }}">
-                                                Ubah
-                                            </x-edit-button>
-                                            <x-delete-button class="delete" data-id="{{ $item->id }}">
-                                                Hapus
-                                            </x-delete-button>
+                                            @if ($item->is_active == 1)
+                                                <x-edit-button class="mx-auto" href="{{ route('academy_admin.classcat.edit', $item->id) }}">
+                                                    Ubah
+                                                </x-edit-button>
+                                                <x-delete-button class="mx-auto delete" data-id="{{ $item->id }}">
+                                                    Hapus
+                                                </x-delete-button>
+                                            @else
+                                                <x-recover-button class="mx-auto recover" data-id="{{ $item->id; }}">
+                                                    Pulihkan
+                                                </x-recover-button>
+                                            @endif
+
                                         </div>
                                     </td>
                                 </tr>
@@ -76,6 +90,25 @@
         </div>
     </div>
 </x-app-layout>
+@if (session('status'))
+<script>
+    const Toast =   Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                        });
+                        Toast.fire({
+                        icon: "success",
+                        title: "{{session('status_message')}}"
+                    });
+</script>
+@endif
 <script>
     $(document).ready(function() {
         $('#table_id').DataTable({
@@ -121,6 +154,7 @@
         .then((response) => {
             if (response.isConfirmed) {
                 $.ajax({
+                    async: false,
                     type: "POST",
                     url: "{{route('academy_admin.classcat.delete')}}",
                     data: {
@@ -137,6 +171,7 @@
                                 text: "Berhasil menghapus data.",
                                 showConfirmButton: true,
                                 confirmButtonText: "OK",
+                                allowOutsideClick: false
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
@@ -150,6 +185,62 @@
                                 text: "Gagal menghapus data.",
                                 showConfirmButton: true,
                                 confirmButtonText: "OK",
+                                allowOutsideClick: false
+                            })
+                        }
+                    }
+                });
+            }
+        })
+    });
+
+    $(document).off('click', '.recover').on('click', '.recover', function() {
+        var classcat_id = $(this).data('id');
+        Swal.fire({
+            icon: "question",
+            title: "Pulihkan",
+            text: "Yakin untuk memulihkan data?",
+            showConfirmButton: true,
+            confirmButtonText: "Ya",
+            showDenyButton: true,
+            denyButtonText: "Tidak",
+            allowOutsideClick: false
+        })
+        .then((response) => {
+            if (response.isConfirmed) {
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    url: "{{ route('academy_admin.classcat.recover') }}",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "id": classcat_id
+                    },
+                    dataType: "JSON",
+                    success: function(response) {
+                        // console.log(response);
+                        if(response > 0){
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil!",
+                                text: "Berhasil memulihkan data.",
+                                showConfirmButton: true,
+                                confirmButtonText: "OK",
+                                allowOutsideClick: false
+                            })
+                            .then((feedback)=>{
+                                if(feedback.isConfirmed){
+                                    window.location = "{{ route('academy_admin.classcat.index') }}";
+                                }
+                            })
+                        }else{
+                            Swal.fire({
+                                icon: "error",
+                                title: "Gagal!",
+                                text: "Gagal memulihkan data. Silahkan coba beberapa saat lagi.",
+                                showConfirmButton: true,
+                                confirmButtonText: "OK",
+                                allowOutsideClick: false
                             })
                         }
                     }

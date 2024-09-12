@@ -22,7 +22,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.classes.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Kelas</a>
+                    <a href="{{ route('academy_admin.studymat.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Bank Materi</a>
                     </div>
                 </li>
             </ol>
@@ -33,23 +33,22 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
-                    <x-add-button href="{{ route('academy_admin.classes.create') }}">
+                    <x-add-button href="{{ route('academy_admin.studymat.create') }}">
                         + Tambah
                     </x-add-button>
                     <table id="table_id" class="table-auto">
                         <thead>
                             <tr>
                                 <th class="whitespace-nowrap">#</th>
-                                <th class="whitespace-nowrap">Judul</th>
-                                <th class="whitespace-nowrap">Kategori</th>
-                                <th class="whitespace-nowrap">Periode</th>
-                                <th class="whitespace-nowrap">Mulai</th>
-                                <th class="whitespace-nowrap">Sampai</th>
+                                <th class="whitespace-nowrap">Nama</th>
+                                <th class="whitespace-nowrap">Tajuk</th>
+                                <th class="whitespace-nowrap">Urutan</th>
+                                <th class="whitespace-nowrap">Bobot Nilai</th>
                                 <th class="whitespace-nowrap" width="15%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($classes as $index => $item)
+                            @forelse ($studymat as $index => $item)
                                 @php
                                     if($item->is_active == 1){
                                         $row_color = 'bg-white';
@@ -59,15 +58,14 @@
                                 @endphp
                                 <tr>
                                     <td class="whitespace-nowrap text-center {{$row_color}}">{{ $index + 1 }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->class_title }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->class_category }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->class_period }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->start_eff_date }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->end_eff_date }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->name }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->header_id }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->order }}</td>
+                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->scoring_weight }}</td>
                                     <td class="whitespace-nowrap {{$row_color}}">
                                         <div class="md:flex flex-row items-center gap-x-3">
                                             @if ($item->is_active == 1)
-                                                <x-edit-button class="mx-auto" href="{{ route('academy_admin.classes.edit', $item->id) }}">
+                                                <x-edit-button class="mx-auto" href="{{ route('academy_admin.studymat.edit', $item->id) }}">
                                                     Ubah
                                                 </x-edit-button>
                                                 <x-delete-button class="mx-auto delete" data-id="{{ $item->id; }}">
@@ -141,7 +139,7 @@
     });
     $(document).off('click', '.delete').on('click', '.delete', function() {
         // console.log($(this).data('id'))
-        var classes_id = $(this).data('id');
+        var studymat_id = $(this).data('id');
         Swal.fire({
             icon: "question",
             title: "Hapus",
@@ -157,10 +155,10 @@
                 $.ajax({
                     async: false,
                     type: "POST",
-                    url: "{{ route('academy_admin.classes.delete') }}",
+                    url: "{{ route('academy_admin.studymat.delete') }}",
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        "id": classes_id
+                        "id": studymat_id
                     },
                     dataType: "JSON",
                     success: function(response) {
@@ -176,7 +174,7 @@
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
-                                    window.location = "{{ route('academy_admin.classes.index') }}";
+                                    window.location = "{{ route('academy_admin.studymat.index') }}";
                                 }
                             })
                         }else{
@@ -195,7 +193,7 @@
         })
     });
     $(document).off('click', '.recover').on('click', '.recover', function() {
-        var classes_id = $(this).data('id');
+        var studymat_id = $(this).data('id');
         Swal.fire({
             icon: "question",
             title: "Pulihkan",
@@ -211,10 +209,10 @@
                 $.ajax({
                     async: false,
                     type: "POST",
-                    url: "{{ route('academy_admin.classes.recover') }}",
+                    url: "{{ route('academy_admin.studymat.recover') }}",
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        "id": classes_id
+                        "id": studymat_id
                     },
                     dataType: "JSON",
                     success: function(response) {
@@ -230,7 +228,7 @@
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
-                                    window.location = "{{ route('academy_admin.classes.index') }}";
+                                    window.location = "{{ route('academy_admin.studymat.index') }}";
                                 }
                             })
                         }else{

@@ -6,6 +6,7 @@ use App\Models\Studies;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,7 @@ class StudiesController extends Controller
     {
         $studies = DB::table('tm_study_material_header AS a')
             ->leftJoin('tm_study_material_category AS b', 'a.category_id', '=', 'b.id')
-            ->select('a.id', 'a.study_material_title', 'a.study_material_desc', 'b.study_material_category')
+            ->select('a.id', 'a.study_material_title', 'a.study_material_desc', 'b.study_material_category', 'a.is_active')
             // ->where('a.is_active', 1)
             ->orderByDesc('a.id')
             ->get();
@@ -61,16 +62,25 @@ class StudiesController extends Controller
             return redirect()->back()->withErrors($validator)->withInput($request->all());
         }
 
-        $studies = new Studies();
-        $studies->study_material_title = $request->judul_materi;
-        $studies->study_material_desc = $request->deskripsi_materi;
-        $studies->category_id = $request->kategori_materi;
-        $studies->is_active = 1;
-        $studies->created_by = Auth::user()->name;
-        $studies->created_date = Carbon::now();
-        $studies->save();
+        $insert_data = [
+            'study_material_title' => $request->judul_materi,
+            'study_material_desc' => $request->deskripsi_materi,
+            'category_id' => $request->kategori_materi,
+            'is_active' => 1,
+            'created_by' => Auth::user()->name,
+            'created_date' => Carbon::now()
+        ];
 
-        return redirect()->route('academy_admin.studies.index');
+        $insert_action = DB::table('tm_study_material_header')
+            ->insertGetId($insert_data);
+
+        if ($insert_action > 0) {
+            $status = [
+                'status' => 'insert',
+                'status_message' => 'Berhasil menambah data!'
+            ];
+            return redirect()->route('academy_admin.studies.index')->with($status);
+        }
     }
 
     /**
@@ -103,7 +113,40 @@ class StudiesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'judul_materi' => 'required',
+                'deskripsi_materi' => 'required',
+                'kategori_materi' => 'required'
+            ],
+            [
+                'judul_materi.required' => 'Judul materi belum terisi.',
+                'deskripsi_materi.required' => 'Deskripsi materi belum terisi.',
+                'kategori_materi.required' => 'Kategori materi belum terisi.'
+            ]
+        );
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput($request->all());
+        }
+        $update_data = [
+            'study_material_title' => $request->judul_materi,
+            'study_material_desc' => $request->deskripsi_materi,
+            'category_id' => $request->kategori_materi,
+            // 'is_active' => 1,
+            'modified_by' => Auth::user()->name,
+            'modified_date' => Carbon::now()
+        ];
+        $update_action = DB::table('tm_study_material_header AS a')
+            ->where('a.id', $id)
+            ->update($update_data);
+        if ($update_action > 0) {
+            $status = [
+                'status' => 'update',
+                'status_message' => 'Berhasil mengubah data!'
+            ];
+            return redirect()->route('academy_admin.studies.index')->with($status);
+        }
     }
 
     /**
@@ -114,5 +157,37 @@ class StudiesController extends Controller
         //
     }
 
-    public function delete(Request $request) {}
+    public function delete(Request $request)
+    {
+        $delete_data = [
+            'is_active' => 0,
+            'modified_by' => Auth::user()->name,
+            'modified_date' => Carbon::now()
+        ];
+        $delete_action = DB::table('tm_study_material_header AS a')
+            ->where('a.id', $request->id)
+            ->update($delete_data);
+        if ($delete_action > 0) {
+            return $delete_action;
+        } else {
+            return 'failed to delete';
+        }
+    }
+
+    public function recover(Request $request)
+    {
+        $recover_data = [
+            'is_active' => 1,
+            'modified_by' => Auth::user()->name,
+            'modified_date' => Carbon::now()
+        ];
+        $recover_action = DB::table('tm_study_material_header AS a')
+            ->where('a.id', $request->id)
+            ->update($recover_data);
+        if ($recover_action > 0) {
+            return $recover_action;
+        } else {
+            return 'failed to recover';
+        }
+    }
 }
