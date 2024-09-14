@@ -1,3 +1,8 @@
+<style>
+    #detail_table tbody tr{
+        cursor: grab;
+    }
+</style>
 <x-app-layout>
     <x-slot name="header">
         {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -18,7 +23,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.studies.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Tajuk Materi</a>
+                    <a href="{{ route('academy_admin.studies.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Bank Materi</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -77,6 +82,117 @@
                         @enderror
                     </div>
 
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        Urutan
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Nama Materi
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        File
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Bobot Nilai
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        1
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        Materi I
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        https://youtube.com/CUskdity45
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        20%
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    </td>
+                                </tr>
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        2
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        Materi II
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        testing.pdf
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        20%
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    </td>
+                                </tr>
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        3
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        Materi III
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        https://youtube.com/CUskdity45
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        20%
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    </td>
+                                </tr>
+                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        4
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        Materi IV
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        aajdcYIdhy.pdf
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        20%
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        5
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        Materi V
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        https://youtube.com/CUskdity45
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        20%
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <div class="flex items-center gap-4">
                         <x-primary-button>{{ __('Save') }}</x-primary-button>
 
@@ -90,3 +206,94 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+(function () {
+    // Get the table and its rows
+    var table = document.getElementById('detail_table');
+    var rows = table.rows;
+    // Initialize the drag source element to null
+    var dragSrcEl = null;
+
+    // Loop through each row (skipping the first row which contains the table headers)
+    for (var i = 1; i < rows.length; i++) {
+        var row = rows[i];
+        // Make each row draggable
+        row.draggable = true;
+
+        // Add an event listener for when the drag starts
+        row.addEventListener('dragstart', function (e) {
+            // Set the drag source element to the current row
+            dragSrcEl = this;
+            // Set the drag effect to "move"
+            e.dataTransfer.effectAllowed = 'move';
+            // Set the drag data to the outer HTML of the current row
+            e.dataTransfer.setData('text/html', this.outerHTML);
+            // Add a class to the current row to indicate it is being dragged
+            this.classList.add('bg-gray-100');
+        });
+
+        // Add an event listener for when the drag ends
+        row.addEventListener('dragend', function (e) {
+            // Remove the class indicating the row is being dragged
+            this.classList.remove('bg-gray-100');
+            // Remove the border classes from all table rows
+            table.querySelectorAll('.border-t-2', '.border-blue-300').forEach(function (el) {
+                el.classList.remove('border-t-2', 'border-blue-300');
+            });
+        });
+
+        // Add an event listener for when the dragged row is over another row
+        row.addEventListener('dragover', function (e) {
+            // Prevent the default dragover behavior
+            e.preventDefault();
+            // Add border classes to the current row to indicate it is a drop target
+            this.classList.add('border-t-2', 'border-blue-300');
+        });
+
+        // Add an event listener for when the dragged row enters another row
+        row.addEventListener('dragenter', function (e) {
+            // Prevent the default dragenter behavior
+            e.preventDefault();
+            // Add border classes to the current row to indicate it is a drop target
+            this.classList.add('border-t-2', 'border-blue-300');
+        });
+
+        // Add an event listener for when the dragged row leaves another row
+        row.addEventListener('dragleave', function (e) {
+            // Remove the border classes from the current row
+            this.classList.remove('border-t-2', 'border-blue-300');
+        });
+
+        // Add an event listener for when the dragged row is dropped onto another row
+        row.addEventListener('drop', function (e) {
+            // Prevent the default drop behavior
+            e.preventDefault();
+            // If the drag source element is not the current row
+            if (dragSrcEl != this) {
+                // Get the index of the drag source element
+                var sourceIndex = dragSrcEl.rowIndex;
+                // Get the index of the target row
+                var targetIndex = this.rowIndex;
+                // If the source index is less than the target index
+                if (sourceIndex < targetIndex) {
+                    // Insert the drag source element after the target row
+                    table.tBodies[0].insertBefore(dragSrcEl, this.nextSibling);
+                } else {
+                    // Insert the drag source element before the target row
+                    table.tBodies[0].insertBefore(dragSrcEl, this);
+                }
+            }
+            // Remove the border classes from all table rows
+            table.querySelectorAll('.border-t-2', '.border-blue-300').forEach(function (el) {
+              el.classList.remove('border-t-2', 'border-blue-300');
+            });
+            refresh_index();
+        });
+    }
+})();
+function refresh_index(){
+    $('#detail_table tbody tr').each(function(index){
+        $(this).find('th').html(index+1);
+    })
+}
+</script>

@@ -5,6 +5,7 @@ use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudiesController;
 use App\Http\Controllers\StudyCatController;
+use App\Http\Controllers\StudyDetController;
 use App\Http\Controllers\StudyMatController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,29 +28,30 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('academy_admin')->name('academy_admin.')->group(function () {
         Route::middleware('can:manage class category')->group(function () {
-            Route::resource('classcat', ClassCatController::class);
             Route::post('classcat/delete', [ClassCatController::class, 'delete'])->name('classcat.delete');
             Route::post('classcat/recover', [ClassCatController::class, 'recover'])->name('classcat.recover');
+            Route::resource('classcat', ClassCatController::class);
         });
         Route::middleware('can:manage classes')->group(function () {
-            Route::resource('classes', ClassesController::class);
             Route::post('classes/delete', [ClassesController::class, 'delete'])->name('classes.delete');
             Route::post('classes/recover', [ClassesController::class, 'recover'])->name('classes.recover');
+            Route::resource('classes', ClassesController::class);
         });
         Route::middleware('can:manage study category')->group(function () {
-            Route::resource('studycat', StudyCatController::class);
             Route::post('studycat/delete', [StudyCatController::class, 'delete'])->name('studycat.delete');
             Route::post('studycat/recover', [StudyCatController::class, 'recover'])->name('studycat.recover');
+            Route::resource('studycat', StudyCatController::class);
         });
         Route::middleware('can:manage studies')->group(function () {
-            Route::resource('studies', StudiesController::class);
             Route::post('studies/delete', [StudiesController::class, 'delete'])->name('studies.delete');
             Route::post('studies/recover', [StudiesController::class, 'recover'])->name('studies.recover');
+            Route::resource('studies', StudiesController::class);
         });
-        Route::middleware('can:manage study material')->group(function () {
-            Route::resource('studymat', StudyMatController::class);
-            Route::post('studymat/delete', [StudyMatController::class, 'delete'])->name('studymat.delete');
-            Route::post('studymat/recover', [StudyMatController::class, 'recover'])->name('studymat.recover');
+        Route::middleware('can:manage study detail')->group(function () {
+            Route::get('studydet/attachment', [StudyDetController::class, 'attachment'])->name('studydet.attachment');
+            Route::post('studydet/delete', [StudyDetController::class, 'delete'])->name('studydet.delete');
+            Route::post('studydet/recover', [StudyDetController::class, 'recover'])->name('studydet.recover');
+            Route::resource('studydet', StudyDetController::class);
         });
     });
 });

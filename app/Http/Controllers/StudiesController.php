@@ -105,7 +105,21 @@ class StudiesController extends Controller
             ->orderBy('a.id', 'asc')
             ->get();
 
-        return view('academy_admin.studies.edit', compact('item', 'kategori'));
+        $sql_detail = "SELECT
+                        a.id, a.name, a.order, a.scoring_weight,
+                        IF(GROUP_CONCAT(b.filename SEPARATOR ' ') IS NOT NULL, GROUP_CONCAT(b.filename SEPARATOR ', '), '-') AS filename,
+                        IF(GROUP_CONCAT(b.attachment SEPARATOR ' ') IS NOT NULL, GROUP_CONCAT(b.attachment SEPARATOR ', '), '-') AS attachment,
+                        IF(GROUP_CONCAT(b.estimated_time SEPARATOR ' ') IS NOT NULL, GROUP_CONCAT(b.estimated_time SEPARATOR ', '), '-') AS estimated_time
+                        FROM tm_study_material_detail a
+                        LEFT JOIN tm_study_material_attachments b ON b.study_material_detail_id = a.id
+                        WHERE a.header_id = ?
+                        GROUP BY a.id";
+        $param_detail = [
+            $id
+        ];
+        $detail = DB::select($sql_detail, $param_detail);
+
+        return view('academy_admin.studies.edit', compact('item', 'kategori', 'detail'));
     }
 
     /**
