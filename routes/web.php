@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClassCatController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudiesController;
 use App\Http\Controllers\StudyCatController;
@@ -51,6 +52,7 @@ Route::middleware('auth')->group(function () {
             Route::get('studydet/attachment', [StudyDetController::class, 'attachment'])->name('studydet.attachment');
             Route::post('studydet/delete', [StudyDetController::class, 'delete'])->name('studydet.delete');
             Route::post('studydet/recover', [StudyDetController::class, 'recover'])->name('studydet.recover');
+            Route::post('file/uploadatt', [FileController::class, 'upload_study_attachment'])->name('file.upload_studyatt');
             Route::resource('studydet', StudyDetController::class);
         });
     });

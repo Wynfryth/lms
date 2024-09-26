@@ -82,117 +82,6 @@
                         @enderror
                     </div>
 
-                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                        <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3">
-                                        Urutan
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Nama Materi
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        File
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Bobot Nilai
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Aksi
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        1
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Materi I
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        https://youtube.com/CUskdity45
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        20%
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                    </td>
-                                </tr>
-                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        2
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Materi II
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        testing.pdf
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        20%
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                    </td>
-                                </tr>
-                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        3
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Materi III
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        https://youtube.com/CUskdity45
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        20%
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                    </td>
-                                </tr>
-                                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        4
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Materi IV
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        aajdcYIdhy.pdf
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        20%
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        5
-                                    </th>
-                                    <td class="px-6 py-4">
-                                        Materi V
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        https://youtube.com/CUskdity45
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        20%
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
                     <div class="flex items-center gap-4">
                         <x-primary-button>{{ __('Save') }}</x-primary-button>
 
@@ -207,6 +96,9 @@
     </div>
 </x-app-layout>
 <script>
+$(document).ready(function () {
+    check_detail();
+});
 (function () {
     // Get the table and its rows
     var table = document.getElementById('detail_table');
@@ -296,4 +188,23 @@ function refresh_index(){
         $(this).find('th').html(index+1);
     })
 }
+function check_detail(){
+    var tr_length = $('#detail_table tbody tr').length;
+    // console.log(tr_length);
+    if(tr_length > 0){
+        // console.log($('tr.no_data_row'));
+        if($('#detail_table tbody').find('tr.no_data_row').length > 0){
+            $('#detail_table tbody').find('tr.no_data_row').remove();
+        }
+        for(i=0; i<tr_length; i++){
+            $('#detail_table tbody').find('th.index_row:eq('+i+')').html((i+1));
+        }
+    }else{
+        $('#detail_table tbody').append('<tr class="no_data_row"><td colspan="100%" class="text-center">Tidak ada data.</td></tr>')
+    }
+}
+$('form').submit(function(e){
+
+    e.preventDefault();
+})
 </script>
