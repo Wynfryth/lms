@@ -50,9 +50,9 @@
                             @forelse ($studies as $index => $item)
                                 @php
                                     if($item->is_active == 1){
-                                        $row_color = 'bg-white';
+                                        $row_color = 'bg-white dark:bg-gray-800';
                                     }else{
-                                        $row_color = 'bg-zinc-300';
+                                        $row_color = 'bg-zinc-300 dark:bg-white';
                                     }
                                 @endphp
                                 <tr>
