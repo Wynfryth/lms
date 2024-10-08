@@ -10,7 +10,7 @@
         <x-recover-button href="#" class="upload_link">Link</x-recover-button>
     </td>
     <td class="px-6 py-4">
-        <x-text-input id="durasi" name="durasi" type="text" class="mt-1 block lg:w-full sm:w-16 timepicker" placeholder="Durasi..." value="{{ old('durasi') }}"/>
+        <x-text-input id="durasi" name="durasi" type="text" class="mt-1 block lg:w-full sm:w-8 timepicker" placeholder="Durasi..." value="{{ old('durasi') }}"/>
     </td>
     <td class="px-6 py-4">
         <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline me-2 hidden edit_attachment">Edit</a>

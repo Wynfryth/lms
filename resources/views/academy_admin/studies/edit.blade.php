@@ -44,13 +44,13 @@
     <div class="p-4 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <form method="POST" action="{{ route('academy_admin.studies.update', $item->id) }}" class="mt-6 space-y-6">
+                <form method="post" action="{{ route('academy_admin.studies.update', $item->id) }}" id="edit_studies" class="mt-6 space-y-6">
                     @csrf
                     @method('put')
 
                     <div>
                         <x-input-label for="judul_materi" :value="__('Judul')" />
-                        <x-text-input id="judul_materi" name="judul_materi" type="text" class="mt-1 block w-full" value="{{ $item->study_material_title }}"/>
+                        <x-text-input id="judul_materi" name="judul_materi" type="text" class="mt-1 block w-full serialize" value="{{ $item->study_material_title }}"/>
                         @error('judul_materi')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -58,7 +58,7 @@
 
                     <div>
                         <x-input-label for="deskripsi_materi" :value="__('Deskripsi')" />
-                        <x-textarea-input id="deskripsi_materi" name="deskripsi_materi" class="mt-1 block w-full">{{ $item->study_material_desc }}</x-textarea-input>
+                        <x-textarea-input id="deskripsi_materi" name="deskripsi_materi" class="mt-1 block w-full serialize">{{ $item->study_material_desc }}</x-textarea-input>
                         @error('deskripsi_materi')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -66,7 +66,7 @@
 
                     <div class="my-1">
                         <x-input-label for="kategori_materi" :value="__('Kategori')"></x-input-label>
-                        <x-select-option id="kategori_materi" name="kategori_materi">
+                        <x-select-option id="kategori_materi" name="kategori_materi" class="serialize">
                             <x-slot name="options">
                                 <option class="disabled" value="null" selected disabled>
                                     Pilih Kategori ...
@@ -89,6 +89,7 @@
                         <x-add-button href="#" id="add_detail" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal">
                             + Tambah
                         </x-add-button>
+                        <x-delete-button href="#" class="float-right" id="deleted_detail" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal">Deleted</x-delete-button>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
                             <h4 class="text-center">Pembelajaran & File</h4>
                             <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -121,7 +122,7 @@
                                             $attachment = explode(', ', $value->attachment);
                                             $estimated_time = explode(', ', $value->estimated_time);
                                         @endphp
-                                        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700" row_id="{{$value->id}}">
                                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                 {{$value->order}}
                                             </th>
@@ -133,7 +134,11 @@
                                                     <ul class="list-disc">
                                                         @foreach ($filename as $filename_index => $filename_item)
                                                         <li>
-                                                            <a href="{{$attachment[$filename_index]}}" target="_blank">{{$filename_item}}</a>
+                                                            @if (substr($attachment[$filename_index], 0, 4) == 'http')
+                                                                <a href="{{$attachment[$filename_index]}}" target="_blank">{{$filename_item}}</a>
+                                                            @else
+
+                                                            @endif
                                                         </li>
                                                         @endforeach
                                                     </ul>
@@ -158,8 +163,8 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4">
-                                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline me-2">Ubah</a>
-                                                <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline">Hapus</a>
+                                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline me-2 edit_detail" data-detail="{{$value->id}}" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal">Ubah</a>
+                                                <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline hapus_detail" data-detail="{{$value->id}}">Hapus</a>
                                             </td>
                                         </tr>
                                     @empty
@@ -186,8 +191,8 @@
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    Pembelajaran & File
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white" id="modal_title">
+                    {{-- Pembelajaran & File --}}
                 </h3>
                 <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="studydet-modal">
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -208,11 +213,30 @@
         </div>
     </div>
 </div>
+@if (session('status'))
+<script>
+    const Toast =   Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                        });
+                        Toast.fire({
+                        icon: "success",
+                        title: "{{session('status_message')}}"
+                    });
+</script>
+@endif
 <script>
 $(document).ready(function () {
     // alert('hai')
     // console.log($(document).find('#add_detail'))
-    $(document).find('#add_detail')[0].click();
+    // $(document).find('#add_detail')[0].click();
 });
 (function () {
     // Get the table and its rows
@@ -303,6 +327,77 @@ function refresh_index(){
         $(this).find('th').html(index+1);
     })
 }
+
+$(document).off('click', '.edit_detail').on('click', '.edit_detail', function () {
+    var detail_id = $(this).data('detail');
+    // console.log(detail_id);
+    var loader_html = '<div class="loader mx-auto my-28"></div>';
+    $('#studydet-modal #modal_body').html(loader_html);
+    $('#studydet-modal #modal_body').animate({'opacity':'0.0'}, 600, function(){
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: "{{ route('academy_admin.studydet.edit', "+detail_id+") }}",
+            cache: false,
+            data: {
+                id: "{{ $item->id }}"
+            },
+            // dataType: "dataType",
+            success: function (response) {
+                $('#studydet-modal #modal_title').html('Pembelajaran & File');
+                $('#studydet-modal #modal_body').html(response);
+                $('#studydet-modal #modal_body').animate({'opacity':'1.0'}, 100);
+            }
+        });
+    })
+});
+$(document).off('click', '.hapus_detail').on('click', '.hapus_detail', function(){
+    var detail_id = $(this).data('detail');
+    Swal.fire({
+        icon: "question",
+        title: "Hapus?",
+        text: "Yakin untuk menghapus?",
+        allowOutsideClick: false,
+        confirmButtonText: "Ya",
+        showDenyButton: true,
+        denyButtonText: "Tidak",
+        // background: "gray"
+    })
+    .then((response)=>{
+        if(response.isConfirmed){
+            // hapus
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: "{{route('academy_admin.studydet.delete')}}",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    id: detail_id,
+                    id_header: "{{ $item->id }}"
+                },
+                dataType: "JSON",
+                success: function (response) {
+                    // console.log(response);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Sukses",
+                        text: "Berhasil menghapus",
+                        allowOutsideClick: false,
+                        confirmButtonText: "OK",
+                        // background: "gray"
+                    })
+                    .then((feedback)=>{
+                        if(feedback.isConfirmed){
+                            window.location.href = "{{ route('academy_admin.studies.edit', $item->id )}}"
+                        }
+                    })
+                }
+            });
+        }else if(response.isDenied){
+            // nggak jadi hapus
+        }
+    })
+});
 $(document).off('click', '#add_detail').on('click', '#add_detail', function () {
     var loader_html = '<div class="loader mx-auto my-28"></div>';
     $('#studydet-modal #modal_body').html(loader_html);
@@ -317,10 +412,44 @@ $(document).off('click', '#add_detail').on('click', '#add_detail', function () {
             },
             // dataType: "dataType",
             success: function (response) {
+                $('#studydet-modal #modal_title').html('Pembelajaran & File');
                 $('#studydet-modal #modal_body').html(response);
                 $('#studydet-modal #modal_body').animate({'opacity':'1.0'}, 100);
             }
         });
     })
+});
+$(document).off('click', '#deleted_detail').on('click', '#deleted_detail', function(){
+    var loader_html = '<div class="loader mx-auto my-28"></div>';
+    $('#studydet-modal #modal_body').html(loader_html);
+    $('#studydet-modal #modal_body').animate({'opacity':'0.0'}, 600, function(){
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: "{{ route('academy_admin.studydet.getdeleted') }}",
+            cache: false,
+            data: {
+                // "_token": "{{ csrf_token() }}",
+                id: "{{ $item->id }}"
+            },
+            // dataType: "JSON",
+            success: function (response) {
+                $('#studydet-modal #modal_title').html('Detail yang dihapus');
+                $('#studydet-modal #modal_body').html(response);
+                $('#studydet-modal #modal_body').animate({'opacity':'1.0'}, 100);
+            }
+        });
+    })
+})
+$(document).find('form').submit(function(e){
+    var no_data_row = $('table#detail_table tbody').find('tr.row_no_data').length;
+
+    if(no_data_row == 0){ // berarti ada isinya
+        var detail_table_row = $(this).find('table#detail_table tbody tr');
+        detail_table_row.each(function(index, element){
+            var row_id = $(element).attr('row_id');
+            $(this).append('<input type="hidden" name="detail_sequence[]" value="'+row_id+'">')
+        });
+    }
 });
 </script>

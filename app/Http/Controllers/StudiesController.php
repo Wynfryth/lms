@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class StudiesController extends Controller
@@ -113,11 +114,18 @@ class StudiesController extends Controller
                         FROM tm_study_material_detail a
                         LEFT JOIN tm_study_material_attachments b ON b.study_material_detail_id = a.id
                         WHERE a.header_id = ?
-                        GROUP BY a.id";
+                        AND a.is_active = 1
+                        GROUP BY a.id
+                        ORDER BY a.order ASC";
         $param_detail = [
             $id
         ];
         $detail = DB::select($sql_detail, $param_detail);
+        foreach ($detail as $key => $value) {
+            if (substr($value->attachment, 0, 4) != 'http') {
+                $value->attachment = Storage::url($value->attachment);
+            }
+        }
 
         return view('academy_admin.studies.edit', compact('item', 'kategori', 'detail'));
     }
@@ -154,6 +162,18 @@ class StudiesController extends Controller
         $update_action = DB::table('tm_study_material_header AS a')
             ->where('a.id', $id)
             ->update($update_data);
+        if (isset($request->detail_sequence)) {
+            foreach ($request->detail_sequence as $key => $value) {
+                // return $value;
+                $update_data = [
+                    'a.order' => intval($key) + 1
+                ];
+                $update_detail_sequence = DB::table('tm_study_material_detail AS a')
+                    ->where('a.id', $value)
+                    ->update($update_data);
+            }
+        }
+        // return $request->detail_sequence;
         if ($update_action > 0) {
             $status = [
                 'status' => 'update',

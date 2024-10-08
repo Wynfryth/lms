@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('can:manage studies')->group(function () {
             Route::post('studies/delete', [StudiesController::class, 'delete'])->name('studies.delete');
             Route::post('studies/recover', [StudiesController::class, 'recover'])->name('studies.recover');
+            // Route::post('studies/update', [StudiesController::class, 'update'])->name('studies.update');
             Route::resource('studies', StudiesController::class);
         });
         Route::middleware('can:manage study detail')->group(function () {
@@ -53,6 +54,7 @@ Route::middleware('auth')->group(function () {
             Route::post('studydet/delete', [StudyDetController::class, 'delete'])->name('studydet.delete');
             Route::post('studydet/recover', [StudyDetController::class, 'recover'])->name('studydet.recover');
             Route::post('file/uploadatt', [FileController::class, 'upload_study_attachment'])->name('file.upload_studyatt');
+            Route::get('studydet/getdeleted', [StudyDetController::class, 'get_deleted'])->name('studydet.getdeleted');
             Route::resource('studydet', StudyDetController::class);
         });
     });

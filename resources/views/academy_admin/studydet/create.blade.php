@@ -11,8 +11,8 @@
     </div>
 
     <div>
-        <x-input-label for="bobot_pembelajaran" :value="__('Bobot Pembelajaran')" />
-        <x-text-input id="bobot_pembelajaran" name="bobot_pembelajaran" type="text" class="mt-1 block w-full serialize" value="{{ old('bobot_pembelajaran') }}"/>
+        <x-input-label for="bobot_pembelajaran" :value="__('Bobot Pembelajaran *harus angka')" />
+        <x-text-input id="bobot_pembelajaran" name="bobot_pembelajaran" type="number" class="mt-1 block w-full serialize" value="{{ old('bobot_pembelajaran') }}"/>
         @error('bobot_pembelajaran')
             <span class="text-red-500 text-sm">{{ $message }}</span>
         @enderror
@@ -93,6 +93,11 @@
         }else{
             $('#attachment_table tbody').append('<tr class="no_data_row"><td colspan="100%" class="text-center">Tidak ada data.</td></tr>')
         }
+        $(document).find('.timepicker').timepicker({
+            timeFormat: 'H:mm',
+            interval: 15,
+            maxTime: '5:00'
+        });
     }
     $(document).off('click', '.delete_attachment').on('click', '.delete_attachment', function () {
         Swal.fire({
@@ -134,6 +139,8 @@
         var bobot_pembelajaran = $(this).find('input[name="bobot_pembelajaran"]').val();
         if(bobot_pembelajaran == ''){
            formValidated = false;
+        }else{
+            bobot_pembelajaran = parseInt(bobot_pembelajaran);
         }
 
         data.push({
@@ -147,6 +154,8 @@
                 var att_row = {};
                 var nama_file = $(element).find('input[name="nama_file"]').val();
                 att_row.nama_file = nama_file;
+                var durasi = $(element).find('input[name="durasi"]').val();
+                att_row.durasi = durasi;
                 var attachment = $(element).find('td.attachment_row').find('input');
                 if(attachment.length > 0){
                     var type = $(attachment).attr('type');
@@ -199,9 +208,7 @@
                 allowOutsideClick: false
             })
         }else{
-            // console.log(data);
             var action = $(this).attr('action');
-            // console.log(action);
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -209,7 +216,10 @@
             });
             $.post(action, data,
                 function (data, textStatus, jqXHR) {
-                    console.log(data);
+                    // console.log(data);
+                    if(data != 0){
+                        window.location = "{{ route('academy_admin.studies.edit', $item['id']) }}";
+                    }
                 },
                 "JSON"
             );
