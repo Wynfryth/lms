@@ -1,4 +1,4 @@
-<form method="POST" action="{{ route('academy_admin.studydet.store') }}" class="mt-1 space-y-6" id="create_pembelajaran">
+<form method="POST" action="{{ route('academy_admin.studydet.update', $item['id']) }}" class="mt-1 space-y-6" id="edit_pembelajaran">
     @csrf
     {{-- @method('put') --}}
 
@@ -44,7 +44,43 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{dd($attachments);}}
+                    @forelse ($attachments as $key => $value)
+                        @php
+                            if($value->is_active == 1){
+                                $row_color = 'bg-white dark:bg-gray-800';
+                            }else{
+                                $row_color - 'bg-zinc-300 dark:bg-white';
+                            }
+                        @endphp
+                        <tr>
+                            <td class="whitespace-nowrap text-center {{$row_color}}">{{ $index + 1 }}</td>
+                            <td class="whitespace-nowrap {{$row_color}}">{{ $value->study_material_title }}</td>
+                            <td class="whitespace-nowrap {{$row_color}}">{{ $value->study_material_desc }}</td>
+                            <td class="whitespace-nowrap {{$row_color}}">
+                                <div class="md:flex flex-row items-center gap-x-3">
+                                    @if ($value->is_active == 1)
+                                        <x-edit-button class="mx-auto" href="{{ route('academy_admin.studies.edit', $item->id) }}">
+                                            Ubah
+                                        </x-edit-button>
+                                        <x-delete-button class="mx-auto delete" data-id="{{ $value->id }}">
+                                            Hapus
+                                        </x-delete-button>
+                                        <x-recover-button class="mx-auto detail">
+                                            Detail
+                                        </x-recover-button>
+                                    @else
+                                        <x-recover-button class="mx-auto w-full recover" data-id="{{ $value->id; }}">
+                                            Pulihkan
+                                        </x-recover-button>
+                                    @endif
 
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+
+                    @endforelse
                 </tbody>
             </table>
         </div>

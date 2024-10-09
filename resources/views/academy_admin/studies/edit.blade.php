@@ -91,7 +91,7 @@
                         </x-add-button>
                         <x-delete-button href="#" class="float-right" id="deleted_detail" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal">Deleted</x-delete-button>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
-                            <h4 class="text-center">Pembelajaran & File</h4>
+                            <h4 class="text-center dark:text-white">Pembelajaran & File</h4>
                             <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>

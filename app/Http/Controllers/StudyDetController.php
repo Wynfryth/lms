@@ -89,18 +89,21 @@ class StudyDetController extends Controller
     public function edit($id)
     {
         $item['id'] = $id;
-        $where_params = [
-            [
-                'a.study_material_detail_id',
-                '=',
-                $id
-            ]
-        ];
+        // $where_params = [
+        //     [
+        //         'a.study_material_detail_id',
+        //         '=',
+        //         $id
+        //     ]
+        // ];
         $attachments = DB::table('tm_study_material_attachments AS a')
-            ->where($where_params)
+            ->where('a.study_material_detail_id', $id)
             ->get();
 
-        return view('academy_admin.studydet.edit', compact('item', 'attachments'));
+        // return $attachments;
+        return $id;
+
+        // return view('academy_admin.studydet.edit', compact('item', 'attachments'));
     }
 
     /**
