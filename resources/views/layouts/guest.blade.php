@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        {{-- <title>{{ config('app.name', 'Laravel') }}</title> --}}
-        <title>LMS - Gacoan Academy</title>
+        <title>{{ config('app.name', 'LMS Gacoan') }}</title>
+        {{-- <title>LMS - Gacoan Academy</title> --}}
 
 
         <!-- Fonts -->

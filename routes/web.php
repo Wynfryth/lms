@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClassCatController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudiesController;
 use App\Http\Controllers\StudyCatController;
@@ -28,6 +29,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::prefix('academy_admin')->name('academy_admin.')->group(function () {
+        Route::middleware('can: manage participant')->group(function () {
+            Route::post('participant/delete', [ParticipantController::class, 'delete'])->name('participant.delete');
+            Route::post('participant/recover', [ParticipantController::class, 'recover'])->name('participant.recover');
+            Route::resource('participant', ParticipantController::class);
+        });
+
         Route::middleware('can:manage class category')->group(function () {
             Route::post('classcat/delete', [ClassCatController::class, 'delete'])->name('classcat.delete');
             Route::post('classcat/recover', [ClassCatController::class, 'recover'])->name('classcat.recover');
