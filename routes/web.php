@@ -4,6 +4,7 @@ use App\Http\Controllers\ClassCatController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ParticipantController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudiesController;
 use App\Http\Controllers\StudyCatController;
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('permissions', PermissionController::class);
 
     Route::prefix('academy_admin')->name('academy_admin.')->group(function () {
         Route::middleware('can: manage participant')->group(function () {

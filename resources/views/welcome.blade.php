@@ -13,7 +13,7 @@
     <header>
         <nav class="container flex items-center py-1 mt-4 sm:mt-12">
             <div class="py-1">
-                <img src="{{url('/gacoan-academy-logo.png')}}" class="w-1/3 h-1/3" alt="">
+                <img src="{{asset('/gacoan-academy-logo.png')}}" class="w-1/3 h-1/3" alt="">
             </div>
             <ul class="hidden sm:flex flex-1 justify-end items-center gap-12 text-bookmark-blue uppercase text-xs">
                 <li class="cursor-pointer text-bookmark-red">Beranda</li>
@@ -21,7 +21,7 @@
                 <li class="cursor-pointer">Kelas</li>
                 <li class="cursor-pointer">Kuis</li>
                 <li class="cursor-pointer">Instruktur</li>
-                <li class="cursor-pointer">Kontak</li>
+                <a href="{{url('/register')}}" type="button">Daftar</a>
                 <a href="{{url('/login')}}"><button type="button" class="btn btn-red hover:bg-bookmark-white hover:text-black rounded-md px-7 py-3 uppercase">Masuk</button></a>
             </ul>
             <div class="flex sm:hidden flex-1 justify-end">
@@ -43,13 +43,13 @@
                 </p>
                 <div class="flex flex-wrap gap-6">
                     <a href="{{url('/login')}}"><button type="button" class="btn btn-red hover:bg-bookmark-white hover:text-black rounded-md px-7 py-3 uppercase">Masuk</button></a>
-                    <button type="button" class="btn btn-purple hover:bg-bookmark-white hover:text-black">Daftar</button>
+                    <a href="{{url('/register')}}"><button type="button" class="btn btn-purple hover:bg-bookmark-white hover:text-black rounded-md px-7 py-3 uppercase">Daftar</button></a>
                     <button type="button" class="btn btn-white hover:bg-bookmark-purple hover:text-white">Kontak kami</button>
                 </div>
             </div>
             {{-- Image --}}
             <div class="flex justify-center flex-1 mb-10 md:mb-16 lg:mb-0 z-10">
-                <img class="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-3/4" src="{{url('/example-img/hero-bg.png')}}" alt="">
+                <img class="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-3/4" src="{{asset('/example-img/hero-bg.png')}}" alt="">
             </div>
         </div>
         {{-- Rounded Rectangle --}}
@@ -70,7 +70,7 @@
             <div class="container flex flex-col lg:flex-row items-center justify-center gap-x-24">
                 {{-- Image--}}
                 <div class="flex flex-1 justify-center z-10 mb-10 lg:mb-0">
-                    <img class="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-3/4" src="{{url('/example-img/illustration-features-tab-1.png')}}" alt="">
+                    <img class="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-3/4" src="{{asset('/example-img/illustration-features-tab-1.png')}}" alt="">
                 </div>
                 {{-- Content --}}
                 <div class="flex flex-1 flex-col items-center lg:items-start">
