@@ -73,9 +73,9 @@
                 </td>
             </tr>
         @empty
-            <tr class="row_no_data">
-                <td class="text-center" colspan="100%">Tidak ada data.</td>
-            </tr>
+        <tr class="row_no_data">
+            <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+        </tr>
         @endforelse
     </tbody>
 </table>
@@ -98,7 +98,7 @@
                 $.ajax({
                     async: false,
                     type: "POST",
-                    url: "{{ route('academy_admin.studydet.recover') }}",
+                    url: "{{ route('studydet.recover') }}",
                     data: {
                         "_token": "{{ csrf_token() }}",
                         id: id,
@@ -115,7 +115,7 @@
                         })
                         .then((feedback)=>{
                             if(feedback.isConfirmed){
-                                window.location.href = "{{ route('academy_admin.studies.edit', isset($detail[0]->header_id) ? $detail[0]->header_id : '0' )}}"
+                                window.location.href = "{{ route('studies.edit', isset($detail[0]->header_id) ? $detail[0]->header_id : '0' )}}"
                             }
                         })
                     }

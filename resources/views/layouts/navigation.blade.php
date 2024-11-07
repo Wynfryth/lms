@@ -22,7 +22,6 @@
                         <x-slot name="name">Pegawai</x-slot>
                         <x-slot name="children">
                             <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Master Pegawai</a>
-                            {{-- <span class="separator"></span> --}}
                             <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Pegawai Terdaftar</a>
                             <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Pegawai Batal</a>
                         </x-slot>
@@ -30,11 +29,10 @@
                     <x-nav-link :href="route('dashboard')">
                         {{ __('Pelatih') }}
                     </x-nav-link>
-                    <x-nav-link-parent :href="'#'" :active="request()->routeIs(['academy_admin.classcat.index'])">
+                    <x-nav-link-parent :href="'#'" :active="request()->routeIs(['classcat'])">
                         <x-slot name="name">Kelas</x-slot>
                         <x-slot name="children">
                             <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Master Kelas</a>
-                            {{-- <span class="separator"></span> --}}
                             <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Kategori Kelas</a>
                             <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Bank Materi</a>
                         </x-slot>
@@ -43,7 +41,6 @@
                         <x-slot name="name">Tes</x-slot>
                         <x-slot name="children">
                             <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Master Tes</a>
-                            {{-- <span class="separator"></span> --}}
                             <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Kategori Tes</a>
                             <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Bank Soal Tes</a>
                         </x-slot>
@@ -52,7 +49,6 @@
                         <x-slot name="name">Laporan</x-slot>
                         <x-slot name="children">
                             <a href="{{ route('dashboard') }}" :active="request()->routeIs('kelas')">Tingkat Kelulusan</a>
-                            {{-- <span class="separator"></span> --}}
                             <a href="{{ route('academy_admin.classcat.index') }}" :active="request()->routeIs('academy_admin.classcat.index')">Mortalitas</a>
                         </x-slot>
                     </x-nav-link-parent>

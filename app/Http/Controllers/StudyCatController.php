@@ -15,14 +15,21 @@ class StudyCatController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($studycat_kywd = null)
     {
         $studycat = DB::table('tm_study_material_category AS a')
             // ->where('a.is_active', 1)
-            ->orderBy('a.id', 'desc')
-            ->get();
+            ->orderBy('a.id', 'desc');
+        if ($studycat_kywd != null) {
+            $any_params = [
+                'a.study_material_category',
+                'a.desc',
+            ];
+            $studycat->whereAny($any_params, 'like', '%' . $studycat_kywd . '%');
+        }
+        $studycat = $studycat->paginate(10);
 
-        return view('academy_admin.studycat.index', compact('studycat'));
+        return view('studycat.index', compact('studycat', 'studycat_kywd'));
     }
 
     /**
@@ -30,7 +37,7 @@ class StudyCatController extends Controller
      */
     public function create()
     {
-        return view('academy_admin.studycat.create');
+        return view('studycat.create');
     }
 
     /**
@@ -67,7 +74,7 @@ class StudyCatController extends Controller
                 'status' => 'insert',
                 'status_message' => 'Berhasil menambah data!'
             ];
-            return redirect()->route('academy_admin.studycat.index')->with($status);
+            return redirect()->route('studycat')->with($status);
         }
     }
 
@@ -87,7 +94,7 @@ class StudyCatController extends Controller
         $item = DB::table('tm_study_material_category AS a')
             ->where('a.id', $id)
             ->first();
-        return view('academy_admin.studycat.edit', compact('item'));
+        return view('studycat.edit', compact('item'));
     }
 
     /**
@@ -124,7 +131,7 @@ class StudyCatController extends Controller
                 'status' => 'update',
                 'status_message' => 'Berhasil mengubah data!'
             ];
-            return redirect()->route('academy_admin.studycat.index')->with($status);
+            return redirect()->route('studycat')->with($status);
         }
     }
 

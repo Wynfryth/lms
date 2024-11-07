@@ -26,7 +26,7 @@ class StudyDetController extends Controller
     public function create(Request $request)
     {
         $item['id'] = $request->id;
-        return view('academy_admin.studydet.create', compact('item'));
+        return view('studydet.create', compact('item'));
     }
 
     /**
@@ -103,7 +103,7 @@ class StudyDetController extends Controller
         // return $attachments;
         return $id;
 
-        // return view('academy_admin.studydet.edit', compact('item', 'attachments'));
+        // return view('studydet.edit', compact('item', 'attachments'));
     }
 
     /**
@@ -138,7 +138,7 @@ class StudyDetController extends Controller
             //     'status' => 'delete',
             //     'status_message' => 'Berhasil mengapus detail!'
             // ];
-            // return redirect()->route('academy_admin.studies.edit', $request->id_header)->with($status);
+            // return redirect()->route('studies.edit', $request->id_header)->with($status);
         } else {
             return 'failed to delete';
         }
@@ -160,7 +160,7 @@ class StudyDetController extends Controller
             //     'status' => 'delete',
             //     'status_message' => 'Berhasil mengapus detail!'
             // ];
-            // return redirect()->route('academy_admin.studies.edit', $request->id_header)->with($status);
+            // return redirect()->route('studies.edit', $request->id_header)->with($status);
         } else {
             return 'failed to recover';
         }
@@ -168,7 +168,7 @@ class StudyDetController extends Controller
 
     public function attachment()
     {
-        return view('academy_admin.studydet.attachment-row');
+        return view('studydet.attachment-row');
     }
 
     public function get_deleted(Request $request)
@@ -197,6 +197,6 @@ class StudyDetController extends Controller
             $detail = [];
         }
 
-        return view('academy_admin.studydet.get_deleted', compact('detail'));
+        return view('studydet.get_deleted', compact('detail'));
     }
 }

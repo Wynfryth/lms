@@ -16,14 +16,25 @@ class ClassesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($classes_kywd = null)
     {
         $classes = DB::table('t_class_header AS a')
             ->leftJoin('tm_class_category AS b', 'a.class_category_id', '=', 'b.id')
             ->select('a.id', 'a.class_title', 'a.class_desc', 'a.class_period', 'a.start_eff_date', 'a.end_eff_date', 'b.class_category', 'a.is_active')
             // ->where('a.is_active', 1)
-            ->orderByDesc('a.id')
-            ->get();
+            ->orderByDesc('a.id');
+        if ($classes_kywd != null) {
+            $any_params = [
+                'a.class_title',
+                'a.class_desc',
+                'a.class_period',
+                'a.start_eff_date',
+                'a.end_eff_date',
+                'b.class_category'
+            ];
+            $classes->whereAny($any_params, 'like', '%' . $classes_kywd . '%');
+        }
+        $classes = $classes->paginate(10);
 
         $bulan = [
             'Januari',
@@ -46,7 +57,7 @@ class ClassesController extends Controller
             $classes[$index]->start_eff_date = date('d-m-Y', strtotime($classes[$index]->start_eff_date));
             $classes[$index]->end_eff_date = date('d-m-Y', strtotime($classes[$index]->end_eff_date));
         }
-        return view('academy_admin.classes.index', compact('classes'));
+        return view('classes.index', compact('classes', 'classes_kywd'));
     }
 
     /**
@@ -58,7 +69,7 @@ class ClassesController extends Controller
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'asc')
             ->get();
-        return view('academy_admin.classes.create', compact('kategori'));
+        return view('classes.create', compact('kategori'));
     }
 
     /**
@@ -114,7 +125,7 @@ class ClassesController extends Controller
                 'status' => 'insert',
                 'status_message' => 'Berhasil menambah data!'
             ];
-            return redirect()->route('academy_admin.classes.index')->with($status);
+            return redirect()->route('classes')->with($status);
         }
     }
 
@@ -139,7 +150,7 @@ class ClassesController extends Controller
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'asc')
             ->get();
-        return view('academy_admin.classes.edit', compact('item', 'kategori'));
+        return view('classes.edit', compact('item', 'kategori'));
     }
 
     /**
@@ -191,7 +202,7 @@ class ClassesController extends Controller
                 'status' => 'update',
                 'status_message' => 'Berhasil mengubah data!'
             ];
-            return redirect()->route('academy_admin.classes.index')->with($status);
+            return redirect()->route('classes')->with($status);
         }
     }
 

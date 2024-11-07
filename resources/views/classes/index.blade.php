@@ -22,7 +22,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.classes.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Kelas</a>
+                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Kelas</a>
                     </div>
                 </li>
             </ol>
@@ -33,59 +33,108 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
-                    <x-add-button href="{{ route('academy_admin.classes.create') }}">
-                        + Tambah
-                    </x-add-button>
-                    <table id="table_id" class="table-auto">
-                        <thead>
-                            <tr>
-                                <th class="whitespace-nowrap">#</th>
-                                <th class="whitespace-nowrap">Judul</th>
-                                <th class="whitespace-nowrap">Kategori</th>
-                                <th class="whitespace-nowrap">Periode</th>
-                                <th class="whitespace-nowrap">Mulai</th>
-                                <th class="whitespace-nowrap">Sampai</th>
-                                <th class="whitespace-nowrap" width="15%">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($classes as $index => $item)
-                                @php
-                                    if($item->is_active == 1){
-                                        $row_color = 'bg-white dark:bg-gray-800';
-                                    }else{
-                                        $row_color = 'bg-zinc-300 dark:bg-white';
-                                    }
-                                @endphp
+                    <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between mb-4">
+                        @can('create kategori kelas')
+                        <x-add-button href="{{route('classes.create')}}">
+                            + Tambah
+                        </x-add-button>
+                        @endcan
+                        <label for="table-search" class="sr-only">Search</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <input type="text" name="classes_kywd" id="table-search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Cari data" value="{{ $classes_kywd }}">
+                        </div>
+                    </div>
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <td class="whitespace-nowrap text-center {{$row_color}}">{{ $index + 1 }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->class_title }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->class_category }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->class_period }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->start_eff_date }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">{{ $item->end_eff_date }}</td>
-                                    <td class="whitespace-nowrap {{$row_color}}">
-                                        <div class="md:flex flex-row items-center gap-x-3">
-                                            @if ($item->is_active == 1)
-                                                <x-edit-button class="mx-auto" href="{{ route('academy_admin.classes.edit', $item->id) }}">
-                                                    Ubah
-                                                </x-edit-button>
-                                                <x-delete-button class="mx-auto delete" data-id="{{ $item->id; }}">
-                                                    Hapus
-                                                </x-delete-button>
-                                            @else
-                                                <x-recover-button class="mx-auto recover" data-id="{{ $item->id; }}">
-                                                    Pulihkan
-                                                </x-recover-button>
-                                            @endif
-                                        </div>
-                                    </td>
+                                    <th scope="col" class="px-6 py-3">
+                                        #
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Judul
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Kategori
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Periode
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Mulai
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Sampai
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Keaktifan
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Aksi
+                                    </th>
                                 </tr>
-                            @empty
-
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse ($classes as $index => $value)
+                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            {{ $index + $classes->firstItem() }}
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            {{ $value->class_title }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $value->class_category }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $value->class_period }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $value->start_eff_date }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $value->end_eff_date }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @if ($value->is_active == 1)
+                                                <span class="text-emerald-600">{{ 'Aktif' }}</span>
+                                            @else
+                                                <span class="text-rose-600">{{ 'Non-Aktif' }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4" width="15%">
+                                            @if ($value->is_active == 1)
+                                                <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                    @can('edit kategori kelas')
+                                                    <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('classes.edit', $value->id) }}">Edit</a>
+                                                    @endcan
+                                                    @can('delete kategori kelas')
+                                                    <button type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline delete" data-id="{{ $value->id }}">Hapus</button>
+                                                    @endcan
+                                                </div>
+                                            @else
+                                                <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                    @can('delete kategori kelas')
+                                                    <button type="button" class="font-medium text-green-400 dark:text-green-200 hover:underline recover" data-id="{{ $value->id }}">Pulihkan</button>
+                                                    @endcan
+                                                </div>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr class="row_no_data">
+                                        <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-2">
+                        {{ $classes->links(); }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -157,7 +206,7 @@
                 $.ajax({
                     async: false,
                     type: "POST",
-                    url: "{{ route('academy_admin.classes.delete') }}",
+                    url: "{{ route('classes.delete') }}",
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "id": classes_id
@@ -176,7 +225,7 @@
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
-                                    window.location = "{{ route('academy_admin.classes.index') }}";
+                                    window.location = "{{ route('classes') }}";
                                 }
                             })
                         }else{
@@ -211,7 +260,7 @@
                 $.ajax({
                     async: false,
                     type: "POST",
-                    url: "{{ route('academy_admin.classes.recover') }}",
+                    url: "{{ route('classes.recover') }}",
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "id": classes_id
@@ -230,7 +279,7 @@
                             })
                             .then((feedback)=>{
                                 if(feedback.isConfirmed){
-                                    window.location = "{{ route('academy_admin.classes.index') }}";
+                                    window.location = "{{ route('classes') }}";
                                 }
                             })
                         }else{
@@ -248,4 +297,12 @@
             }
         })
     });
+    $('body').off('keypress', '[name="classes_kywd"]').on('keypress', '[name="classes_kywd"]', function(e){
+        if(e.which == 13) {
+            var classes_kywd = $(this).val();
+            var url = "{{ route('classes', ['classes_kywd' => ':classes_kywd']) }}";
+            url = url.replace(':classes_kywd', classes_kywd);
+            window.location.href = url;
+        }
+    })
 </script>

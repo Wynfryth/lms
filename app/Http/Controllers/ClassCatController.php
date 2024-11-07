@@ -16,14 +16,23 @@ class ClassCatController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($classcat_kywd = null)
     {
         $classcat = DB::table('tm_class_category AS a')
+            ->select('a.id', 'a.class_category', 'a.desc', 'a.is_active')
             // ->where('a.is_active', 1)
-            ->orderBy('a.id', 'desc')
-            // ->paginate(10);
-            ->get();
-        return view('academy_admin.classcat.index', compact('classcat'));
+            ->orderBy('a.id', 'desc');
+        if ($classcat_kywd != null) {
+            $any_params = [
+                'a.id',
+                'a.class_category',
+                'a.desc',
+                'a.is_active'
+            ];
+            $classcat->whereAny($any_params, 'like', '%' . $classcat_kywd . '%');
+        }
+        $classcat = $classcat->paginate(10);
+        return view('classcat.index', compact('classcat', 'classcat_kywd'));
     }
 
     /**
@@ -31,7 +40,7 @@ class ClassCatController extends Controller
      */
     public function create()
     {
-        return view('academy_admin.classcat.create');
+        return view('classcat.create');
     }
 
     /**
@@ -68,7 +77,7 @@ class ClassCatController extends Controller
                 'status' => 'insert',
                 'status_message' => 'Berhasil menambah data!'
             ];
-            return redirect()->route('academy_admin.classcat.index')->with($status);
+            return redirect()->route('classcat')->with($status);
         }
     }
 
@@ -88,7 +97,7 @@ class ClassCatController extends Controller
         $item = DB::table('tm_class_category AS a')
             ->where('a.id', $id)
             ->first();
-        return view('academy_admin.classcat.edit', compact('item'));
+        return view('classcat.edit', compact('item'));
     }
 
     /**
@@ -126,7 +135,7 @@ class ClassCatController extends Controller
                 'status' => 'update',
                 'status_message' => 'Berhasil mengubah data!'
             ];
-            return redirect()->route('academy_admin.classcat.index')->with($status);
+            return redirect()->route('classcat')->with($status);
         }
     }
 
@@ -144,7 +153,7 @@ class ClassCatController extends Controller
             ->where('a.id', $id)
             ->update($delete_data);
         if ($update_affected > 0) {
-            return redirect()->route('academy_admin.classcat.index');
+            return redirect()->route('classcat');
         }
     }
 

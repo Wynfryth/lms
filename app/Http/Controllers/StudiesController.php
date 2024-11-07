@@ -17,16 +17,23 @@ class StudiesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($studies_kywd = null)
     {
         $studies = DB::table('tm_study_material_header AS a')
             ->leftJoin('tm_study_material_category AS b', 'a.category_id', '=', 'b.id')
             ->select('a.id', 'a.study_material_title', 'a.study_material_desc', 'b.study_material_category', 'a.is_active')
             // ->where('a.is_active', 1)
-            ->orderByDesc('a.id')
-            ->get();
+            ->orderByDesc('a.id');
+        if ($studies_kywd != null) {
+            $any_params = [
+                'a.study_material_title',
+                'a.study_material_desc'
+            ];
+            $studies->whereAny($any_params, 'like', '%' . $studies_kywd . '%');
+        }
+        $studies = $studies->paginate(10);
 
-        return view('academy_admin.studies.index', compact('studies'));
+        return view('studies.index', compact('studies', 'studies_kywd'));
     }
 
     /**
@@ -38,7 +45,7 @@ class StudiesController extends Controller
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'asc')
             ->get();
-        return view('academy_admin.studies.create', compact('kategori'));
+        return view('studies.create', compact('kategori'));
     }
 
     /**
@@ -80,7 +87,7 @@ class StudiesController extends Controller
                 'status' => 'insert',
                 'status_message' => 'Berhasil menambah data!'
             ];
-            return redirect()->route('academy_admin.studies.index')->with($status);
+            return redirect()->route('studies')->with($status);
         }
     }
 
@@ -127,7 +134,7 @@ class StudiesController extends Controller
             }
         }
 
-        return view('academy_admin.studies.edit', compact('item', 'kategori', 'detail'));
+        return view('studies.edit', compact('item', 'kategori', 'detail'));
     }
 
     /**
@@ -179,7 +186,7 @@ class StudiesController extends Controller
                 'status' => 'update',
                 'status_message' => 'Berhasil mengubah data!'
             ];
-            return redirect()->route('academy_admin.studies.index')->with($status);
+            return redirect()->route('studies')->with($status);
         }
     }
 

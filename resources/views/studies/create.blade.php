@@ -23,7 +23,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('academy_admin.studies.index') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Bank Materi</a>
+                    <a href="{{ route('studies') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Bank Materi</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -41,7 +41,7 @@
     <div class="p-4 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <form method="POST" action="{{ route('academy_admin.studies.store') }}" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('studies.store') }}" class="mt-6 space-y-6">
                     @csrf
                     {{-- @method('put') --}}
 
@@ -197,7 +197,7 @@ function check_detail(){
             $('#detail_table tbody').find('tr.no_data_row').remove();
         }
         for(i=0; i<tr_length; i++){
-            $('#detail_table tbody').find('th.index_row:eq('+i+')').html((i+1));
+            $('#detail_table tbody').find('th_row:eq('+i+')').html((i+1));
         }
     }else{
         $('#detail_table tbody').append('<tr class="no_data_row"><td colspan="100%" class="text-center">Tidak ada data.</td></tr>')

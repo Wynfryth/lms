@@ -1,4 +1,4 @@
-<form method="POST" action="{{ route('academy_admin.studydet.store') }}" class="mt-1 space-y-6" id="create_pembelajaran">
+<form method="POST" action="{{ route('studydet.store') }}" class="mt-1 space-y-6" id="create_pembelajaran">
     @csrf
     {{-- @method('put') --}}
 
@@ -62,7 +62,7 @@
         $.ajax({
             async: false,
             type: "GET",
-            url: "{{ route('academy_admin.studydet.attachment') }}",
+            url: "{{ route('studydet.attachment') }}",
             // data: "data",
             // dataType: "html",
             success: function (response) {
@@ -172,7 +172,7 @@
                             $.ajax({
                                 async: false,
                                 type: "POST",
-                                url: "{{ route('academy_admin.file.upload_studyatt') }}",
+                                url: "{{ route('file.upload_studyatt') }}",
                                 processData: false,
                                 contentType: false,
                                 data: formData,
@@ -218,7 +218,7 @@
                 function (data, textStatus, jqXHR) {
                     // console.log(data);
                     if(data != 0){
-                        window.location = "{{ route('academy_admin.studies.edit', $item['id']) }}";
+                        window.location = "{{ route('studies.edit', $item['id']) }}";
                     }
                 },
                 "JSON"

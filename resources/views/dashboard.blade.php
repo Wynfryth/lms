@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Beranda - Selamat Datang di LMS Gacoan') }}
+            {{ __('Dashboard - Selamat Datang di LMS Gacoan') }}
         </h2>
     </x-slot>
     <div class="p-4 px-0 sm:ml-64">
@@ -85,6 +85,9 @@
                                 </div>
                             </x-slot>
                         </x-card-dashboard>
+                    </div>
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <div id="chart"></div>
                     </div>
                     <h5 class="ml-2 font-bold tracking-tight text-gray-600">Pre-Test</h5>
                     <div
@@ -319,3 +322,62 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+$(document).ready(function () {
+    cleanlinessGraph();
+});
+function cleanlinessGraph(){
+    var options = {
+          series: [{
+          name: 'Peserta',
+          data: [122, 122, 122, 122, 150, 140, 122, 105, 111]
+        }, {
+          name: 'Lulus',
+          data: [117, 85, 101, 98, 87, 105, 91, 114, 94]
+        }, {
+          name: 'Gagal',
+          data: [5, 41, 36, 26, 45, 48, 52, 53, 41]
+        }],
+          chart: {
+          type: 'bar',
+          height: 350
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            endingShape: 'rounded'
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+        },
+        yaxis: {
+          title: {
+            text: '$ (thousands)'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + " orang"
+            }
+          }
+        }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+}
+</script>
