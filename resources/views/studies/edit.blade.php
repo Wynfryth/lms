@@ -332,17 +332,19 @@ function refresh_index(){
 $(document).off('click', '.edit_detail').on('click', '.edit_detail', function () {
     var detail_id = $(this).data('detail');
     // console.log(detail_id);
+    var url = "{{ route('studydet.edit', ':detail_id') }}";
+    url = url.replace(':detail_id', detail_id);
     var loader_html = '<div class="loader mx-auto my-28"></div>';
     $('#studydet-modal #modal_body').html(loader_html);
     $('#studydet-modal #modal_body').animate({'opacity':'0.0'}, 600, function(){
         $.ajax({
             async: false,
             type: "GET",
-            url: "{{ route('studydet.edit', "+detail_id+") }}",
+            url: url,
             cache: false,
-            data: {
-                id: "{{ $item->id }}"
-            },
+            // data: {
+            //     id: "{{ $item->id }}"
+            // },
             // dataType: "dataType",
             success: function (response) {
                 $('#studydet-modal #modal_title').html('Pembelajaran & File');

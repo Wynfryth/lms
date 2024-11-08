@@ -85,19 +85,18 @@
                 </div>
                 <div class="flex items-center ms-3">
                     <div>
-                        <button type="button"
-                            class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                            aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                        <button type="button" class="flex text-sm me-4 bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user" data-dropdown-offset-distance="10" data-dropdown-offset-skidding="-100">
                             <span class="sr-only">Open user menu</span>
-                            <img class="w-8 h-8 rounded-full"
-                                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
+                            <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
                         </button>
                     </div>
-                    <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded border border-gray-700 shadow dark:bg-gray-700 dark:divide-gray-600"
-                        id="dropdown-user">
+                    <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded border border-gray-700 shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
                         <div class="px-4 py-3 bg-gray-700 text-white" role="none">
                             <p class="text-sm text-white dark:text-white" role="none">
                                 {{ Auth::user()->name }}
+                            </p>
+                            <p class="text-sm text-white dark:text-white" role="none">
+                                {{ Auth::user()->roles->pluck('name')[0] }}
                             </p>
                             <p class="text-sm font-medium text-white truncate dark:text-gray-300" role="none">
                                 {{ Auth::user()->email }}
@@ -125,9 +124,6 @@
                                         {{ __('Sign Out') }}
                                     </x-dropdown-link>
                                 </form>
-                                {{-- <a href="#"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                    role="menuitem">Sign out</a> --}}
                             </li>
                         </ul>
                     </div>
@@ -153,6 +149,7 @@
                     </x-slot>
                 </x-nav-link-parent>
             </li> --}}
+            @can('view dashboard')
             <li>
                 <a href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')"
                     class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -163,10 +160,11 @@
                             d="M11.293 3.293a1 1 0 0 1 1.414 0l6 6 2 2a1 1 0 0 1-1.414 1.414L19 12.414V19a2 2 0 0 1-2 2h-3a1 1 0 0 1-1-1v-3h-2v3a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2v-6.586l-.293.293a1 1 0 0 1-1.414-1.414l2-2 6-6Z"
                             clip-rule="evenodd" />
                     </svg>
-
                     <span class="ms-3">Dashboard</span>
                 </a>
             </li>
+            @endcan
+            @canany(['list pegawai', 'list peserta terdaftar', 'list peserta batal'])
             <li>
                 <button type="button"
                     class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
@@ -186,23 +184,31 @@
                     </svg>
                 </button>
                 <ul id="dropdown-employee" class="hidden py-2 space-y-2">
+                    @can('list pegawai')
                     <li>
-                        <a href="{{route('participant')}}"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Semua
-                            Pegawai</a>
+                        <a href="{{route('participant')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Semua
+                            Pegawai
+                        </a>
                     </li>
+                    @endcan
+                    @can('list peserta terdaftar')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Peserta
-                            Terdaftar</a>
+                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Peserta
+                            Terdaftar
+                        </a>
                     </li>
+                    @endcan
+                    @can('list peserta batal')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Peserta
-                            Batal</a>
+                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Peserta
+                            Batal
+                        </a>
                     </li>
+                    @endcan
                 </ul>
             </li>
+            @endcanany
+            @can('list instruktur')
             <li>
                 <a href="#"
                     class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -218,6 +224,8 @@
                         class="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Pro</span> --}}
                 </a>
             </li>
+            @endcan
+            @canany(['list kategori kelas', 'list kelas'])
             <li>
                 <button type="button"
                     class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
@@ -237,20 +245,24 @@
                     </svg>
                 </button>
                 <ul id="dropdown-class" class="hidden py-2 space-y-2">
+                    @can('list kategori kelas')
                     <li>
-                        <a href="{{ route('classcat') }}"
-                            :active="request() - > routeIs('classcat')"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Kategori
-                            Kelas</a>
+                        <a href="{{ route('classcat') }}" :active="request() - > routeIs('classcat')" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Kategori Kelas
+                        </a>
                     </li>
+                    @endcan
+                    @can('list kelas')
                     <li>
-                        <a href="{{ route('classes') }}"
-                            :active="request() - > routeIs('classes')"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Daftar
-                            Kelas</a>
+                        <a href="{{ route('classes') }}" :active="request() - > routeIs('classes')" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Daftar Kelas
+                        </a>
                     </li>
+                    @endcan
                 </ul>
             </li>
+            @endcanany
+            @canany(['list kategori materi', 'list bank materi'])
             <li>
                 <button type="button"
                     class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
@@ -266,24 +278,24 @@
                     </svg>
                 </button>
                 <ul id="dropdown-material" class="hidden py-2 space-y-2">
+                    @can('list kategori materi')
                     <li>
-                        <a href="{{ route('studycat') }}"
-                            :active="request() - > routeIs('studycat')"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Kategori Materi</a>
+                        <a href="{{ route('studycat') }}" :active="request() - > routeIs('studycat')" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Kategori Materi
+                        </a>
                     </li>
+                    @endcan
+                    @can('list bank materi')
                     <li>
-                        <a href="{{route('studies')}}"
-                            :active="request() - > routeIs('studies')"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Bank Materi</a>
+                        <a href="{{route('studies')}}" :active="request() - > routeIs('studies')" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Bank Materi
+                        </a>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('academy_admin.classes.index') }}"
-                            :active="request() - > routeIs('academy_admin.classes.index')"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Daftar
-                            Kelas</a>
-                    </li> --}}
+                    @endcan
                 </ul>
             </li>
+            @endcanany
+            @canany(['list kategori tes', 'list bank pertanyaan tes', 'list daftar tes'])
             <li>
                 <button type="button"
                     class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
@@ -303,23 +315,31 @@
                     </svg>
                 </button>
                 <ul id="dropdown-test" class="hidden py-2 space-y-2">
+                    @can('list kategori tes')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Kategori
-                            Tes</a>
+                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Kategori Tes
+                        </a>
                     </li>
+                    @endcan
+                    @can('list bank pertanyaan tes')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Bank
-                            Pertanyaan Tes</a>
+                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Bank Pertanyaan Tes
+                        </a>
                     </li>
+                    @endcan
+                    @can('list tes')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Daftar
-                            Tes</a>
+                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Daftar Tes
+                        </a>
                     </li>
+                    @endcan
                 </ul>
             </li>
+            @endcanany
+            @canany(['view tingkat kelulusan', 'view mortalitas'])
             <li>
                 <button type="button"
                     class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
@@ -340,23 +360,30 @@
                     </svg>
                 </button>
                 <ul id="dropdown-report" class="hidden py-2 space-y-2">
+                    @can('view tingkat kelulusan')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Tingkat
-                            Kelulusan</a>
+                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Tingkat Kelulusan
+                        </a>
                     </li>
+                    @endcan
+                    @can('view mortalitas')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Mortalitas</a>
+                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Mortalitas
+                        </a>
                     </li>
+                    @endcan
                 </ul>
             </li>
+            @endcanany
+            @canany(['list users', 'list roles', 'list permissions'])
             <li>
                 <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-user-setting" data-collapse-toggle="dropdown-user-setting">
                     <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd" d="M17 10v1.126c.367.095.714.24 1.032.428l.796-.797 1.415 1.415-.797.796c.188.318.333.665.428 1.032H21v2h-1.126c-.095.367-.24.714-.428 1.032l.797.796-1.415 1.415-.796-.797a3.979 3.979 0 0 1-1.032.428V20h-2v-1.126a3.977 3.977 0 0 1-1.032-.428l-.796.797-1.415-1.415.797-.796A3.975 3.975 0 0 1 12.126 16H11v-2h1.126c.095-.367.24-.714.428-1.032l-.797-.796 1.415-1.415.796.797A3.977 3.977 0 0 1 15 11.126V10h2Zm.406 3.578.016.016c.354.358.574.85.578 1.392v.028a2 2 0 0 1-3.409 1.406l-.01-.012a2 2 0 0 1 2.826-2.83ZM5 8a4 4 0 1 1 7.938.703 7.029 7.029 0 0 0-3.235 3.235A4 4 0 0 1 5 8Zm4.29 5H7a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h6.101A6.979 6.979 0 0 1 9 15c0-.695.101-1.366.29-2Z" clip-rule="evenodd"/>
                     </svg>
-                    <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">User Setting</span>
+                    <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">User Management</span>
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 10 6">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -364,20 +391,30 @@
                     </svg>
                 </button>
                 <ul id="dropdown-user-setting" class="hidden py-2 space-y-2">
+                    @can('list users')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Users</a>
+                        <a href="{{ route('users') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Users
+                        </a>
                     </li>
+                    @endcan
+                    @can('list roles')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Roles</a>
+                        <a href="{{ route('roles') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Roles
+                        </a>
                     </li>
+                    @endcan
+                    @can('list permissions')
                     <li>
-                        <a href="#"
-                            class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Permissions</a>
+                        <a href="{{ route('permissions') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Permissions
+                        </a>
                     </li>
+                    @endcan
                 </ul>
             </li>
+            @endcanany
             {{-- <li>
                 <a href="#"
                     class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

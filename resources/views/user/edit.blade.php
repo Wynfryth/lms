@@ -37,10 +37,10 @@
         </nav>
     </x-slot>
 
-    <div class="py-3">
+    <div class="p-4 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <form method="post" action="{{ route('user.update', $user_id) }}" class="mt-6 space-y-6">
+                <form method="post" action="{{ route('users.update', $user_id) }}" class="mt-6 space-y-6">
                     @csrf
                     {{-- @method('put') --}}
 
@@ -151,7 +151,7 @@
                 function (data, textStatus, jqXHR) {
                     // console.log(data);
                     if(data != 0){
-                        window.location = "{{ route('user') }}";
+                        window.location = "{{ route('users') }}";
                     }
                 },
                 "JSON"

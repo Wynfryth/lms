@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard - Selamat Datang di LMS Gacoan') }}
+            {{ __('Dashboard') }}
         </h2>
     </x-slot>
     <div class="p-4 px-0 sm:ml-64">
@@ -362,7 +362,7 @@ function cleanlinessGraph(){
         },
         yaxis: {
           title: {
-            text: '$ (thousands)'
+            text: 'Orang'
           }
         },
         fill: {
@@ -374,8 +374,22 @@ function cleanlinessGraph(){
               return val + " orang"
             }
           }
+        },
+        title: {
+            text: 'Tingkat Kelulusan Peserta 2024 (dummy)',
+            align: 'center',
+            margin: 10,
+            offsetX: 0,
+            offsetY: 0,
+            floating: false,
+            style: {
+            fontSize:  '14px',
+            fontWeight:  'bold',
+            fontFamily:  undefined,
+            color:  '#263238'
+            },
         }
-        };
+    };
 
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();

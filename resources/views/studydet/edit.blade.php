@@ -1,10 +1,10 @@
-<form method="POST" action="{{ route('academy_admin.studydet.update', $item['id']) }}" class="mt-1 space-y-6" id="edit_pembelajaran">
+<form method="POST" action="{{ route('studydet.update', $detail_id) }}" class="mt-1 space-y-6" id="create_pembelajaran">
     @csrf
     {{-- @method('put') --}}
 
     <div>
         <x-input-label for="nama_pembelajaran" :value="__('Nama Pembelajaran')" />
-        <x-text-input id="nama_pembelajaran" name="nama_pembelajaran" type="text" class="mt-1 block w-full serialize" value="{{ old('nama_pembelajaran') }}"/>
+        <x-text-input id="nama_pembelajaran" name="nama_pembelajaran" type="text" class="mt-1 block w-full serialize" value="{{ $details->name }}"/>
         @error('nama_pembelajaran')
             <span class="text-red-500 text-sm">{{ $message }}</span>
         @enderror
@@ -12,7 +12,7 @@
 
     <div>
         <x-input-label for="bobot_pembelajaran" :value="__('Bobot Pembelajaran *harus angka')" />
-        <x-text-input id="bobot_pembelajaran" name="bobot_pembelajaran" type="number" class="mt-1 block w-full serialize" value="{{ old('bobot_pembelajaran') }}"/>
+        <x-text-input id="bobot_pembelajaran" name="bobot_pembelajaran" type="number" class="mt-1 block w-full serialize" value="{{ $details->scoring_weight }}"/>
         @error('bobot_pembelajaran')
             <span class="text-red-500 text-sm">{{ $message }}</span>
         @enderror
@@ -44,43 +44,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{dd($attachments);}}
-                    @forelse ($attachments as $key => $value)
-                        @php
-                            if($value->is_active == 1){
-                                $row_color = 'bg-white dark:bg-gray-800';
-                            }else{
-                                $row_color - 'bg-zinc-300 dark:bg-white';
-                            }
-                        @endphp
-                        <tr>
-                            <td class="whitespace-nowrap text-center {{$row_color}}">{{ $index + 1 }}</td>
-                            <td class="whitespace-nowrap {{$row_color}}">{{ $value->study_material_title }}</td>
-                            <td class="whitespace-nowrap {{$row_color}}">{{ $value->study_material_desc }}</td>
-                            <td class="whitespace-nowrap {{$row_color}}">
-                                <div class="md:flex flex-row items-center gap-x-3">
-                                    @if ($value->is_active == 1)
-                                        <x-edit-button class="mx-auto" href="{{ route('academy_admin.studies.edit', $item->id) }}">
-                                            Ubah
-                                        </x-edit-button>
-                                        <x-delete-button class="mx-auto delete" data-id="{{ $value->id }}">
-                                            Hapus
-                                        </x-delete-button>
-                                        <x-recover-button class="mx-auto detail">
-                                            Detail
-                                        </x-recover-button>
-                                    @else
-                                        <x-recover-button class="mx-auto w-full recover" data-id="{{ $value->id; }}">
-                                            Pulihkan
-                                        </x-recover-button>
-                                    @endif
 
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-
-                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -98,7 +62,7 @@
         $.ajax({
             async: false,
             type: "GET",
-            url: "{{ route('academy_admin.studydet.attachment') }}",
+            url: "{{ route('studydet.attachment') }}",
             // data: "data",
             // dataType: "html",
             success: function (response) {
@@ -181,7 +145,7 @@
 
         data.push({
             name: "header_id",
-            value: "{{ $item['id']; }}"
+            value: "{{ $detail_id; }}"
         })
 
         if(no_data_row == 0){ // berarti ada isinya
@@ -208,7 +172,7 @@
                             $.ajax({
                                 async: false,
                                 type: "POST",
-                                url: "{{ route('academy_admin.file.upload_studyatt') }}",
+                                url: "{{ route('file.upload_studyatt') }}",
                                 processData: false,
                                 contentType: false,
                                 data: formData,
@@ -254,7 +218,7 @@
                 function (data, textStatus, jqXHR) {
                     // console.log(data);
                     if(data != 0){
-                        window.location = "{{ route('academy_admin.studies.edit', $item['id']) }}";
+                        window.location = "{{ route('studies.edit', $detail_id) }}";
                     }
                 },
                 "JSON"

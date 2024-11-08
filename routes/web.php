@@ -46,13 +46,13 @@ Route::middleware('auth')->group(function () {
     });
     // Classes
     Route::controller(ClassesController::class)->group(function () {
-        Route::get('classes/index/{classes_kywd?}', 'index')->middleware(['permission:list daftar kelas'])->name('classes');
-        Route::get('classes/create', 'create')->middleware(['permission:create daftar kelas'])->name('classes.create');
-        Route::post('classes/store', 'store')->middleware(['permission:create daftar kelas'])->name('classes.store');
-        Route::get('classes/edit/{id}', 'edit')->middleware(['permission:edit daftar kelas'])->name('classes.edit');
-        Route::post('classes/update/{id}', 'update')->middleware(['permission:edit daftar kelas'])->name('classes.update');
-        Route::post('classes/delete', 'delete')->name('classes.delete');
-        Route::post('classes/recover', 'recover')->name('classes.recover');
+        Route::get('classes/index/{classes_kywd?}', 'index')->middleware(['permission:list kelas'])->name('classes');
+        Route::get('classes/create', 'create')->middleware(['permission:create kelas'])->name('classes.create');
+        Route::post('classes/store', 'store')->middleware(['permission:create kelas'])->name('classes.store');
+        Route::get('classes/edit/{id}', 'edit')->middleware(['permission:edit kelas'])->name('classes.edit');
+        Route::post('classes/update/{id}', 'update')->middleware(['permission:edit kelas'])->name('classes.update');
+        Route::post('classes/delete', 'delete')->middleware('delete kelas')->name('classes.delete');
+        Route::post('classes/recover', 'recover')->middleware('delete kelas')->name('classes.recover');
     });
     // Studies Category
     Route::controller(StudyCatController::class)->group(function () {
@@ -91,15 +91,28 @@ Route::middleware('auth')->group(function () {
     });
     // Users
     Route::controller(UsersController::class)->group(function () {
-        Route::get('users', 'index')->middleware(['permission:list users'])->name('users');
+        Route::get('users/index/{users_kywd?}', 'index')->name('users');
+        Route::get('users/edit/{id}', 'edit')->middleware(['permission:edit users'])->name('users.edit');
+        Route::post('users/update/{id}', 'update')->middleware(['permission:edit users'])->name('users.update');
+        Route::post('users/delete', 'delete')->name('users.delete');
     });
     // Roles
     Route::controller(RolesController::class)->group(function () {
-        Route::get('roles', 'index')->middleware(['permission:list roles'])->name('roles');
+        Route::get('roles/index/{roles_kywd?}', 'index')->name('roles');
+        Route::get('roles/create', 'create')->name('roles.create');
+        Route::post('roles/store', 'store')->name('roles.store');
+        Route::get('roles/edit/{id}', 'edit')->name('roles.edit');
+        Route::post('roles/update/{id}', 'update')->name('roles.update');
+        Route::post('roles/delete', 'delete')->name('roles.delete');
     });
     // Permissions
     Route::controller(PermissionController::class)->group(function () {
-        Route::get('permissions', 'index')->middleware(['permisson:list permissions'])->name('permissions');
+        Route::get('permissions/index/{permissions_kywd?}', 'index')->name('permissions');
+        Route::get('permissions/create/', 'create')->name('permissions.create');
+        Route::post('permissions/store/', 'store')->name('permissions.store');
+        Route::get('permissions/edit/{id}', 'edit')->name('permissions.edit');
+        Route::post('permissions/update/{id}', 'update')->name('permissions.update');
+        Route::post('permissions/delete', 'delete')->name('permissions.delete');
     });
 });
 

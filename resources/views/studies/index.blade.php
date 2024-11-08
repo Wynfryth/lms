@@ -64,11 +64,11 @@
                                     <th scope="col" class="px-6 py-3">
                                         Keaktifan
                                     </th>
-                                    @can('permission:edit bank materi|delete bank materi')
+                                    @canany(['edit bank materi', 'delete bank materi'])
                                     <th scope="col" class="px-6 py-3 text-center">
                                         Aksi
                                     </th>
-                                    @endcan
+                                    @endcanany
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,7 +90,7 @@
                                                 <span class="text-rose-600">{{ 'Non-Aktif' }}</span>
                                             @endif
                                         </td>
-                                        @can('permission:edit bank materi|delete bank materi')
+                                        @canany(['edit bank materi', 'delete bank materi'])
                                         <td class="px-6 py-4" width="15%">
                                             @if ($value->is_active == 1)
                                                 <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
@@ -109,7 +109,7 @@
                                                 </div>
                                             @endif
                                         </td>
-                                        @endcan
+                                        @endcanany
                                     </tr>
                                 @empty
                                     <tr class="row_no_data">

@@ -34,7 +34,7 @@
         </nav>
     </x-slot>
 
-    <div class="py-3">
+    <div class="p-4 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <form method="post" action="{{ route('permissions.store') }}" class="mt-6 space-y-6">
@@ -82,56 +82,3 @@
         </div>
     </div>
 </x-app-layout>
-<script>
-    $(document).ready(function () {
-        //
-    });
-    $('form').submit(function(e){
-        // e.preventDefault();
-
-        // var data = $(this).find('.serialize').serializeArray();
-        // var formValidated = true;
-        // var not_passed = [];
-
-        // $('.serialize').each(function(index, element){
-        //     var element_value = $(this).val();
-        //     if(element_value == '' || element_value ==  null){
-        //         var name = $(this).attr('name');
-        //         not_passed.push($('label[for="'+name+'"]').text());
-        //         formValidated = false;
-        //     }
-        // });
-
-        // if(!formValidated){
-        //     // e.preventDefault();
-        //     var unpassed = '<ul>';
-        //     for(var keys in not_passed){
-        //         unpassed += '<li>'+not_passed[keys]+'</li>';
-        //     }
-        //     unpassed += '</ul>';
-        //     Swal.fire({
-        //         icon: "warning",
-        //         title: "Perhatian!",
-        //         html: "Inputan masih ada yang kosong. Mohon di cek kembali.<br/>"+unpassed,
-        //         confirmButtonColor: "#8CD4F5",
-        //         allowOutsideClick: false
-        //     })
-        // }else{
-        //     var action = $(this).attr('action');
-        //     $.ajaxSetup({
-        //         headers: {
-        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //         }
-        //     });
-        //     $.post(action, data,
-        //         function (data, textStatus, jqXHR) {
-        //             // console.log(data);
-        //             if(data != 0){
-        //                 window.location = "{{ route('user') }}";
-        //             }
-        //         },
-        //         "JSON"
-        //     );
-        // }
-    })
-</script>

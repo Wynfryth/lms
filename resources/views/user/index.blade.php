@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-3">
+    <div class="p-4 sm:ml-64">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
@@ -18,7 +18,7 @@
                             <div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
                             </div>
-                            <input type="text" name="user_keyword" id="table-search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Cari data" value="{{ $user_keyword }}">
+                            <input type="text" name="users_kywd" id="table-search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Cari data" value="{{ $users_kywd }}">
                         </div>
                     </div>
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -46,7 +46,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($user as $index => $value)
+                                @forelse ($users as $index => $value)
                                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                         <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
                                             {{ $index + 1 }}
@@ -69,8 +69,8 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             {{-- @if ($value->is_active == 1) --}}
-                                                @can('edit user')
-                                                <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('user.edit', $value->id) }}">Edit</a>
+                                                @can('edit users')
+                                                <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('users.edit', $value->id) }}">Edit</a>
                                                 @endcan
                                                 {{-- <x-edit-link-button class="mx-auto" href="{{ route('user.edit', $value->id) }}">
                                                     Ubah
@@ -96,7 +96,7 @@
                             </tbody>
                         </table>
                     </div>
-                    {{ $user->links() }}
+                    {{ $users->links() }}
                 </div>
             </div>
         </div>
@@ -141,7 +141,7 @@
                 $.ajax({
                     async: false,
                     type: "POST",
-                    url: "{{route('user.delete')}}",
+                    url: "{{route('users.delete')}}",
                     data: {
                         _token: '{{csrf_token()}}',
                         user_id: user_id
@@ -154,11 +154,11 @@
             }
         })
     });
-    $('body').off('keypress', '[name="user_keyword"]').on('keypress', '[name="user_keyword"]', function(e){
+    $('body').off('keypress', '[name="users_kywd"]').on('keypress', '[name="users_kywd"]', function(e){
         if(e.which == 13) {
-            var user_keyword = $(this).val();
-            var url = "{{ route('user', ['user_keyword' => ':user_keyword']) }}";
-            url = url.replace(':user_keyword', user_keyword);
+            var users_kywd = $(this).val();
+            var url = "{{ route('users', ['users_kywd' => ':users_kywd']) }}";
+            url = url.replace(':users_kywd', users_kywd);
             window.location.href = url;
         }
     })
