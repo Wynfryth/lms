@@ -164,7 +164,7 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4">
-                                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline me-2 edit_detail" data-detail="{{$value->id}}" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal">Ubah</a>
+                                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline me-2 edit_detail" data-detail="{{$value->id}}" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal">Edit</a>
                                                 <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline hapus_detail" data-detail="{{$value->id}}">Hapus</a>
                                             </td>
                                         </tr>

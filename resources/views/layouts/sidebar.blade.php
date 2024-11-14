@@ -295,7 +295,7 @@
                 </ul>
             </li>
             @endcanany
-            @canany(['list kategori tes', 'list bank pertanyaan tes', 'list daftar tes'])
+            @canany(['list kategori tes', 'list pertanyaan', 'list daftar tes'])
             <li>
                 <button type="button"
                     class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
@@ -317,22 +317,22 @@
                 <ul id="dropdown-test" class="hidden py-2 space-y-2">
                     @can('list kategori tes')
                     <li>
-                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                        <a href="{{route('testcat')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             Kategori Tes
-                        </a>
-                    </li>
-                    @endcan
-                    @can('list bank pertanyaan tes')
-                    <li>
-                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                            Bank Pertanyaan Tes
                         </a>
                     </li>
                     @endcan
                     @can('list tes')
                     <li>
-                        <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                        <a href="{{route('tests')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             Daftar Tes
+                        </a>
+                    </li>
+                    @endcan
+                    @can('list pertanyaan')
+                    <li>
+                        <a href="{{route('questions')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Bank Pertanyaan Tes
                         </a>
                     </li>
                     @endcan

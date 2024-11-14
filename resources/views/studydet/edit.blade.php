@@ -44,7 +44,63 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    @forelse ($attachments as $index => $value)
+                        @php
+                            $filename = explode(', ', $value->filename);
+                            $attachment = explode(', ', $value->attachment);
+                            $estimated_time = explode(', ', $value->estimated_time);
+                        @endphp
+                        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700" row_id="{{$value->id}}">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{$value->order}}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{$value->name}}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if (count($filename) > 1)
+                                    <ul class="list-disc">
+                                        @foreach ($filename as $filename_index => $filename_item)
+                                        <li>
+                                            @if (substr($attachment[$filename_index], 0, 4) == 'http')
+                                                <a href="{{$attachment[$filename_index]}}" target="_blank">{{$filename_item}}</a>
+                                            @else
+                                                <a href="{{$attachment[$filename_index]}}" target="_blank">{{$filename_item}}</a>
+                                                {{-- <a type="button" href="#" class=""></a> --}}
+                                            @endif
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <a href="{{$value->attachment}}" target="_blank">{{$value->filename}}</a>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                {{$value->scoring_weight}}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if (count($estimated_time) > 1)
+                                    <ul class="list-disc">
+                                        @foreach ($estimated_time as $estimated_time_item)
+                                        <li>
+                                            {{$estimated_time_item}}
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    {{$value->estimated_time}}
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline me-2 edit_detail" data-detail="{{$value->id}}" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal">Edit</a>
+                                <a href="#" class="font-medium text-red-600 dark:text-red-500 hover:underline hapus_detail" data-detail="{{$value->id}}">Hapus</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr class="row_no_data">
+                            <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

@@ -7,11 +7,15 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\ParticipantsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuestionsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\StudiesController;
 use App\Http\Controllers\StudyCatController;
 use App\Http\Controllers\StudyDetController;
 use App\Http\Controllers\StudyMatController;
+use App\Http\Controllers\TestCatController;
+use App\Http\Controllers\TestsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -84,6 +88,36 @@ Route::middleware('auth')->group(function () {
         Route::post('studydet/recover', 'recover')->name('studydet.recover');
         Route::get('studydet/attachment', 'attachment')->name('studydet.attachment');
         Route::get('studydet/getdeleted', 'get_deleted')->name('studydet.getdeleted');
+    });
+    // Test Category
+    Route::controller(TestCatController::class)->group(function () {
+        Route::get('testcat/index/{testcat_kywd?}', 'index')->middleware(['permission:list kategori tes'])->name('testcat');
+        Route::get('testcat/create', 'create')->middleware(['permission:create kategori tes'])->name('testcat.create');
+        Route::post('testcat/store', 'store')->middleware(['permission:create kategori tes'])->name('testcat.store');
+        Route::get('testcat/edit/{id}', 'edit')->middleware(['permission:edit kategori tes'])->name('testcat.edit');
+        Route::post('testcat/update/{id}', 'update')->middleware(['permission:edit kategori tes'])->name('testcat.update');
+        Route::post('testcat/delete', 'delete')->middleware(['permission:delete kategori tes'])->name('testcat.delete');
+        Route::post('testcat/recover', 'recover')->middleware(['permission:delete kategori tes'])->name('testcat.recover');
+    });
+    // Tests
+    Route::controller(TestsController::class)->group(function () {
+        Route::get('tests/index/{tests_kywd?}', 'index')->middleware(['permission:list tes'])->name('tests');
+        Route::get('tests/create', 'create')->middleware(['permission:create tes'])->name('tests.create');
+        Route::post('tests/store', 'store')->middleware(['permission:create tes'])->name('tests.store');
+        Route::get('tests/edit/{id}', 'edit')->middleware(['permission:edit tes'])->name('tests.edit');
+        Route::post('tests/update/{id}', 'update')->middleware(['permission:edit tes'])->name('tests.update');
+        Route::post('tests/delete', 'delete')->middleware(['permission:delete tes'])->name('tests.delete');
+        Route::post('tests/recover', 'recover')->middleware(['permission:delete tes'])->name('tests.recover');
+    });
+    // Questions
+    Route::controller(QuestionsController::class)->group(function () {
+        Route::get('questions/index/{questions_kywd?}', 'index')->middleware(['permission:list pertanyaan'])->name('questions');
+        Route::get('questions/create', 'create')->middleware(['permission:create pertanyaan'])->name('questions.create');
+        Route::post('questions/store', 'store')->middleware(['permission:create pertanyaan'])->name('questions.store');
+        Route::get('questions/edit/{id}', 'edit')->middleware(['permission:edit pertanyaan'])->name('questions.edit');
+        Route::post('questions/update/{id}', 'update')->middleware(['permission:edit pertanyaan'])->name('questions.update');
+        Route::post('questions/delete', 'delete')->middleware(['permission:delete pertanyaan'])->name('questions.delete');
+        Route::post('questions/recover', 'recover')->middleware(['permission:delete pertanyaan'])->name('questions.recover');
     });
     // File
     Route::controller(FileController::class)->group(function () {

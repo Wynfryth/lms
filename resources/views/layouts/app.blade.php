@@ -162,4 +162,56 @@ themeToggleBtn.addEventListener('click', function() {
     }
 
 });
+$(document).off('click', '#add_answers').on('click', '#add_answers', function(){
+    var table = $('#answers_table');
+    var answer_row =    '<tr>'+
+                            '<td class="row_index text-center"></td>'+
+                            '<td class="p-2"><input class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="answers[]" type="text"></td>'+
+                            '<td class="p-3 text-center">'+
+                                '<label class="inline-flex items-center cursor-pointer">'+
+                                    '<input type="radio" class="sr-only peer" name="answer_status">'+
+                                    '<div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[\'\'] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>'+
+                                    '<span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Benar</span>'+
+                                '</label>'+
+                            '</td>'+
+                            '<td class="text-center">'+
+                                '<button type="button" class="font-medium text-red-400 dark:text-red-200 hover:underline remove_row">Hapus</button>'+
+                            '</td>'+
+                        '</tr>';
+    table.find('tbody').append(answer_row);
+    update_dynaTable_index(table);
+});
+function update_dynaTable_index(table){
+    if($(table).find('tbody tr.row_no_data').length > 0){
+        $(table).find('tbody tr.row_no_data').remove();
+    }
+    if($(table).find('tbody tr').length > 0){
+        $(table).find('tbody tr').each(function(index, element){
+            $(element).find('.row_index').html((index+1));
+            $(element).find('input[name="answer_status"]').val(index);
+        });
+    }else{
+        var html_row_no_data =  '<tr class="row_no_data">'+
+                                    '<td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>'+
+                                '</tr>';
+        $(table).find('tbody').append(html_row_no_data);
+    }
+}
+$(document).off('click', '.remove_row').on('click', '.remove_row', function(){
+    var table = $(this).closest('table');
+    Swal.fire({
+        icon: "question",
+        title: "Yakin?",
+        text: "Yakin untuk menghapus data?",
+        showConfirmButton: true,
+        confirmButtonText: "OK",
+        allowOutsideClick: false
+    })
+    .then((feedback)=>{
+        if(feedback.isConfirmed){
+            $(this).closest('tr').remove();
+        update_dynaTable_index(table);
+        }
+    })
+})
 </script>
