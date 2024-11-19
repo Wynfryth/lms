@@ -71,6 +71,7 @@
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     </head>
     <div id="loading" class="text-center bg-white dark:bg-gray-800">
         <div class="loader mx-auto my-28"></div>
@@ -101,6 +102,7 @@
         <script src="https://cdn.jsdelivr.net/npm/jqueryui@1.11.1/jquery-ui.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     </body>
 </html>
 <script>
@@ -162,24 +164,77 @@ themeToggleBtn.addEventListener('click', function() {
     }
 
 });
-$(document).off('click', '#add_answers').on('click', '#add_answers', function(){
-    var table = $('#answers_table');
-    var answer_row =    '<tr>'+
-                            '<td class="row_index text-center"></td>'+
-                            '<td class="p-2"><input class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="answers[]" type="text"></td>'+
-                            '<td class="p-3 text-center">'+
-                                '<label class="inline-flex items-center cursor-pointer">'+
-                                    '<input type="radio" class="sr-only peer" name="answer_status">'+
-                                    '<div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[\'\'] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>'+
-                                    '<span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Benar</span>'+
-                                '</label>'+
-                            '</td>'+
-                            '<td class="text-center">'+
-                                '<button type="button" class="font-medium text-red-400 dark:text-red-200 hover:underline remove_row">Hapus</button>'+
-                            '</td>'+
-                        '</tr>';
-    table.find('tbody').append(answer_row);
+$(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', function(){
+    var table_id = $(this).closest('div').next('div').find('table').attr('id');
+    var table = $('#'+table_id);
+    switch(table_id){
+        case 'participant_table':
+            var row_html =  '<tr>'+
+                                '<td class="row_index text-center"></td>'+
+                                '<td class="p-2">'+
+                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="peserta[]" type="text"></select>'+
+                                '</td>'+
+                                '<td class="text-center">'+
+                                    '<button type="button" class="font-medium text-red-400 dark:text-red-200 hover:underline remove_row">Hapus</button>'+
+                                '</td>'+
+                            '</tr>';
+        break;
+        case 'answers_table':
+            var row_html =  '<tr>'+
+                                '<td class="row_index text-center"></td>'+
+                                '<td class="p-2"><input class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="answers[]" type="text"></td>'+
+                                '<td class="p-3 text-center">'+
+                                    '<label class="inline-flex items-center cursor-pointer">'+
+                                        '<input type="radio" class="sr-only peer" name="answer_status">'+
+                                        '<div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[\'\'] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>'+
+                                        '<span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Benar</span>'+
+                                    '</label>'+
+                                '</td>'+
+                                '<td class="text-center">'+
+                                    '<button type="button" class="font-medium text-red-400 dark:text-red-200 hover:underline remove_row">Hapus</button>'+
+                                '</td>'+
+                            '</tr>';
+        break;
+    }
+    table.find('tbody').append(row_html);
     update_dynaTable_index(table);
+    switch(table_id){
+        case 'participant_table':
+            table.find('tbody tr:last').find('select[name="peserta[]"]').select2({
+                placeholder: 'Pilih Peserta',
+                allowClear: true,
+                minimumInputLength: 3, // only start searching when the user has input 3 or more characters
+                ajax: {
+                    async: false,
+                    url: "{{ route('class_sessions.participant_selectpicker') }}",
+                    dataType: "JSON",
+                    type: "POST",
+                    quietMillis: 50,
+                    delay: 250,
+                    data: function (term) {
+                        return {
+                            term: term,
+                            _token: '{{ csrf_token() }}'
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data, function (item) {
+                                return {
+                                    id: item.nip,
+                                    text: item.Employee_name
+                                }
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            })
+        break;
+        case 'answers_table':
+            //
+        break;
+    }
 });
 function update_dynaTable_index(table){
     if($(table).find('tbody tr.row_no_data').length > 0){
@@ -214,4 +269,19 @@ $(document).off('click', '.remove_row').on('click', '.remove_row', function(){
         }
     })
 })
+function toggleDetail(element){
+    var object = $(element);
+    var detailRow = object.next('.class_detail'); // Get the next detail row
+
+    if (detailRow.hasClass('hidden')) {
+        // Close all other detail rows
+        $('.class_detail').addClass('hidden').removeClass('visible');
+
+        // Open the clicked detail row
+        detailRow.removeClass('hidden').addClass('visible');
+    } else {
+        // Close the clicked detail row
+        detailRow.addClass('hidden').removeClass('visible');
+    }
+}
 </script>

@@ -131,7 +131,7 @@ class TestsController extends Controller
     {
         $delete_data = [
             'is_active' => 0,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $delete_action = DB::table('tm_test AS a')
@@ -148,7 +148,7 @@ class TestsController extends Controller
     {
         $recover_data = [
             'is_active' => 1,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $recover_action = DB::table('tm_test AS a')

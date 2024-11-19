@@ -64,7 +64,7 @@ class StudyCatController extends Controller
         $insert_data = [
             'study_material_category' => $request->kategori_materi,
             'desc' => $request->deskripsi_kategori_materi,
-            'created_by' => Auth::user()->name,
+            'created_by' => Auth::id(),
             'created_date' => Carbon::now()
         ];
         $insert_action = DB::table('tm_study_material_category')
@@ -120,7 +120,7 @@ class StudyCatController extends Controller
         $update_data = [
             'study_material_category' => $request->kategori_materi,
             'desc' => $request->deskripsi_kategori_materi,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_study_material_category AS a')
@@ -147,7 +147,7 @@ class StudyCatController extends Controller
     {
         $delete_data = [
             'is_active' => 0,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_study_material_category AS a')
@@ -164,7 +164,7 @@ class StudyCatController extends Controller
     {
         $recover_data = [
             'is_active' => 1,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_study_material_category AS a')

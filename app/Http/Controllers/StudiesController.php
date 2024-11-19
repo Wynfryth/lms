@@ -75,7 +75,7 @@ class StudiesController extends Controller
             'study_material_desc' => $request->deskripsi_materi,
             'category_id' => $request->kategori_materi,
             'is_active' => 1,
-            'created_by' => Auth::user()->name,
+            'created_by' => Auth::id(),
             'created_date' => Carbon::now()
         ];
 
@@ -163,7 +163,7 @@ class StudiesController extends Controller
             'study_material_desc' => $request->deskripsi_materi,
             'category_id' => $request->kategori_materi,
             // 'is_active' => 1,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_action = DB::table('tm_study_material_header AS a')
@@ -202,7 +202,7 @@ class StudiesController extends Controller
     {
         $delete_data = [
             'is_active' => 0,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $delete_action = DB::table('tm_study_material_header AS a')
@@ -219,7 +219,7 @@ class StudiesController extends Controller
     {
         $recover_data = [
             'is_active' => 1,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $recover_action = DB::table('tm_study_material_header AS a')

@@ -22,7 +22,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Kelas</a>
+                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Master Kelas</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -45,38 +45,39 @@
                     @csrf
                     {{-- @method('put') --}}
 
-                    <div>
-                        <x-input-label for="nama_kelas" :value="__('Nama')" />
-                        <x-text-input id="nama_kelas" name="nama_kelas" type="text" class="mt-1 block w-full" value="{{ old('nama_kelas') }}"/>
-                        @error('nama_kelas')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="my-1">
+                            <x-input-label for="nama_kelas" :value="__('Nama')" />
+                            <x-text-input id="nama_kelas" name="nama_kelas" type="text" class="mt-1 block w-full" value="{{ old('nama_kelas') }}"/>
+                            @error('nama_kelas')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="my-1">
+                            <x-input-label for="kategori_kelas" :value="__('Kategori')"></x-input-label>
+                            <x-select-option id="kategori_kelas" name="kategori_kelas">
+                                <x-slot name="options">
+                                    <option class="disabled" value="null" selected disabled>
+                                        Pilih Kategori ...
+                                    </option>
+                                    @forelse ($kategori as $index => $item)
+                                        <option value="{{ $item->id }}" {{ old('kategori_kelas') == $item->id ? 'selected' : '' }}>
+                                            {{ $item->class_category }}
+                                        </option>
+                                    @empty
+                                        {{-- do nothing --}}
+                                    @endforelse
+                                </x-slot>
+                            </x-select-option>
+                            @error('kategori_kelas')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
 
                     <div>
                         <x-input-label for="deskripsi_kelas" :value="__('Deskripsi')" />
                         <x-textarea-input id="deskripsi_kelas" name="deskripsi_kelas" class="mt-1 block w-full">{{ old('deskripsi_kelas') }}</x-textarea-input>
-                    </div>
-
-                    <div class="my-1">
-                        <x-input-label for="kategori_kelas" :value="__('Kategori')"></x-input-label>
-                        <x-select-option id="kategori_kelas" name="kategori_kelas">
-                            <x-slot name="options">
-                                <option class="disabled" value="null" selected disabled>
-                                    Pilih Kategori ...
-                                </option>
-                                @forelse ($kategori as $index => $item)
-                                    <option value="{{ $item->id }}" {{ old('kategori_kelas') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->class_category }}
-                                    </option>
-                                @empty
-                                    {{-- do nothing --}}
-                                @endforelse
-                            </x-slot>
-                        </x-select-option>
-                        @error('kategori_kelas')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
                     </div>
 
                     <div>

@@ -95,13 +95,23 @@ class TestCatController extends Controller
             'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
+        $update_affected = DB::table('tm_test_category AS a')
+            ->where('a.id', $id)
+            ->update($update_data);
+        if ($update_affected > 0) {
+            $status = [
+                'status' => 'update',
+                'status_message' => 'Berhasil mengubah data!'
+            ];
+            return redirect()->route('traincts')->with($status);
+        }
     }
 
     public function delete(Request $request)
     {
         $delete_data = [
             'is_active' => 0,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $delete_action = DB::table('tm_test_category AS a')
@@ -118,7 +128,7 @@ class TestCatController extends Controller
     {
         $recover_data = [
             'is_active' => 1,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $recover_action = DB::table('tm_test_category AS a')

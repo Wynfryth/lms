@@ -330,13 +330,13 @@ function cleanlinessGraph(){
     var options = {
           series: [{
           name: 'Peserta',
-          data: [122, 122, 122, 122, 150, 140, 122, 105, 111]
+          data: [122, 150, 133, 145, 111, 124, 124, 125, 167, 100, 97]
         }, {
           name: 'Lulus',
-          data: [117, 85, 101, 98, 87, 105, 91, 114, 94]
+          data: [117, 141, 123, 140, 100, 120, 124, 124, 167, 95, 96]
         }, {
           name: 'Gagal',
-          data: [5, 41, 36, 26, 45, 48, 52, 53, 41]
+          data: [5, 9, 10, 5, 11, 4, 0, 1, 0, 5, 1]
         }],
           chart: {
           type: 'bar',
@@ -358,7 +358,7 @@ function cleanlinessGraph(){
           colors: ['transparent']
         },
         xaxis: {
-          categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         },
         yaxis: {
           title: {

@@ -115,7 +115,7 @@ class ClassesController extends Controller
             'is_active' => 1,
             'start_eff_date' => $start_eff_date,
             'end_eff_date' => $end_eff_date,
-            'created_by' => Auth::user()->name,
+            'created_by' => Auth::id(),
             'created_date' => Carbon::now()
         ];
         $insert_action = DB::table('t_class_header')
@@ -191,7 +191,7 @@ class ClassesController extends Controller
             'is_active' => 1,
             'start_eff_date' => $start_eff_date,
             'end_eff_date' => $end_eff_date,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_action = DB::table('t_class_header AS a')
@@ -218,7 +218,7 @@ class ClassesController extends Controller
     {
         $delete_data = [
             'is_active' => 0,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $delete_action = DB::table('t_class_header AS a')
@@ -235,7 +235,7 @@ class ClassesController extends Controller
     {
         $recover_data = [
             'is_active' => 1,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $recover_action = DB::table('t_class_header AS a')

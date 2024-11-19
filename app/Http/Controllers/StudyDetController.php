@@ -49,7 +49,7 @@ class StudyDetController extends Controller
             'header_id' => $request->header_id,
             'order' => $highest_order + 1,
             'is_active' => 1,
-            'created_by' => Auth::user()->name,
+            'created_by' => Auth::id(),
             'created_date' => Carbon::now(),
             'scoring_weight' => $request->bobot_pembelajaran
         ];
@@ -65,7 +65,7 @@ class StudyDetController extends Controller
                 'estimated_time' => $value->durasi,
                 'attachment' => $value->file_pembelajaran,
                 'is_active' => 1,
-                'created_by' => Auth::user()->name,
+                'created_by' => Auth::id(),
                 'created_date' => Carbon::now()
             ];
             $insert_att = DB::table('tm_study_material_attachments')
@@ -118,7 +118,7 @@ class StudyDetController extends Controller
     {
         $delete_data = [
             'is_active' => 0,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_study_material_detail AS a')
@@ -140,7 +140,7 @@ class StudyDetController extends Controller
     {
         $recover_data = [
             'is_active' => 1,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_study_material_detail AS a')

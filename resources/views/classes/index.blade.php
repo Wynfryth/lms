@@ -1,3 +1,8 @@
+<style>
+    #detail_table tbody tr{
+        cursor: pointer;
+    }
+</style>
 <x-app-layout>
     <x-slot name="header">
         {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -22,7 +27,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Kelas</a>
+                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Master Kelas</a>
                     </div>
                 </li>
             </ol>
@@ -34,7 +39,7 @@
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
                     <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between mb-4">
-                        @can('create kategori kelas')
+                        @can('create master kelas')
                         <x-add-button href="{{route('classes.create')}}">
                             + Tambah
                         </x-add-button>
@@ -51,6 +56,8 @@
                         <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
+                                    <th scope="col" class="" width="1%">
+                                    </th>
                                     <th scope="col" class="px-6 py-3">
                                         #
                                     </th>
@@ -72,7 +79,7 @@
                                     <th scope="col" class="px-6 py-3">
                                         Keaktifan
                                     </th>
-                                    @canany(['edit kategori kelas', 'delete kategori kelas'])
+                                    @canany(['edit master kelas', 'delete master kelas'])
                                     <th scope="col" class="px-6 py-3 text-center">
                                         Aksi
                                     </th>
@@ -81,7 +88,12 @@
                             </thead>
                             <tbody>
                                 @forelse ($classes as $index => $value)
-                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700" onClick="toggleDetail(this)">
+                                        <td>
+                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 10 4 4 4-4"/>
+                                            </svg>
+                                        </td>
                                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {{ $index + $classes->firstItem() }}
                                         </th>
@@ -107,26 +119,31 @@
                                                 <span class="text-rose-600">{{ 'Non-Aktif' }}</span>
                                             @endif
                                         </td>
-                                        @canany(['edit kategori kelas', 'delete kategori kelas'])
+                                        @canany(['edit master kelas', 'delete master kelas'])
                                         <td class="px-6 py-4" width="15%">
                                             @if ($value->is_active == 1)
                                                 <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
-                                                    @can('edit kategori kelas')
+                                                    @can('edit master kelas')
                                                     <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('classes.edit', $value->id) }}">Edit</a>
                                                     @endcan
-                                                    @can('delete kategori kelas')
+                                                    @can('delete master kelas')
                                                     <button type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline delete" data-id="{{ $value->id }}">Hapus</button>
                                                     @endcan
                                                 </div>
                                             @else
                                                 <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
-                                                    @can('delete kategori kelas')
+                                                    @can('delete master kelas')
                                                     <button type="button" class="font-medium text-green-400 dark:text-green-200 hover:underline recover" data-id="{{ $value->id }}">Pulihkan</button>
                                                     @endcan
                                                 </div>
                                             @endif
                                         </td>
                                         @endcanany
+                                    </tr>
+                                    <tr class="bg-pink-50 class_detail hidden" id="detail_{{$value->id}}">
+                                        <td class="p-3" colspan="100%">
+                                            Contoh data
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr class="row_no_data">

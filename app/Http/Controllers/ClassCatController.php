@@ -67,7 +67,7 @@ class ClassCatController extends Controller
         $insert_data = [
             'class_category' => $request->kategori_kelas,
             'desc' => $request->deskripsi_kategori_kelas,
-            'created_by' => Auth::user()->name,
+            'created_by' => Auth::id(),
             'created_date' => Carbon::now()
         ];
         $insert_action = DB::table('tm_class_category')
@@ -124,7 +124,7 @@ class ClassCatController extends Controller
         $update_data = [
             'class_category' => $request->kategori_kelas,
             'desc' => $request->deskripsi_kategori_kelas,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_class_category AS a')
@@ -146,7 +146,7 @@ class ClassCatController extends Controller
     {
         $delete_data = [
             'is_active' => 0,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_class_category AS a')
@@ -161,7 +161,7 @@ class ClassCatController extends Controller
     {
         $delete_data = [
             'is_active' => 0,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_class_category AS a')
@@ -178,7 +178,7 @@ class ClassCatController extends Controller
     {
         $recover_data = [
             'is_active' => 1,
-            'modified_by' => Auth::user()->name,
+            'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_affected = DB::table('tm_class_category AS a')
