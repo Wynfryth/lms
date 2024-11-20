@@ -167,26 +167,39 @@
                         </div>
                     </div>
 
-                    {{-- <div class="my-1">
-                        <x-input-label for="tc_kelas" :value="__('Pusat Pelatihan')"></x-input-label>
-                        <x-select-option id="tc_kelas" name="tc_kelas">
-                            <x-slot name="options">
-                                <option value="null" selected disabled>
-                                    Pilih Pusat Pelatihan...
-                                </option>
-                                @forelse ($tc as $index => $item)
-                                    <option value="{{ $item->id }}">
-                                        {{ $item->tc_name.' - '.$item->tc_address }}
-                                    </option>
-                                @empty
-
-                                @endforelse
-                            </x-slot>
-                        </x-select-option>
-                        @error('tc_kelas')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div> --}}
+                    <div class="my-1">
+                        <div class="my-4 ">
+                            @can('create master kelas')
+                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_studies">
+                                + Materi
+                            </button>
+                            @endcan
+                        </div>
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            <table id="studies_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                            #
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Nama Peserta
+                                        </th>
+                                        @canany(['edit master kelas','delete master kelas'])
+                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                            Aksi
+                                        </th>
+                                        @endcanany
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="row_no_data">
+                                        <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                     <div class="flex items-center gap-4">
                         <x-primary-button>{{ __('Save') }}</x-primary-button>
@@ -203,10 +216,42 @@
 </x-app-layout>
 <script>
     $(document).ready(function () {
-        // $('.datepicker').datepicker({
-        //     dateFormat: 'dd-mm-yy',
-        //     // changeMonth: true,
-        //     // changeYear: true
-        // });
+        $('select[name="studies[]"]').select2({
+            placeholder: 'Pilih Peserta',
+            allowClear: true,
+            minimumInputLength: 3, // only start searching when the user has input 3 or more characters
+            ajax: {
+                async: false,
+                url: "{{ route('classes.studies_selectpicker') }}",
+                dataType: "JSON",
+                type: "POST",
+                quietMillis: 50,
+                delay: 250,
+                data: function (term) {
+                    return {
+                        term: term,
+                        _token: '{{ csrf_token() }}'
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                id: item.id,
+                                text: item.study_material_title
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+        var id_studies = "{{$item->id_studies}}".split(',');
+        var studies = "{{$item->studies}}".split(',');
+        // console.log(nip_peserta);
+        for(var i=0; i<id_studies.length; i++){
+            $('button#add_studies').trigger('click');
+            $('#studies_table tbody tr:last').find('select[name="studies[]"]').append('<option value="'+id_studies[i]+'">'+studies[i]+'</option>');
+        }
     });
 </script>

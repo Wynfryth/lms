@@ -140,9 +140,52 @@
                                         </td>
                                         @endcanany
                                     </tr>
-                                    <tr class="bg-pink-50 class_detail hidden" id="detail_{{$value->id}}">
+                                    <tr class="bg-blue-50 class_detail hidden" id="detail_{{$value->id}}">
                                         <td class="p-3" colspan="100%">
-                                            Contoh data
+                                            <div class="grid grid-cols-3 gap-2">
+                                                <div class="relative overflow-x-auto">
+                                                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                                        <tr>
+                                                            <td>
+                                                                Deskripsi
+                                                            </td>
+                                                            <td>:</td>
+                                                            <td>
+                                                                {{ $value->class_desc }}
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                                <div class="col-span-2 grid grid-cols-1 gap-2">
+                                                    @php
+                                                        $studies = explode(',', $value->studies);
+                                                    @endphp
+                                                    @if ($studies[0] != '')
+                                                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                                            <tr>
+                                                                <th scope="col" class="px-6 py-3 text-center">
+                                                                    Materi
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                                                <td class="px-6 py-4">
+                                                                    <ol class="ps-5 mt-2 space-y-1 list-decimal list-inside">
+                                                                    <div class="grid lg:grid-cols-2 sm:grid-cols-3 gap-2">
+                                                                        @foreach($studies as $index => $study)
+                                                                            <li>{{$study}}</li>
+                                                                        @endforeach
+                                                                    </div>
+                                                                    </ol>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty

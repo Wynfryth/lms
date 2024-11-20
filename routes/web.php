@@ -5,11 +5,9 @@ use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClassSessionsController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\FileController;
-// use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\ParticipantsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\StudiesController;
@@ -18,7 +16,6 @@ use App\Http\Controllers\StudyDetController;
 use App\Http\Controllers\StudyMatController;
 use App\Http\Controllers\TestCatController;
 use App\Http\Controllers\TestsController;
-use App\Http\Controllers\TrainCtController;
 use App\Http\Controllers\TrainCtsController;
 use App\Http\Controllers\TrainersController;
 use App\Http\Controllers\UsersController;
@@ -40,15 +37,17 @@ Route::middleware('auth')->group(function () {
     // Employees
     Route::controller(EmployeesController::class)->group(function () {
         Route::get('employees/index/{employees_kywd?}', 'index')->middleware(['permission:list pegawai'])->name('employees');
-        // Route::post('participant/delete', 'delete')->middleware(['permissoin:delete pegawai'])->name('participant.delete');
-        // Route::post('participant/recover', 'recover')->middleware(['permissoin:delete pegawai'])->name('participant.recover');
     });
 
     // Participants
     Route::controller(ParticipantsController::class)->group(function () {
-        Route::get('participant/index/{participant_kywd?}', 'index')->middleware(['permission:list peserta'])->name('participant');
-        // Route::post('participant/delete', 'delete')->middleware(['permissoin:delete pegawai'])->name('participant.delete');
-        // Route::post('participant/recover', 'recover')->middleware(['permissoin:delete pegawai'])->name('participant.recover');
+        Route::get('participants/index/{participants_kywd?}', 'index')->middleware(['permission:list peserta'])->name('participants');
+        Route::get('participants/create', 'create')->middleware(['permission:create peserta'])->name('participants.create');
+        Route::post('participants/store', 'store')->middleware(['permission:create peserta'])->name('participants.store');
+        Route::get('participants/edit/{id}', 'edit')->middleware(['permission:edit peserta'])->name('participants.edit');
+        Route::post('participants/update/{id}', 'update')->middleware(['permission:edit peserta'])->name('participants.update');
+        Route::post('participants/delete', 'delete')->middleware(['permission:delete peserta'])->name('participants.delete');
+        Route::post('participants/recover', 'recover')->middleware(['permission:delete peserta'])->name('participants.recover');
     });
     // Training Centers
     Route::controller(TrainCtsController::class)->group(function () {
@@ -85,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(ClassesController::class)->group(function () {
         Route::get('classes/index/{classes_kywd?}', 'index')->middleware(['permission:list master kelas'])->name('classes');
         Route::get('classes/create', 'create')->middleware(['permission:create master kelas'])->name('classes.create');
+        Route::post('classes/studies_selectpicker', 'studies_selectpicker')->middleware(['permission:create master kelas|edit master kelas'])->name('classes.studies_selectpicker');
         Route::post('classes/store', 'store')->middleware(['permission:create master kelas'])->name('classes.store');
         Route::get('classes/edit/{id}', 'edit')->middleware(['permission:edit master kelas'])->name('classes.edit');
         Route::post('classes/update/{id}', 'update')->middleware(['permission:edit master kelas'])->name('classes.update');

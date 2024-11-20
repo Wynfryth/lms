@@ -103,7 +103,7 @@ class TestCatController extends Controller
                 'status' => 'update',
                 'status_message' => 'Berhasil mengubah data!'
             ];
-            return redirect()->route('traincts')->with($status);
+            return redirect()->route('testcat')->with($status);
         }
     }
 

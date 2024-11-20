@@ -48,17 +48,17 @@
                     {{-- @method('put') --}}
 
                     <div>
-                        <x-input-label for="judul_materi" :value="__('Judul')" />
-                        <x-text-input id="judul_materi" name="judul_materi" type="text" class="mt-1 block w-full serialize" value="{{ $item->test_category }}"/>
-                        @error('judul_materi')
+                        <x-input-label for="kategori_tes" :value="__('Judul')" />
+                        <x-text-input id="kategori_tes" name="kategori_tes" type="text" class="mt-1 block w-full serialize" value="{{ $item->test_category }}"/>
+                        @error('kategori_tes')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
 
                     <div>
-                        <x-input-label for="deskripsi_materi" :value="__('Deskripsi')" />
-                        <x-textarea-input id="deskripsi_materi" name="deskripsi_materi" class="mt-1 block w-full serialize">{{ $item->desc }}</x-textarea-input>
-                        @error('deskripsi_materi')
+                        <x-input-label for="deskripsi_kategori_tes" :value="__('Deskripsi')" />
+                        <x-textarea-input id="deskripsi_kategori_tes" name="deskripsi_kategori_tes" class="mt-1 block w-full serialize">{{ $item->desc }}</x-textarea-input>
+                        @error('deskripsi_kategori_tes')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>

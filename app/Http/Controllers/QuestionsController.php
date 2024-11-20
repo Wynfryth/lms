@@ -131,8 +131,8 @@ class QuestionsController extends Controller
             ->where('a.id', $id)
             ->update($update_question);
         // deleting answer record
-        $delete_answer_action = DB::table('tm_answer_bank AS a')
-            ->where('a.question_id', $id)
+        $delete_answer_action = DB::table('tm_answer_bank')
+            ->where('question_id', $id)
             ->delete();
         if ($request->answers != null) {
             foreach ($request->answers as $key => $answer) {

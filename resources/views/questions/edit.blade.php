@@ -77,7 +77,7 @@
                     <div class="my-1">
                         <div class="my-4 ">
                             @can('create pertanyaan')
-                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded" id="add_answers">
+                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_answers">
                                 + Jawaban
                             </button>
                             @endcan

@@ -137,14 +137,17 @@
                                                             @if (substr($attachment[$filename_index], 0, 4) == 'http')
                                                                 <a href="{{$attachment[$filename_index]}}" target="_blank">{{$filename_item}}</a>
                                                             @else
-                                                                <a href="{{$attachment[$filename_index]}}" target="_blank">{{$filename_item}}</a>
-                                                                {{-- <a type="button" href="#" class=""></a> --}}
+                                                                <button type="button" class="font-medium text-cyan-600 dark:text-cyan-500 hover:underline study_file" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal" data-file="{{$attachment[$filename_index]}}">{{$filename_item}}</button>
                                                             @endif
                                                         </li>
                                                         @endforeach
                                                     </ul>
                                                 @else
-                                                    <a href="{{$value->attachment}}" target="_blank">{{$value->filename}}</a>
+                                                    @if (substr($attachment[0], 0, 4) == 'http')
+                                                        <a href="{{$attachment[0]}}" target="_blank">{{$filename[0]}}</a>
+                                                    @else
+                                                        <button type="button" class="font-medium text-cyan-600 dark:text-cyan-500 hover:underline study_file" data-modal-target="studydet-modal" data-modal-toggle="studydet-modal" data-file="{{$attachment[0]}}" >{{$filename[0]}}</button>
+                                                    @endif
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4">
@@ -331,7 +334,6 @@ function refresh_index(){
 
 $(document).off('click', '.edit_detail').on('click', '.edit_detail', function () {
     var detail_id = $(this).data('detail');
-    // console.log(detail_id);
     var url = "{{ route('studydet.edit', ':detail_id') }}";
     url = url.replace(':detail_id', detail_id);
     var loader_html = '<div class="loader mx-auto my-28"></div>';
@@ -342,10 +344,6 @@ $(document).off('click', '.edit_detail').on('click', '.edit_detail', function ()
             type: "GET",
             url: url,
             cache: false,
-            // data: {
-            //     id: "{{ $item->id }}"
-            // },
-            // dataType: "dataType",
             success: function (response) {
                 $('#studydet-modal #modal_title').html('Pembelajaran & File');
                 $('#studydet-modal #modal_body').html(response);
@@ -443,7 +441,16 @@ $(document).off('click', '#deleted_detail').on('click', '#deleted_detail', funct
             }
         });
     })
-})
+});
+$(document).off('click', '.study_file').on('click', '.study_file', function(){
+    var file_link = $(this).data('file');
+    var file_title = $(this).text();
+    var link = '{{ asset(":file_link") }}';
+    link = link.replace(':file_link', file_link);
+    $('#studydet-modal #modal_title').html(file_title);
+    $('#studydet-modal').find('#modal_body').html('<img src="'+link+'" alt="'+link+'"></img>');
+    $('#studydet-modal').show('modal');
+});
 $(document).find('form').submit(function(e){
     var no_data_row = $('table#detail_table tbody').find('tr.row_no_data').length;
 

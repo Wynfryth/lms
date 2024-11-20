@@ -234,8 +234,8 @@ class ClassSessionsController extends Controller
         $update_action = DB::table('t_class_session AS a')
             ->where('a.id', $id)
             ->update($update_data);
-        $delete_enrollment = DB::table('tr_enrollment AS a')
-            ->where('a.class_session_id', $id)
+        $delete_enrollment = DB::table('tr_enrollment')
+            ->where('class_session_id', $id)
             ->delete();
         if (count($request->peserta) > 0) {
             foreach ($request->peserta as $item) {

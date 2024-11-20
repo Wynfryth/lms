@@ -19,9 +19,13 @@ class ClassesController extends Controller
     public function index($classes_kywd = null)
     {
         $classes = DB::table('t_class_header AS a')
-            ->leftJoin('tm_class_category AS b', 'a.class_category_id', '=', 'b.id')
             ->select('a.id', 'a.class_title', 'a.class_desc', 'a.class_period', 'a.start_eff_date', 'a.end_eff_date', 'b.class_category', 'a.is_active')
+            ->selectRaw(DB::raw('GROUP_CONCAT(d.id) AS id_studies, GROUP_CONCAT(d.study_material_title) AS studies'))
+            ->leftJoin('tm_class_category AS b', 'a.class_category_id', '=', 'b.id')
+            ->leftJoin('class_has_studies AS c', 'c.id_class_header', '=', 'a.id')
+            ->leftJoin('tm_study_material_header AS d', 'd.id', '=', 'c.id_study_material_header')
             // ->where('a.is_active', 1)
+            ->groupBy('a.id')
             ->orderByDesc('a.id');
         if ($classes_kywd != null) {
             $any_params = [
@@ -72,6 +76,16 @@ class ClassesController extends Controller
         return view('classes.create', compact('kategori'));
     }
 
+    public function studies_selectpicker(Request $request)
+    {
+        $keyword = $request->term['term'];
+        $studies = DB::table('tm_study_material_header AS a')
+            ->select('a.id', 'a.study_material_title', 'a.study_material_desc')
+            ->where('a.study_material_title', 'like', '%' . $keyword . '%')
+            ->get();
+        return $studies;
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -120,6 +134,16 @@ class ClassesController extends Controller
         ];
         $insert_action = DB::table('t_class_header')
             ->insertGetId($insert_data);
+        if (count($request->studies) > 0) {
+            foreach ($request->studies as $item) {
+                $insert_class_has_studies_data = [
+                    'id_class_header' => $insert_action,
+                    'id_study_material_header' => $item,
+                ];
+                $insert_class_has_studies = DB::table('class_has_studies')
+                    ->insertGetId($insert_class_has_studies_data);
+            }
+        }
         if ($insert_action > 0) {
             $status = [
                 'status' => 'insert',
@@ -143,9 +167,13 @@ class ClassesController extends Controller
     public function edit($id)
     {
         $item = DB::table('t_class_header AS a')
+            ->select('a.*')
+            ->selectRaw(DB::raw('GROUP_CONCAT(c.id) AS id_studies, GROUP_CONCAT(c.study_material_title) AS studies'))
+            ->leftJoin('class_has_studies AS b', 'b.id_class_header', '=', 'a.id')
+            ->leftJoin('tm_study_material_header AS c', 'c.id', '=', 'b.id_study_material_header')
             ->where('a.id', $id)
+            ->groupBy('a.id')
             ->first();
-
         $kategori = DB::table('tm_class_category AS a')
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'asc')
@@ -197,6 +225,19 @@ class ClassesController extends Controller
         $update_action = DB::table('t_class_header AS a')
             ->where('a.id', $id)
             ->update($update_data);
+        $delete_class_has_studies = DB::table('class_has_studies')
+            ->where('id_class_header', $id)
+            ->delete();
+        if (count($request->studies) > 0) {
+            foreach ($request->studies as $item) {
+                $update_class_has_studies_data = [
+                    'id_class_header' => $id,
+                    'id_study_material_header' => $item,
+                ];
+                $update_class_has_studies = DB::table('class_has_studies')
+                    ->insertGetId($update_class_has_studies_data);
+            }
+        }
         if ($update_action > 0) {
             $status = [
                 'status' => 'update',

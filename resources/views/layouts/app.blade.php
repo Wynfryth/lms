@@ -195,6 +195,17 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
                                 '</td>'+
                             '</tr>';
         break;
+        case 'studies_table':
+            var row_html =  '<tr>'+
+                                '<td class="row_index text-center"></td>'+
+                                '<td class="p-2">'+
+                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="studies[]" type="text"></select>'+
+                                '</td>'+
+                                '<td class="text-center">'+
+                                    '<button type="button" class="font-medium text-red-400 dark:text-red-200 hover:underline remove_row">Hapus</button>'+
+                                '</td>'+
+                            '</tr>';
+        break;
     }
     table.find('tbody').append(row_html);
     update_dynaTable_index(table);
@@ -233,6 +244,38 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
         break;
         case 'answers_table':
             //
+        break;
+        case 'studies_table':
+            table.find('tbody tr:last').find('select[name="studies[]"]').select2({
+                placeholder: 'Pilih Materi',
+                allowClear: true,
+                minimumInputLength: 3, // only start searching when the user has input 3 or more characters
+                ajax: {
+                    async: false,
+                    url: "{{ route('classes.studies_selectpicker') }}",
+                    dataType: "JSON",
+                    type: "POST",
+                    quietMillis: 50,
+                    delay: 250,
+                    data: function (term) {
+                        return {
+                            term: term,
+                            _token: '{{ csrf_token() }}'
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data, function (item) {
+                                return {
+                                    id: item.id,
+                                    text: item.study_material_title
+                                }
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            })
         break;
     }
 });

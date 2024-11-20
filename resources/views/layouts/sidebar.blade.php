@@ -179,7 +179,7 @@
                 </a>
             </li>
             @endcan
-            @canany(['list pegawai', 'list peserta terdaftar', 'list peserta batal'])
+            @canany(['list pegawai', 'list peserta', 'list peserta batal'])
             <li>
                 <button type="button"
                     class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
@@ -195,9 +195,9 @@
                     </svg>
                 </button>
                 <ul id="dropdown-employee" class="hidden py-2 space-y-2">
-                    @can('list peserta terdaftar')
+                    @can('list peserta')
                     <li>
-                        <a href="{{route('participant')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Peserta
+                        <a href="{{route('participants')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Peserta
                             Terdaftar
                         </a>
                     </li>
