@@ -5,9 +5,12 @@
         </h2>
     </x-slot>
     <div class="p-4 px-0 sm:ml-64">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 sm:py-1 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <div class="p-1">
+                        <span>Hi, <strong>{{ Auth::user()->name; }}</strong>! Welcome to Learning Management System Gacoan!</span>
+                    </div>
                     @role('Academy Admin')
                     <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4">
                         <x-card-dashboard class="hover:bg-blue-700 bg-white hover:text-blue-600 hover:delay-75 group">
@@ -81,7 +84,7 @@
                         </x-card-dashboard>
                     </div>
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                        <div id="chart"></div>
+                        <div id="mortalityGraph"></div>
                     </div>
                     <h5 class="ml-2 font-bold tracking-tight text-gray-600">Pre-Test</h5>
                     <div
@@ -312,6 +315,82 @@
                         </x-card-dashboard>
                     </div>
                     @endrole
+                    @role('Student')
+                    <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4">
+                        <x-card-dashboard class="hover:bg-blue-700 bg-white hover:text-blue-600 hover:delay-75 group">
+                            <x-slot name="header">
+                                <h5
+                                    class="text-2xl font-bold tracking-tight dark:text-white text-dark group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
+                                    Kelas</h5>
+                            </x-slot>
+                            <x-slot name="detail">
+                                <p
+                                    class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
+                                    Jumlah Kelas yang Diikuti
+                                </p>
+                            </x-slot>
+                            <x-slot name="number">
+                                <h2
+                                    class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
+                                    8
+                                </h2>
+                            </x-slot>
+                        </x-card-dashboard>
+                        <x-card-dashboard class="hover:bg-emerald-700 bg-white hover:text-white group">
+                            <x-slot name="header">
+                                <h5
+                                    class="text-2xl font-bold tracking-tight dark:text-dark text-dark group-hover:text-white group-hover:bg-emerald-700">
+                                    Lulus</h5>
+                            </x-slot>
+                            <x-slot name="detail">
+                                <p
+                                    class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-emerald-700">
+                                    Jumlah Kelas yang Telah Lulus
+                                </p>
+                            </x-slot>
+                            <x-slot name="number">
+                                <div class="flex">
+                                    <h2
+                                        class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700 flex-1 float-left">
+                                        5
+                                    </h2>
+                                    <h2
+                                        class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
+                                        62 %
+                                    </h2>
+                                </div>
+                            </x-slot>
+                        </x-card-dashboard>
+                        <x-card-dashboard class="bg-white hover:bg-rose-700 hover:text-white group">
+                            <x-slot name="header">
+                                <h5
+                                    class="text-2xl font-bold tracking-tight dark:text-white text-dark group-hover:text-white group-hover:bg-rose-700">
+                                    Gagal</h5>
+                            </x-slot>
+                            <x-slot name="detail">
+                                <p
+                                    class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-rose-700">
+                                    Jumlah Kelas yang Gagal
+                                </p>
+                            </x-slot>
+                            <x-slot name="number">
+                                <div class="flex">
+                                    <h2
+                                        class="text-2xl font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700 flex-1 float-left">
+                                        3
+                                    </h2>
+                                    <h2
+                                        class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
+                                        38 %
+                                    </h2>
+                                </div>
+                            </x-slot>
+                        </x-card-dashboard>
+                    </div>
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <div id="passRateGraph"></div>
+                    </div>
+                    @endrole
                 </div>
             </div>
         </div>
@@ -319,9 +398,10 @@
 </x-app-layout>
 <script>
 $(document).ready(function () {
-    cleanlinessGraph();
+    mortalityGraph();
+    passRateGraph();
 });
-function cleanlinessGraph(){
+function mortalityGraph(){
     var options = {
           series: [{
           name: 'Peserta',
@@ -386,7 +466,75 @@ function cleanlinessGraph(){
         }
     };
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        var chart = new ApexCharts(document.querySelector("#mortalityGraph"), options);
+        chart.render();
+}
+function passRateGraph(){
+    var options = {
+          series: [{
+          name: 'Peserta',
+          data: [122, 150, 133, 145, 111, 124, 124, 125, 167, 100, 97]
+        }, {
+          name: 'Lulus',
+          data: [117, 141, 123, 140, 100, 120, 124, 124, 167, 95, 96]
+        }, {
+          name: 'Gagal',
+          data: [5, 9, 10, 5, 11, 4, 0, 1, 0, 5, 1]
+        }],
+          chart: {
+          type: 'bar',
+          height: 350
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            endingShape: 'rounded'
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        },
+        yaxis: {
+          title: {
+            text: 'Orang'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + " orang"
+            }
+          }
+        },
+        title: {
+            text: 'Tingkat Keberhasilan kelas kamu 2024 (dummy)',
+            align: 'center',
+            margin: 10,
+            offsetX: 0,
+            offsetY: 0,
+            floating: false,
+            style: {
+            fontSize:  '14px',
+            fontWeight:  'bold',
+            fontFamily:  undefined,
+            color:  '#263238'
+            },
+        }
+    };
+
+        var chart = new ApexCharts(document.querySelector("#passRateGraph"), options);
         chart.render();
 }
 </script>

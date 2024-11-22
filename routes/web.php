@@ -5,6 +5,11 @@ use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClassSessionsController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\MyClassesController;
+use App\Http\Controllers\MyScheduleController;
+use App\Http\Controllers\MySchedulesController;
+use App\Http\Controllers\MyTeachesController;
+use App\Http\Controllers\MyTeachesScheduleController;
 use App\Http\Controllers\ParticipantsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
@@ -17,6 +22,7 @@ use App\Http\Controllers\StudyMatController;
 use App\Http\Controllers\TestCatController;
 use App\Http\Controllers\TestsController;
 use App\Http\Controllers\TrainCtsController;
+use App\Http\Controllers\TrainerSchedulesController;
 use App\Http\Controllers\TrainersController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -69,6 +75,17 @@ Route::middleware('auth')->group(function () {
         Route::post('trainers/update/{id}', 'update')->middleware(['permission:edit pelatih'])->name('trainers.update');
         Route::post('trainers/delete', 'delete')->middleware(['permission:delete pelatih'])->name('trainers.delete');
         Route::post('trainers/recover', 'recover')->middleware(['permission:delete pelatih'])->name('trainers.recover');
+    });
+    // Jadwal Instruktur / Pelatih
+    Route::controller(TrainerSchedulesController::class)->group(function () {
+        Route::get('trainerschedules/index/{trainerschedules_kywd?}', 'index')->middleware(['permission:list jadwal pelatih'])->name('trainerschedules');
+        // Route::get('trainers/create', 'create')->middleware(['permission:create pelatih'])->name('trainers.create');
+        // Route::post('trainers/selectpicker', 'trainers_selectpicker')->middleware(['permission:create pelatih|edit pelatih'])->name('trainers.selectpicker');
+        // Route::post('trainers/store', 'store')->middleware(['permission:create pelatih'])->name('trainers.store');
+        // Route::get('trainers/edit/{id}', 'edit')->middleware(['permission:edit pelatih'])->name('trainers.edit');
+        // Route::post('trainers/update/{id}', 'update')->middleware(['permission:edit pelatih'])->name('trainers.update');
+        // Route::post('trainers/delete', 'delete')->middleware(['permission:delete pelatih'])->name('trainers.delete');
+        // Route::post('trainers/recover', 'recover')->middleware(['permission:delete pelatih'])->name('trainers.recover');
     });
     // Classes Category
     Route::controller(ClassCatController::class)->group(function () {
@@ -191,6 +208,50 @@ Route::middleware('auth')->group(function () {
         Route::get('permissions/edit/{id}', 'edit')->middleware(['permission:edit permissions'])->name('permissions.edit');
         Route::post('permissions/update/{id}', 'update')->middleware(['permission:edit permissions'])->name('permissions.update');
         Route::post('permissions/delete', 'delete')->middleware(['permission:delete permissions'])->name('permissions.delete');
+    });
+
+    // Kelasku (Student)
+    Route::controller(MyClassesController::class)->group(function () {
+        Route::get('myclasses/index/{myclasses_kywd?}', 'index')->middleware(['permission:list kelasku'])->name('myclasses');
+        Route::get('myclasses/create', 'create')->middleware(['permission:create kelasku'])->name('myclasses.create');
+        Route::post('myclasses/store', 'store')->middleware(['permission:create kelasku'])->name('myclasses.store');
+        Route::get('myclasses/edit/{id}', 'edit')->middleware(['permission:edit kelasku'])->name('myclasses.edit');
+        Route::post('myclasses/update/{id}', 'update')->middleware(['permission:edit kelasku'])->name('myclasses.update');
+        Route::post('myclasses/delete', 'delete')->middleware(['permission:delete kelasku'])->name('myclasses.delete');
+        Route::post('myclasses/recover', 'recover')->middleware(['permission:delete kelasku'])->name('myclasses.recover');
+    });
+
+    // Jadwalku (Student)
+    Route::controller(MySchedulesController::class)->group(function () {
+        Route::get('myschedules/index/{myschedules_kywd?}', 'index')->middleware(['permission:list jadwalku'])->name('myschedules');
+        Route::get('myschedules/create', 'create')->middleware(['permission:create jadwalku'])->name('myschedules.create');
+        Route::post('myschedules/store', 'store')->middleware(['permission:create jadwalku'])->name('myschedules.store');
+        Route::get('myschedules/edit/{id}', 'edit')->middleware(['permission:edit jadwalku'])->name('myschedules.edit');
+        Route::post('myschedules/update/{id}', 'update')->middleware(['permission:edit jadwalku'])->name('myschedules.update');
+        Route::post('myschedules/delete', 'delete')->middleware(['permission:delete jadwalku'])->name('myschedules.delete');
+        Route::post('myschedules/recover', 'recover')->middleware(['permission:delete jadwalku'])->name('myschedules.recover');
+    });
+
+    // Kelas Diampu (Instructor)
+    Route::controller(MyTeachesController::class)->group(function () {
+        Route::get('myteaches/index/{myteaches_kywd?}', 'index')->middleware(['permission:list kelas diampu'])->name('myteaches');
+        Route::get('myteaches/create', 'create')->middleware(['permission:create kelas diampu'])->name('myteaches.create');
+        Route::post('myteaches/store', 'store')->middleware(['permission:create kelas diampu'])->name('myteaches.store');
+        Route::get('myteaches/edit/{id}', 'edit')->middleware(['permission:edit kelas diampu'])->name('myteaches.edit');
+        Route::post('myteaches/update/{id}', 'update')->middleware(['permission:edit kelas diampu'])->name('myteaches.update');
+        Route::post('myteaches/delete', 'delete')->middleware(['permission:delete kelas diampu'])->name('myteaches.delete');
+        Route::post('myteaches/recover', 'recover')->middleware(['permission:delete kelas diampu'])->name('myteaches.recover');
+    });
+
+    // Jadwalku (Student)
+    Route::controller(MyTeachesScheduleController::class)->group(function () {
+        Route::get('myteachesschedule/index/{myteachesschedule_kywd?}', 'index')->middleware(['permission:list jadwal kelas diampu'])->name('myteachesschedule');
+        Route::get('myteachesschedule/create', 'create')->middleware(['permission:create jadwal kelas diampu'])->name('myteachesschedule.create');
+        Route::post('myteachesschedule/store', 'store')->middleware(['permission:create jadwal kelas diampu'])->name('myteachesschedule.store');
+        Route::get('myteachesschedule/edit/{id}', 'edit')->middleware(['permission:edit jadwal kelas diampu'])->name('myteachesschedule.edit');
+        Route::post('myteachesschedule/update/{id}', 'update')->middleware(['permission:edit jadwal kelas diampu'])->name('myteachesschedule.update');
+        Route::post('myteachesschedule/delete', 'delete')->middleware(['permission:delete jadwal kelas diampu'])->name('myteachesschedule.delete');
+        Route::post('myteachesschedule/recover', 'recover')->middleware(['permission:delete jadwal kelas diampu'])->name('myteachesschedule.recover');
     });
 });
 

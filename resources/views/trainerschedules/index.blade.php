@@ -1,0 +1,81 @@
+<x-app-layout>
+    <x-slot name="header">
+        {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Kelas > Kategori Kelas') }}
+        </h2> --}}
+        <!-- Breadcrumb -->
+        <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                <li class="inline-flex items-center">
+                    <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9h3m-3 3h3m-3 3h3m-6 1c-.306-.613-.933-1-1.618-1H7.618c-.685 0-1.312.387-1.618 1M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm7 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+                    </svg>
+                    &nbsp;&nbsp;Instruktur
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                    <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <a href="{{ route('trainerschedules') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Jadwal Instruktur</a>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </x-slot>
+
+    <div class="p-4 sm:ml-64">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
+            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
+                <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+@if (session('status'))
+<script>
+    const Toast =   Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                        });
+                        Toast.fire({
+                        icon: "success",
+                        title: "{{session('status_message')}}"
+                    });
+</script>
+@endif
+<script>
+    $(document).ready(function () {
+        var events = {!! json_encode($events) !!};
+        var events = events.map(function(item){
+            return {
+                title: item.Employee_name+' - '+item.session_name,
+                start: item.start_effective_date,
+                end: item.end_effective_date,
+            }
+        })
+        // console.log(events);
+        const calendarEl = document.getElementById('calendar')
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            },
+            initialView: 'dayGridMonth',
+            events: events
+        })
+        calendar.render()
+    });
+</script>

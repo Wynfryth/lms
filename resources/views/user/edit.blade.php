@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
-                        <div class="my-1">
+                        {{-- <div class="my-1">
                             <x-input-label for="role" :value="__('Role')"></x-input-label>
                             <x-select-option id="role" name="role" class="serialize">
                                 <x-slot name="options">
@@ -68,14 +68,14 @@
                                             {{ $item->name }}
                                         </option>
                                     @empty
-                                        {{-- do nothing --}}
+
                                     @endforelse
                                 </x-slot>
                             </x-select-option>
                             @error('role')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
-                        </div>
+                        </div> --}}
                         <div class="my-5 ml-3">
                             <x-input-label for="active_status" :value="__('Status Keaktifan')"></x-input-label>
                             <label class="inline-flex items-center cursor-pointer">
@@ -90,6 +90,32 @@
                                 <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                 <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300" id="ket_status_keaktifan">Aktif</span>
                             </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h6 class="text-dark dark:text-white">Roles: </h6>
+                        <div class="grid lg:grid-cols-5 sm:grid-cols-1 gap-4 px-3">
+                            @php
+                                $roles_granted = explode(',', $user_data->roles_granted);
+                            @endphp
+                            @foreach ($roles as $role)
+                                @php
+                                    if(in_array($role->id, $roles_granted)){
+                                        $check_status = 'checked';
+                                    }else{
+                                        $check_status = '';
+                                    }
+                                @endphp
+                                <div class="my-1">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer serialize" name="role_{{ $role->id }}" {{ $check_status }}>
+                                        <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300" id="ket_status_keaktifan">{{ $role->name }}</span>
+                                    </label>
+
+                                </div>
+                            @endforeach
                         </div>
                     </div>
 

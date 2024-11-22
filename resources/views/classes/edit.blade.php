@@ -121,7 +121,6 @@
                             <div>
                                 <x-input-label for="tahun_periode_kelas" :value="__('Tahun')"></x-input-label>
                                 <x-select-option id="tahun_periode_kelas" name="tahun_periode_kelas">
-
                                     <x-slot name="options">
                                         <option value="null" selected disabled>
                                             Pilih Tahun...

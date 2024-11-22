@@ -58,7 +58,12 @@
                                             {{ $value->username }}
                                         </td>
                                         <td class="px-6 py-4">
-                                            {{ $value->rolename }}
+                                            @php
+                                                $roles_granted = explode(',', $value->rolename);
+                                            @endphp
+                                            @foreach ($roles_granted as $role)
+                                                <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">{{ $role }}</span>
+                                            @endforeach
                                         </td>
                                         <td class="px-6 py-4">
                                             @if ($value->is_active == 1)

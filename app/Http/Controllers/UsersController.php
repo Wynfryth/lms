@@ -13,9 +13,11 @@ class UsersController extends Controller
     public function index($users_kywd = null)
     {
         $users = DB::table('users AS a')
-            ->select('a.id', 'a.email', 'a.name AS username', 'c.name AS rolename', 'a.is_active')
+            ->select('a.id', 'a.email', 'a.name AS username', 'a.is_active')
+            ->selectRaw(DB::raw('GROUP_CONCAT(c.name) AS rolename'))
             ->leftJoin('model_has_roles AS b', 'b.model_id', '=', 'a.id')
-            ->leftJoin('roles AS c', 'c.id', '=', 'b.role_id');
+            ->leftJoin('roles AS c', 'c.id', '=', 'b.role_id')
+            ->groupBy('a.id');
         if ($users_kywd != null) {
             $any_params = [
                 'a.email',
@@ -32,7 +34,8 @@ class UsersController extends Controller
     {
         $user_id = $id;
         $user_data = DB::table('users AS a')
-            ->select('a.id', 'a.email', 'a.name AS username', 'c.id AS roleid', 'c.name AS rolename', 'a.is_active')
+            ->select('a.id', 'a.email', 'a.name AS username', 'a.is_active')
+            ->selectRaw(DB::raw('GROUP_CONCAT(c.id) AS roles_granted'))
             ->leftJoin('model_has_roles AS b', 'b.model_id', '=', 'a.id')
             ->leftJoin('roles AS c', 'c.id', '=', 'b.role_id')
             ->where('a.id', $user_id)
@@ -55,9 +58,19 @@ class UsersController extends Controller
             ->where('a.id', $id)
             ->update($update_data);
         $user = User::where(['id' => $id])->first();
-        $role = Role::where(['id' => $request->role])->first();
         $user->roles()->detach();
-        $user->assignRole($role);
+
+        $data = $request->all();
+        foreach ($data as $key => $item) {
+            if (substr($key, 0, 5) == 'role_') {
+                $role = Role::where('id', explode('_', $key)[1])->first();
+                $user->assignRole($role);
+            }
+        };
+
+        // $role = Role::where(['id' => $request->role])->first();
+        // $user->roles()->detach();
+        // $user->assignRole($role);
         return $update_action;
     }
 }

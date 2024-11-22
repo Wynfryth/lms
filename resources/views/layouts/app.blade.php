@@ -103,6 +103,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
     </body>
 </html>
 <script>
@@ -314,7 +315,8 @@ $(document).off('click', '.remove_row').on('click', '.remove_row', function(){
 })
 function toggleDetail(element){
     var object = $(element);
-    var detailRow = object.next('.class_detail'); // Get the next detail row
+    var detailRow = object.nextAll('.class_detail:first'); // Get the next detail row
+    console.log(detailRow)
 
     if (detailRow.hasClass('hidden')) {
         // Close all other detail rows
