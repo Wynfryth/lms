@@ -82,7 +82,7 @@
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white dark:bg-gray-800 border-b border-gray-200 p-0 mt-20 sm:ml-64 shadow sticky top-20 z-30">
+                <header class="bg-white dark:bg-gray-800 border-b border-gray-200 p-0 lg:mt-16 lg:top-16 sm:mt-20 sm:top-20 sm:ml-64 shadow sticky z-30">
                     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
