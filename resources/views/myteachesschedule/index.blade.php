@@ -60,7 +60,7 @@
         var events = {!! json_encode($events) !!};
         var events = events.map(function(item){
             return {
-                title: item.Employee_name+' - '+item.session_name,
+                title: item.session_name+' ('+item.jumlah_peserta+' peserta)',
                 start: item.start_effective_date,
                 end: item.end_effective_date,
             }

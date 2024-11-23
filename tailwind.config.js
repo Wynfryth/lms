@@ -18,7 +18,16 @@ export default {
               "bookmark-blue": "#2424A5",
               "bookmark-grey": "#9194A2",
               "bookmark-white": "#f7f7f7",
-            }
+            },
+            keyframes: {
+                wiggle: {
+                    '0%, 100%': { transform: 'rotate(-20deg)' },
+                    '50%': { transform: 'rotate(20deg)' },
+                }
+            },
+            animation: {
+                wiggle: 'wiggle 1s ease-in-out infinite',
+            },
         },
         fontFamily: {
           sans: ['Figtree', ...defaultTheme.fontFamily.sans],

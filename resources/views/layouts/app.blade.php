@@ -114,7 +114,69 @@ $(window).on('load', function() {
     }, 800, function() {
         $('div#loading').hide();
     });
+    var notifications;
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "{{route('user.notifications')}}",
+        data: {
+            _token: "{{csrf_token()}}",
+            user_nip : "{{Auth::user()->nip}}"
+        },
+        dataType: "JSON",
+        success: function (response) {
+            // console.log(response);
+            if(response.length > 0){
+                var unread = 0;
+                var html = '';
+                var bg_color = '';
+                for(var keys in response){
+                    if(response[keys].read_status == 0){
+                        unread++;
+                        bg_color = 'bg-red-50 hover:bg-red-100';
+                    }else{
+                        bg_color = '';
+                    }
+                    html += '<li class="'+bg_color+'" data-notification="'+response[keys].id+'">'+
+                                '<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">'+
+                                    '<strong class="text-blue-500">'+response[keys].notification_title+'</strong><br/>'+
+                                    '<div class=""><span>'+response[keys].notification_content+'</span></div>'+
+                                '</a>'+
+                            '</li>';
+                }
+                if(unread > 0){
+                    $('#notifications_length').html(unread);
+                    $('#bell_icon').addClass('animate-wiggle');
+                }
+            }else{
+                html = '<li class="text-center">'+
+                            '<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">'+
+                                '<span class="text-red-500">Tidak ada notifikasi.</span>'+
+                            '</a>'+
+                        '</li>';
+            }
+            $('#usernotifications ul').html(html);
+        }
+    });
 });
+$('#bell_icon_button').off('click').on('click', function(){
+    if($(this).find('#bell_icon').hasClass('animate-wiggle')){
+        $(this).find('#bell_icon').removeClass('animate-wiggle');
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "{{route('user.readnotifications')}}",
+            data: {
+                _token: "{{csrf_token()}}",
+                user_nip : "{{Auth::user()->nip}}"
+            },
+            dataType: "JSON",
+            success: function (response) {
+                $('#notifications_ring').remove();
+            }
+        });
+    }
+})
 function isNumber(value){
     return typeof value === 'number' && isFinite(value);
 }

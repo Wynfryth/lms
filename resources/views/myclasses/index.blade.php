@@ -153,7 +153,7 @@
                                         </td>
                                     </tr>
                                     <tr class="class_detail hidden">
-                                        <td colspan="100%">Hai</td>
+                                        <td colspan="100%">Nanti detail kelasnya di sini (tergantung dari academy, peserta boleh liat detail kelasnya sebelum dimulai kelasnya ato nggak)</td>
                                     </tr>
                                 @empty
                                     <tr class="row_no_data">

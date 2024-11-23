@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -70,7 +71,26 @@ class TrainersController extends Controller
         ];
         $insert_action = DB::table('tm_trainer_data')
             ->insertGetId($insert_data);
+        $user = User::where(['nip' => $request->instruktur])->first();
+        $user->assignRole('Instructor');
         if ($insert_action > 0) {
+            // kasih notifikasi untuk user tsb
+            $notification_title = "Ditambahkan sebagai instruktur";
+            $notification_content = "Anda ditambahkan sebagai Instruktur oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+            $insert_notification = [
+                'notification_title' => $notification_title,
+                'notification_content' => $notification_content,
+                'created_by' => Auth::id(),
+                'created_date' => Carbon::now()
+            ];
+            $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+            $user_target = DB::table('users')->where('nip', $request->instruktur)->first();
+            $insert_notif_receipt = [
+                'notification_id' => $notification_id,
+                'user_id' => $user_target->id,
+                'read_status' => 0
+            ];
+            DB::table('t_notification_receipt')->insert($insert_notif_receipt);
             $status = [
                 'status' => 'insert',
                 'status_message' => 'Berhasil menambah data!'
@@ -130,7 +150,31 @@ class TrainersController extends Controller
         $delete_action = DB::table('tm_trainer_data AS a')
             ->where('a.id', $request->id)
             ->update($delete_data);
+        $user_data = DB::table('tm_trainer_data AS a')->where('a.id', $request->id)->first();
+        $user = User::where(['nip' => $user_data->nip])->first();
+        $user->removeRole('Instructor');
         if ($delete_action > 0) {
+            // kasih notifikasi untuk user tsb
+            $notification_title = "Dibatalkan sebagai instruktur";
+            $notification_content = "Anda dibatalkan sebagai Instruktur oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+            $insert_notification = [
+                'notification_title' => $notification_title,
+                'notification_content' => $notification_content,
+                'created_by' => Auth::id(),
+                'created_date' => Carbon::now()
+            ];
+            $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+            $nip = DB::table('tm_trainer_data AS a')
+                ->where('a.id', $request->id)
+                ->select('a.nip')
+                ->first();
+            $user_target = DB::table('users')->where('nip', $nip->nip)->first();
+            $insert_notif_receipt = [
+                'notification_id' => $notification_id,
+                'user_id' => $user_target->id,
+                'read_status' => 0
+            ];
+            DB::table('t_notification_receipt')->insert($insert_notif_receipt);
             return $delete_action;
         } else {
             return 'failed to delete';
@@ -147,7 +191,31 @@ class TrainersController extends Controller
         $recover_action = DB::table('tm_trainer_data AS a')
             ->where('a.id', $request->id)
             ->update($recover_data);
+        $user_data = DB::table('tm_trainer_data AS a')->where('a.id', $request->id)->first();
+        $user = User::where(['nip' => $user_data->nip])->first();
+        $user->assignRole('Instructor');
         if ($recover_action > 0) {
+            // kasih notifikasi untuk user tsb
+            $notification_title = "Ditambahkan sebagai instruktur";
+            $notification_content = "Anda ditambahkan sebagai Instruktur oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+            $insert_notification = [
+                'notification_title' => $notification_title,
+                'notification_content' => $notification_content,
+                'created_by' => Auth::id(),
+                'created_date' => Carbon::now()
+            ];
+            $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+            $nip = DB::table('tm_trainer_data AS a')
+                ->where('a.id', $request->id)
+                ->select('a.nip')
+                ->first();
+            $user_target = DB::table('users')->where('nip', $nip->nip)->first();
+            $insert_notif_receipt = [
+                'notification_id' => $notification_id,
+                'user_id' => $user_target->id,
+                'read_status' => 0
+            ];
+            DB::table('t_notification_receipt')->insert($insert_notif_receipt);
             return $recover_action;
         } else {
             return 'failed to recover';

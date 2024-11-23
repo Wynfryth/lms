@@ -67,10 +67,6 @@ class UsersController extends Controller
                 $user->assignRole($role);
             }
         };
-
-        // $role = Role::where(['id' => $request->role])->first();
-        // $user->roles()->detach();
-        // $user->assignRole($role);
         return $update_action;
     }
 }

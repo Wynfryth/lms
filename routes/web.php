@@ -10,6 +10,7 @@ use App\Http\Controllers\MyScheduleController;
 use App\Http\Controllers\MySchedulesController;
 use App\Http\Controllers\MyTeachesController;
 use App\Http\Controllers\MyTeachesScheduleController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\ParticipantsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
@@ -39,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('notifications', [NotificationsController::class, 'usernotifications'])->name('user.notifications');
+    Route::post('readnotifications', [NotificationsController::class, 'readnotifications'])->name('user.readnotifications');
 
     // Employees
     Route::controller(EmployeesController::class)->group(function () {
