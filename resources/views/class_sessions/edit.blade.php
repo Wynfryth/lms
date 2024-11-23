@@ -164,6 +164,9 @@
                     <div>
                         <x-input-label for="deskripsi_sesi" :value="__('Deskripsi Sesi')" />
                         <x-textarea-input id="deskripsi_sesi" name="deskripsi_sesi" class="mt-1 block w-full">{{ $item->desc }}</x-textarea-input>
+                        @error('deskripsi_sesi')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     {{-- {{var_dump($item->nip_peserta)}}

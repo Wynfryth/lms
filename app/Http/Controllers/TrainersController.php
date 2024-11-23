@@ -72,6 +72,7 @@ class TrainersController extends Controller
         $insert_action = DB::table('tm_trainer_data')
             ->insertGetId($insert_data);
         $user = User::where(['nip' => $request->instruktur])->first();
+        $user->removeRole('Guest');
         $user->assignRole('Instructor');
         if ($insert_action > 0) {
             // kasih notifikasi untuk user tsb
@@ -84,10 +85,9 @@ class TrainersController extends Controller
                 'created_date' => Carbon::now()
             ];
             $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
-            $user_target = DB::table('users')->where('nip', $request->instruktur)->first();
             $insert_notif_receipt = [
                 'notification_id' => $notification_id,
-                'user_id' => $user_target->id,
+                'user_nip' => $request->instruktur,
                 'read_status' => 0
             ];
             DB::table('t_notification_receipt')->insert($insert_notif_receipt);
@@ -168,10 +168,9 @@ class TrainersController extends Controller
                 ->where('a.id', $request->id)
                 ->select('a.nip')
                 ->first();
-            $user_target = DB::table('users')->where('nip', $nip->nip)->first();
             $insert_notif_receipt = [
                 'notification_id' => $notification_id,
-                'user_id' => $user_target->id,
+                'user_nip' => $nip->nip,
                 'read_status' => 0
             ];
             DB::table('t_notification_receipt')->insert($insert_notif_receipt);
@@ -193,6 +192,7 @@ class TrainersController extends Controller
             ->update($recover_data);
         $user_data = DB::table('tm_trainer_data AS a')->where('a.id', $request->id)->first();
         $user = User::where(['nip' => $user_data->nip])->first();
+        $user->removeRole('Guest');
         $user->assignRole('Instructor');
         if ($recover_action > 0) {
             // kasih notifikasi untuk user tsb
@@ -209,10 +209,9 @@ class TrainersController extends Controller
                 ->where('a.id', $request->id)
                 ->select('a.nip')
                 ->first();
-            $user_target = DB::table('users')->where('nip', $nip->nip)->first();
             $insert_notif_receipt = [
                 'notification_id' => $notification_id,
-                'user_id' => $user_target->id,
+                'user_nip' => $nip->nip,
                 'read_status' => 0
             ];
             DB::table('t_notification_receipt')->insert($insert_notif_receipt);

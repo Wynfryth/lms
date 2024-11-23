@@ -40,8 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('notifications', [NotificationsController::class, 'usernotifications'])->name('user.notifications');
-    Route::post('readnotifications', [NotificationsController::class, 'readnotifications'])->name('user.readnotifications');
+    Route::get('notifications', [NotificationsController::class, 'usernotifications'])->name('user.notifications');
+    Route::get('readnotifications', [NotificationsController::class, 'readnotifications'])->name('user.readnotifications');
 
     // Employees
     Route::controller(EmployeesController::class)->group(function () {

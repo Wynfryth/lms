@@ -117,11 +117,10 @@ $(window).on('load', function() {
     var notifications;
     $.ajax({
         async: false,
-        type: "POST",
+        type: "GET",
         url: "{{route('user.notifications')}}",
         data: {
-            _token: "{{csrf_token()}}",
-            user_nip : "{{Auth::user()->nip}}"
+            _token: "{{csrf_token()}}"
         },
         dataType: "JSON",
         success: function (response) {
@@ -164,11 +163,10 @@ $('#bell_icon_button').off('click').on('click', function(){
         $(this).find('#bell_icon').removeClass('animate-wiggle');
         $.ajax({
             async: false,
-            type: "POST",
+            type: "GET",
             url: "{{route('user.readnotifications')}}",
             data: {
-                _token: "{{csrf_token()}}",
-                user_nip : "{{Auth::user()->nip}}"
+                _token: "{{csrf_token()}}"
             },
             dataType: "JSON",
             success: function (response) {

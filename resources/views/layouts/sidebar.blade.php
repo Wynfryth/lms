@@ -73,7 +73,7 @@
                                 {{ Auth::user()->name }}
                             </p>
                             <p class="text-sm text-white dark:text-white" role="none">
-                                {{ Auth::user()->roles->pluck('name')[0] }}
+                                {{ Auth::user()->roles->pluck('name')->join(','); }}
                             </p>
                             <p class="text-sm font-medium text-white truncate dark:text-gray-300" role="none">
                                 {{ Auth::user()->email }}

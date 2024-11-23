@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -139,6 +140,22 @@ class ClassSessionsController extends Controller
         ];
         $insert_action = DB::table('t_class_session')
             ->insertGetId($insert_data);
+        $notification_title = "Ditambahkan ke Sesi Kelas \"" . $request->nama_sesi . "\" sebagai Instruktur";
+        $notification_content = "Anda ditambahkan sebagai Instruktur ke Sesi Kelas \"" . $request->nama_sesi . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+        $insert_notification = [
+            'notification_title' => $notification_title,
+            'notification_content' => $notification_content,
+            'created_by' => Auth::id(),
+            'created_date' => Carbon::now()
+        ];
+        $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+        $trainer_data = DB::table('tm_trainer_data AS a')->where('a.id', $request->instruktur)->first();
+        $insert_notif_receipt = [
+            'notification_id' => $notification_id,
+            'user_nip' => $trainer_data->nip,
+            'read_status' => 0
+        ];
+        DB::table('t_notification_receipt')->insert($insert_notif_receipt);
         if (count($request->peserta) > 0) {
             foreach ($request->peserta as $item) {
                 $insert_enrollment_data = [
@@ -151,6 +168,26 @@ class ClassSessionsController extends Controller
                 ];
                 $insert_enrollment = DB::table('tr_enrollment')
                     ->insertGetId($insert_enrollment_data);
+                $user = User::where(['nip' => $item])->first();
+                if ($user) {
+                    $user->removeRole('Guest');
+                    $user->assignRole('Student');
+                }
+                $notification_title = "Ditambahkan ke Sesi Kelas \"" . $request->nama_sesi . "\" sebagai Peserta";
+                $notification_content = "Anda ditambahkan sebagai Peserta ke Sesi Kelas \"" . $request->nama_sesi . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+                $insert_notification = [
+                    'notification_title' => $notification_title,
+                    'notification_content' => $notification_content,
+                    'created_by' => Auth::id(),
+                    'created_date' => Carbon::now()
+                ];
+                $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+                $insert_notif_receipt = [
+                    'notification_id' => $notification_id,
+                    'user_nip' => $item,
+                    'read_status' => 0
+                ];
+                DB::table('t_notification_receipt')->insert($insert_notif_receipt);
             }
         }
         if ($insert_action > 0) {
@@ -270,6 +307,52 @@ class ClassSessionsController extends Controller
         $delete_action = DB::table('t_class_session AS a')
             ->where('a.id', $request->id)
             ->update($delete_data);
+        $class_session = DB::table('t_class_session AS a')
+            ->where('a.id', $request->id)
+            ->first();
+        // notif trainer
+        $trainer = DB::table('tm_trainer_data AS a')
+            ->where('a.id', $class_session->trainer_id)
+            ->first();
+        $notification_title = "Sesi Kelas \"" . $class_session->session_name . "\" dibatalkan";
+        $notification_content = "Sesi Kelas \"" . $class_session->session_name . "\" anda sebagai instruktur dibatalkan oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+        $insert_notification = [
+            'notification_title' => $notification_title,
+            'notification_content' => $notification_content,
+            'created_by' => Auth::id(),
+            'created_date' => Carbon::now()
+        ];
+        $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+        $insert_notif_receipt = [
+            'notification_id' => $notification_id,
+            'user_nip' => $trainer->nip,
+            'read_status' => 0
+        ];
+        DB::table('t_notification_receipt')->insert($insert_notif_receipt);
+        // notif peserta
+        $students = DB::table('t_enrollment AS a')
+            ->where('a.class_session_id', $request->id)
+            ->get();
+        if ($students->isNotEmpty()) {
+            foreach ($students as $student) {
+                $user = User::where(['nip' => $student->emp_nip])->first();
+                $notification_title = "Sesi Kelas \"" . $class_session->session_name  . "\" dibatalkan";
+                $notification_content = "Sesi Kelas \"" . $class_session->session_name . "\" anda sebagai peserta dibatalkan oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+                $insert_notification = [
+                    'notification_title' => $notification_title,
+                    'notification_content' => $notification_content,
+                    'created_by' => Auth::id(),
+                    'created_date' => Carbon::now()
+                ];
+                $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+                $insert_notif_receipt = [
+                    'notification_id' => $notification_id,
+                    'user_nip' => $student->emp_nip,
+                    'read_status' => 0
+                ];
+                DB::table('t_notification_receipt')->insert($insert_notif_receipt);
+            }
+        }
         if ($delete_action > 0) {
             return $delete_action;
         } else {
@@ -287,6 +370,52 @@ class ClassSessionsController extends Controller
         $recover_action = DB::table('t_class_session AS a')
             ->where('a.id', $request->id)
             ->update($recover_data);
+        $class_session = DB::table('t_class_session AS a')
+            ->where('a.id', $request->id)
+            ->first();
+        // notif trainer
+        $trainer = DB::table('tm_trainer_data AS a')
+            ->where('a.id', $class_session->trainer_id)
+            ->first();
+        $notification_title = "Sesi Kelas \"" . $class_session->session_name . "\" diberlakukan kembali";
+        $notification_content = "Sesi Kelas \"" . $class_session->session_name . "\" anda sebagai instruktur diberlakukan kembali oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+        $insert_notification = [
+            'notification_title' => $notification_title,
+            'notification_content' => $notification_content,
+            'created_by' => Auth::id(),
+            'created_date' => Carbon::now()
+        ];
+        $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+        $insert_notif_receipt = [
+            'notification_id' => $notification_id,
+            'user_nip' => $trainer->nip,
+            'read_status' => 0
+        ];
+        DB::table('t_notification_receipt')->insert($insert_notif_receipt);
+        // notif peserta
+        $students = DB::table('t_enrollment AS a')
+            ->where('a.class_session_id', $request->id)
+            ->get();
+        if ($students->isNotEmpty()) {
+            foreach ($students as $student) {
+                $user = User::where(['nip' => $student->emp_nip])->first();
+                $notification_title = "Sesi Kelas \"" . $class_session->session_name  . "\" diberlakukan kembali";
+                $notification_content = "Sesi Kelas \"" . $class_session->session_name . "\" anda sebagai peserta diberlakukan kembali oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+                $insert_notification = [
+                    'notification_title' => $notification_title,
+                    'notification_content' => $notification_content,
+                    'created_by' => Auth::id(),
+                    'created_date' => Carbon::now()
+                ];
+                $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+                $insert_notif_receipt = [
+                    'notification_id' => $notification_id,
+                    'user_nip' => $student->emp_nip,
+                    'read_status' => 0
+                ];
+                DB::table('t_notification_receipt')->insert($insert_notif_receipt);
+            }
+        }
         if ($recover_action > 0) {
             return $recover_action;
         } else {
