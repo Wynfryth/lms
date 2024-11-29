@@ -63,7 +63,7 @@
                                     Pilih Kategori ...
                                 </option>
                                 @forelse ($testcats as $key => $value)
-                                    <option value="{{ $value->id }}" {{ $value->id == $item->id ? 'selected' : '' }}>
+                                    <option value="{{ $value->id }}" {{ $value->id == $item->test_cat_id ? 'selected' : '' }}>
                                         {{ $value->test_category }}
                                     </option>
                                 @empty
@@ -72,6 +72,27 @@
                             </x-slot>
                         </x-select-option>
                         @error('kategori_tes')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div id="materi_div" class="my-1 hidden">
+                        <x-input-label for="materi" :value="__('Untuk Materi')"></x-input-label>
+                        <x-select-option id="materi" name="materi">
+                            <x-slot name="options">
+                                <option class="disabled" value="null" selected disabled>
+                                    Pilih Materi...
+                                </option>
+                                @forelse ($studies as $key => $value)
+                                    <option value="{{ $value->id }}" {{ $value->id == $item->study_materials_id ? 'selected' : '' }}>
+                                        {{ $value->study_material_title }}
+                                    </option>
+                                @empty
+                                    {{-- do nothing --}}
+                                @endforelse
+                            </x-slot>
+                        </x-select-option>
+                        @error('materi')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
@@ -111,3 +132,16 @@
                     });
 </script>
 @endif
+<script>
+    $(document).ready(function () {
+        $(document).find('[name="kategori_tes"]').trigger('change');
+    });
+    $(document).off('change', '[name="kategori_tes"]').on('change', '[name="kategori_tes"]', function(){
+        var kategori_tes = $(this).val();
+        if(kategori_tes != '1'){
+            $('#materi_div').removeClass('hidden');
+        }else{
+            $('#materi_div').addClass('hidden');
+        }
+    })
+</script>

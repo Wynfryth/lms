@@ -19,48 +19,22 @@ class ClassesController extends Controller
     public function index($classes_kywd = null)
     {
         $classes = DB::table('t_class_header AS a')
-            ->select('a.id', 'a.class_title', 'a.class_desc', 'a.class_period', 'a.start_eff_date', 'a.end_eff_date', 'b.class_category', 'a.is_active')
-            ->selectRaw(DB::raw('GROUP_CONCAT(d.id) AS id_studies, GROUP_CONCAT(d.study_material_title) AS studies'))
+            ->select('a.id', 'a.class_title', 'a.class_desc', 'b.class_category', 'a.is_active')
+            ->selectRaw(DB::raw('GROUP_CONCAT(d.study_material_title) AS studies, GROUP_CONCAT(d.id) AS id_studies, COUNT(d.study_material_title) AS jumlah_materi'))
             ->leftJoin('tm_class_category AS b', 'a.class_category_id', '=', 'b.id')
-            ->leftJoin('class_has_studies AS c', 'c.id_class_header', '=', 'a.id')
-            ->leftJoin('tm_study_material_header AS d', 'd.id', '=', 'c.id_study_material_header')
-            // ->where('a.is_active', 1)
+            ->leftJoin('class_has_materials AS c', 'c.id_class_header', '=', 'a.id')
+            ->leftJoin('tm_study_material_header AS d', 'd.id', '=', 'c.id_material')
             ->groupBy('a.id')
             ->orderByDesc('a.id');
         if ($classes_kywd != null) {
             $any_params = [
                 'a.class_title',
                 'a.class_desc',
-                'a.class_period',
-                'a.start_eff_date',
-                'a.end_eff_date',
                 'b.class_category'
             ];
             $classes->whereAny($any_params, 'like', '%' . $classes_kywd . '%');
         }
         $classes = $classes->paginate(10);
-
-        $bulan = [
-            'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember',
-        ];
-
-        foreach ($classes as $index => $item) {
-            $month_number = intval(explode('-', $classes[$index]->class_period)[1]) - 1;
-            $classes[$index]->class_period = $bulan[$month_number] . ' ' . explode('-', $classes[$index]->class_period)[0];
-            $classes[$index]->start_eff_date = date('d-m-Y', strtotime($classes[$index]->start_eff_date));
-            $classes[$index]->end_eff_date = date('d-m-Y', strtotime($classes[$index]->end_eff_date));
-        }
         return view('classes.index', compact('classes', 'classes_kywd'));
     }
 
@@ -70,6 +44,7 @@ class ClassesController extends Controller
     public function create()
     {
         $kategori = DB::table('tm_class_category AS a')
+            ->leftJoin('tm_class_category_type AS b', 'b.id', '=', 'a.class_category_type_id')
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'asc')
             ->get();
@@ -80,10 +55,35 @@ class ClassesController extends Controller
     {
         $keyword = $request->term['term'];
         $studies = DB::table('tm_study_material_header AS a')
-            ->select('a.id', 'a.study_material_title', 'a.study_material_desc')
-            ->where('a.study_material_title', 'like', '%' . $keyword . '%')
+            ->select('a.id', 'a.study_material_title')
+            ->selectRaw(DB::raw('IF(GROUP_CONCAT(d.id) IS NOT NULL, GROUP_CONCAT(d.id), "-") AS pretest_postest, "Materi" AS tipe'))
+            ->leftJoin('t_test_with_materials_list AS b', 'b.study_materials_id', '=', 'a.id')
+            ->leftJoin('tm_test AS c', 'c.id', '=', 'b.test_id')
+            ->leftJoin('tm_test_category AS d', 'd.id', '=', 'c.test_cat_id')
+            ->where([
+                ['a.is_active', '=', 1],
+                ['a.study_material_title', 'like', '%' . $keyword . '%']
+            ])
+            ->groupBy('a.id')
             ->get();
         return $studies;
+    }
+
+    public function pretests_selectpicker(Request $request)
+    {
+        $keyword = $request->term['term'];
+        $tests = DB::table('tm_test AS a')
+            ->select('a.id', 'a.test_name')
+            ->selectRaw('"Tes" AS tipe, COUNT(b.question_id) AS jumlah_soal')
+            ->leftJoin('test_has_questions AS b', 'b.test_id', '=', 'a.id')
+            ->where([
+                ['a.is_active', '=', 1],
+                ['a.test_cat_id', '=', 1],
+                ['a.test_name', 'like', '%' . $keyword . '%']
+            ])
+            ->groupBy('a.id')
+            ->get();
+        return $tests;
     }
 
     /**
@@ -96,20 +96,10 @@ class ClassesController extends Controller
             [
                 'nama_kelas' => 'required',
                 'kategori_kelas' => 'required',
-                'bulan_periode_kelas' => 'required',
-                'tahun_periode_kelas' => 'required',
-                'periode_efektif_kelas_mulai' => 'required',
-                'periode_efektif_kelas_sampai' => 'required',
-                // 'tc_kelas' => 'required',
             ],
             [
                 'nama_kelas.required' => 'Nama kelas belum terisi.',
                 'kategori_kelas.required' => 'Kategori kelas belum terisi.',
-                'bulan_periode_kelas.required' => 'Bulan periode kelas belum terisi.',
-                'tahun_periode_kelas.required' => 'Tahun periode kelas belum terisi.',
-                'periode_efektif_kelas_mulai.required' => 'Periode efektif kelas dari belum terisi.',
-                'periode_efektif_kelas_sampai.required' => 'Periode efektif kelas sampai belum terisi.',
-                // 'tc_kelas.required' => 'Pusat pelatihan belum terisi.',
             ]
         );
 
@@ -117,31 +107,34 @@ class ClassesController extends Controller
             return redirect()->back()->withErrors($validator)->withInput($request->all());
         }
 
-        $class_period = $request->tahun_periode_kelas . '-' . $request->bulan_periode_kelas . '-01';
-        $start_eff_date = date('Y-m-d', strtotime($request->periode_efektif_kelas_mulai));
-        $end_eff_date = date('Y-m-d', strtotime($request->periode_efektif_kelas_sampai));
-
         $insert_data = [
             'class_title' => $request->nama_kelas,
             'class_desc' => $request->deskripsi_kelas,
             'class_category_id' => $request->kategori_kelas,
-            'class_period' => $class_period,
             'is_active' => 1,
-            'start_eff_date' => $start_eff_date,
-            'end_eff_date' => $end_eff_date,
             'created_by' => Auth::id(),
             'created_date' => Carbon::now()
         ];
         $insert_action = DB::table('t_class_header')
             ->insertGetId($insert_data);
-        if (count($request->studies) > 0) {
-            foreach ($request->studies as $item) {
-                $insert_class_has_studies_data = [
+        if (count($request->materials) > 0) {
+            foreach ($request->materials as $index => $item) {
+                switch ($request->material_types[$index]) {
+                    case "Materi":
+                        $material_type = 1;
+                        break;
+                    case "Tes":
+                        $material_type = 2;
+                        break;
+                }
+                $insert_class_has_materials_data = [
                     'id_class_header' => $insert_action,
-                    'id_study_material_header' => $item,
+                    'id_material' => $item,
+                    'material_type' => $material_type,
+                    'material_order' => $index + 1,
                 ];
-                $insert_class_has_studies = DB::table('class_has_studies')
-                    ->insertGetId($insert_class_has_studies_data);
+                $insert_class_has_materials = DB::table('class_has_materials')
+                    ->insertGetId($insert_class_has_materials_data);
             }
         }
         if ($insert_action > 0) {
@@ -166,15 +159,46 @@ class ClassesController extends Controller
      */
     public function edit($id)
     {
-        $item = DB::table('t_class_header AS a')
-            ->select('a.*')
-            ->selectRaw(DB::raw('GROUP_CONCAT(c.id) AS id_studies, GROUP_CONCAT(c.study_material_title) AS studies'))
-            ->leftJoin('class_has_studies AS b', 'b.id_class_header', '=', 'a.id')
-            ->leftJoin('tm_study_material_header AS c', 'c.id', '=', 'b.id_study_material_header')
+        $class_type = DB::table('t_class_header AS a')
+            ->leftJoin('tm_class_category AS b', 'b.id', '=', 'a.class_category_id')
+            ->leftJoin('tm_class_category_type AS c', 'c.id', '=', 'b.class_category_type_id')
             ->where('a.id', $id)
-            ->groupBy('a.id')
             ->first();
+        switch ($class_type->category_type) {
+            case "Training Class":
+                $item = DB::table('t_class_header AS a')
+                    ->select('a.*', 'e.category_type')
+                    ->selectRaw(DB::raw('GROUP_CONCAT(c.id) AS id_materials, GROUP_CONCAT(c.study_material_title) AS studies, 0 AS jumlah_soal'))
+                    ->leftJoin('class_has_materials AS b', 'b.id_class_header', '=', 'a.id')
+                    ->leftJoin('tm_study_material_header AS c', 'c.id', '=', 'b.id_material')
+                    ->leftJoin('tm_class_category AS d', 'd.id', '=', 'a.class_category_id')
+                    ->leftJoin('tm_class_category_type AS e', 'e.id', '=', 'd.class_category_type_id')
+                    ->where('a.id', $id)
+                    ->groupBy('a.id')
+                    ->first();
+                break;
+            case "Pre-test Class":
+                $item = DB::table('t_class_header AS a')
+                    ->select('a.*', 'e.category_type')
+                    ->selectRaw(DB::raw('GROUP_CONCAT(c.id) AS id_materials, GROUP_CONCAT(c.test_name) AS studies, GROUP_CONCAT(f.jumlah_soal) AS jumlah_soal'))
+                    ->leftJoin('class_has_materials AS b', 'b.id_class_header', '=', 'a.id')
+                    ->leftJoin('tm_test AS c', 'c.id', '=', 'b.id_material')
+                    ->leftJoin('tm_class_category AS d', 'd.id', '=', 'a.class_category_id')
+                    ->leftJoin('tm_class_category_type AS e', 'e.id', '=', 'd.class_category_type_id')
+                    ->leftJoin(DB::raw('(SELECT a.id, COUNT(b.question_id) AS jumlah_soal
+                                        FROM tm_test AS a
+                                        LEFT JOIN test_has_questions AS b ON b.test_id = a.id
+                                        GROUP BY a.id
+                                    ) AS f'), 'f.id', '=', 'c.id')
+                    ->leftJoin('test_has_questions AS f', 'f.test_id', '=', 'a.id')
+                    ->where('a.id', $id)
+                    ->groupBy('a.id')
+                    ->first();
+                break;
+        }
         $kategori = DB::table('tm_class_category AS a')
+            ->select('a.id', 'a.class_category', 'b.category_type')
+            ->leftJoin('tm_class_category_type AS b', 'b.id', '=', 'a.class_category_type_id')
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'asc')
             ->get();
@@ -191,51 +215,47 @@ class ClassesController extends Controller
             [
                 'nama_kelas' => 'required',
                 'kategori_kelas' => 'required',
-                'bulan_periode_kelas' => 'required',
-                'tahun_periode_kelas' => 'required',
-                'periode_efektif_kelas_mulai' => 'required',
-                'periode_efektif_kelas_sampai' => 'required',
             ],
             [
                 'nama_kelas.required' => 'Nama kelas belum terisi.',
                 'kategori_kelas.required' => 'Kategori kelas belum terisi.',
-                'bulan_periode_kelas.required' => 'Bulan periode kelas belum terisi.',
-                'tahun_periode_kelas.required' => 'Tahun periode kelas belum terisi.',
-                'periode_efektif_kelas_mulai.required' => 'Periode efektif kelas dari belum terisi.',
-                'periode_efektif_kelas_sampai.required' => 'Periode efektif kelas sampai belum terisi.',
             ]
         );
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput($request->all());
         }
-        $class_period = $request->tahun_periode_kelas . '-' . $request->bulan_periode_kelas . '-01';
-        $start_eff_date = date('Y-m-d', strtotime($request->periode_efektif_kelas_mulai));
-        $end_eff_date = date('Y-m-d', strtotime($request->periode_efektif_kelas_sampai));
         $update_data = [
             'class_title' => $request->nama_kelas,
             'class_desc' => $request->deskripsi_kelas,
             'class_category_id' => $request->kategori_kelas,
-            'class_period' => $class_period,
             'is_active' => 1,
-            'start_eff_date' => $start_eff_date,
-            'end_eff_date' => $end_eff_date,
             'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
         $update_action = DB::table('t_class_header AS a')
             ->where('a.id', $id)
             ->update($update_data);
-        $delete_class_has_studies = DB::table('class_has_studies')
+        $delete_class_has_materials = DB::table('class_has_materials')
             ->where('id_class_header', $id)
             ->delete();
-        if (count($request->studies) > 0) {
-            foreach ($request->studies as $item) {
-                $update_class_has_studies_data = [
+        if (count($request->materials) > 0) {
+            foreach ($request->materials as $index => $item) {
+                switch ($request->material_types[$index]) {
+                    case "Materi":
+                        $material_type = 1;
+                        break;
+                    case "Tes":
+                        $material_type = 2;
+                        break;
+                }
+                $update_class_has_materials_data = [
                     'id_class_header' => $id,
-                    'id_study_material_header' => $item,
+                    'id_material' => $item,
+                    'material_type' => $material_type,
+                    'material_order' => $index + 1,
                 ];
-                $update_class_has_studies = DB::table('class_has_studies')
-                    ->insertGetId($update_class_has_studies_data);
+                $update_class_has_materials = DB::table('class_has_materials')
+                    ->insertGetId($update_class_has_materials_data);
             }
         }
         if ($update_action > 0) {

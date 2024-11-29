@@ -16,17 +16,17 @@
                 <div class="shrink-0 ms-2 flex items-center">
                     <a href="{{ route('dashboard') }}" class="lg:hidden sm:block">
                         <div class="w-full border border-white rounded-lg hover:shadow-sm hover:shadow-black">
-                            <img class="flex dark:hidden" src="{{url('/gacoan-academy-lms-logo-removebg.png')}}" width="150" height="100" alt="">
-                            <img class="hidden dark:flex" src="{{url('/gacoan-academy-lms-logo-white-title-removebg.png')}}" width="150" height="100" alt="">
+                            <img class="flex dark:hidden" src="{{asset('/gacoan-academy-lms-logo-removebg.png')}}" width="150" height="100" alt="">
+                            <img class="hidden dark:flex" src="{{asset('/gacoan-academy-lms-logo-white-title-removebg.png')}}" width="150" height="100" alt="">
                         </div>
                     </a>
                     <a href="{{ route('dashboard') }}" class="hidden lg:block">
                         <div class="w-full border border-white rounded-lg hover:shadow-sm hover:shadow-black">
-                            <img class="flex dark:hidden" src="{{url('/gacoan-academy-logo.png')}}" width="50" height="25" alt="">
-                            <img class="hidden dark:flex" src="{{url('/gacoan-academy-logo.png')}}" width="50" height="25" alt="">
+                            <img class="flex dark:hidden" src="{{asset('/gacoan-academy-logo.png')}}" width="50" height="25" alt="">
+                            <img class="hidden dark:flex" src="{{asset('/gacoan-academy-logo.png')}}" width="50" height="25" alt="">
                         </div>
                     </a>
-                    <span class="hidden lg:block ms-1 text-bookmark-blue self-center text-xl lg:text-2xl whitespace-nowrap dark:text-white font-Outfit">Learning Management System</span>
+                    <span class="hidden lg:block ms-1 text-bookmark-blue self-center text-xl lg:text-2xl whitespace-nowrap dark:text-white font-Outfit"><b style="color: #d52b85;">L</b>earning <b style="color: #d52b85;">M</b>anagement <b style="color: #d52b85;">S</b>ystem</span>
                 </div>
                 {{-- <a href="https://flowbite.com" class="flex ms-2 md:me-24">
                     <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />

@@ -51,7 +51,7 @@ class StudyDetController extends Controller
             'is_active' => 1,
             'created_by' => Auth::id(),
             'created_date' => Carbon::now(),
-            'scoring_weight' => $request->bobot_pembelajaran
+            // 'scoring_weight' => $request->bobot_pembelajaran
         ];
         $insert_action = DB::table('tm_study_material_detail')
             ->insertGetId($insert_data);

@@ -14,9 +14,15 @@ class TestsController extends Controller
     public function index($tests_kywd = null)
     {
         $tests = DB::table('tm_test AS a')
-            ->select('a.id', 'b.test_category', 'a.test_code', 'a.test_name', 'b.test_category', 'a.test_desc', 'a.is_active')
+            ->select('a.id', 'b.test_category', 'a.test_code', 'a.test_name', 'study_material_title', 'a.test_desc', 'a.is_active')
+            ->selectRaw(DB::raw('COUNT(d.id) AS jumlah_soal, IF(SUM(d.points) IS NULL, 0, SUM(d.points)) AS total_poin'))
             ->leftJoin('tm_test_category AS b', 'b.id', '=', 'a.test_cat_id')
-            ->orderByDesc('a.id');
+            ->leftJoin('test_has_questions AS c', 'c.test_id', '=', 'a.id')
+            ->leftJoin('tm_question_bank AS d', 'd.id', '=', 'c.question_id')
+            ->leftJoin('t_test_with_materials_list AS e', 'e.test_id', '=', 'a.id')
+            ->leftJoin('tm_study_material_header AS f', 'f.id', '=', 'e.study_materials_id')
+            ->orderByDesc('a.id')
+            ->groupBy('a.id');
         if ($tests_kywd != null) {
             $any_params = [
                 'b.test_category',
@@ -36,7 +42,11 @@ class TestsController extends Controller
             ->select('a.id', 'a.test_category')
             ->orderBy('a.id')
             ->get();
-        return view('tests_view.create', compact('testcats'));
+        $studies = DB::table('tm_study_material_header AS a')
+            ->select('a.id', 'a.study_material_title')
+            ->orderBy('a.id')
+            ->get();
+        return view('tests_view.create', compact('testcats', 'studies'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -67,6 +77,17 @@ class TestsController extends Controller
         ];
         $insert_action = DB::table('tm_test')
             ->insertGetId($insert_data);
+        // menautkan ke study material
+        if ($request->kategori_tes != 1) {
+            $insert_test_in_material_data = [
+                'test_id' => $insert_action,
+                'study_materials_id' => $request->materi,
+                'created_by' => Auth::id(),
+                'created_date' => Carbon::now()
+            ];
+            $insert_test_in_material_action = DB::table('t_test_with_materials_list')
+                ->insertGetId($insert_test_in_material_data);
+        }
         if ($insert_action > 0) {
             $status = [
                 'status' => 'insert',
@@ -79,15 +100,20 @@ class TestsController extends Controller
     public function edit($id)
     {
         $item = DB::table('tm_test AS a')
-            ->select('a.id', 'b.test_category', 'a.test_code', 'a.test_name', 'a.test_desc', 'a.is_active')
+            ->select('a.id', 'a.test_cat_id', 'a.test_code', 'a.test_name', 'a.test_desc', 'a.is_active', 'c.study_materials_id')
             ->leftJoin('tm_test_category AS b', 'b.id', '=', 'a.test_cat_id')
+            ->leftJoin('t_test_with_materials_list AS c', 'c.test_id', '=', 'a.id')
             ->where('a.id', $id)
             ->first();
         $testcats = DB::table('tm_test_category AS a')
             ->select('a.id', 'a.test_category')
             ->orderBy('a.id')
             ->get();
-        return view('tests_view.edit', compact('item', 'testcats'));
+        $studies = DB::table('tm_study_material_header AS a')
+            ->select('a.id', 'a.study_material_title')
+            ->orderBy('a.id')
+            ->get();
+        return view('tests_view.edit', compact('item', 'testcats', 'studies'));
     }
 
     public function update(Request $request, $id): RedirectResponse
@@ -116,8 +142,25 @@ class TestsController extends Controller
             'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
-        $update_action = DB::table('tm_test')
+        $update_action = DB::table('tm_test AS a')
+            ->where('a.id', $id)
             ->update($update_data);
+        // menautkan ke study material
+        if ($request->kategori_tes != 1) {
+            $update_test_in_material_data = [
+                'test_id' => $update_action,
+                'study_materials_id' => $request->materi,
+                'created_by' => Auth::id(),
+                'created_date' => Carbon::now()
+            ];
+            $update_test_in_material_action = DB::table('t_test_with_materials_list')
+                ->where(['test_id' => $id, 'study_materials_id' => $request->materi])
+                ->update($update_test_in_material_data);
+        } else {
+            DB::table('t_test_with_materials_list')
+                ->where(['test_id' => $id, 'study_materials_id' => $request->materi])
+                ->delete();
+        }
         if ($update_action > 0) {
             $status = [
                 'status' => 'update',

@@ -19,7 +19,8 @@ class ClassCatController extends Controller
     public function index($classcat_kywd = null)
     {
         $classcat = DB::table('tm_class_category AS a')
-            ->select('a.id', 'a.class_category', 'a.desc', 'a.is_active')
+            ->select('a.id', 'a.class_category', 'a.desc', 'a.is_active', 'b.category_type')
+            ->leftJoin('tm_class_category_type AS b', 'b.id', '=', 'a.class_category_type_id')
             // ->where('a.is_active', 1)
             ->orderBy('a.id', 'desc');
         if ($classcat_kywd != null) {

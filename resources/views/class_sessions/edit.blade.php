@@ -189,6 +189,15 @@
                                         <th scope="col" class="px-6 py-3 text-center">
                                             Nama Peserta
                                         </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            NIP
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Divisi
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Status
+                                        </th>
                                         @canany(['edit sesi kelas','delete sesi kelas'])
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
                                             Aksi
@@ -230,7 +239,7 @@
                 dataType: "JSON",
                 type: "POST",
                 quietMillis: 50,
-                delay: 250,
+                delay: 500,
                 data: function (term) {
                     return {
                         term: term,
@@ -252,10 +261,85 @@
         });
         var nip_peserta = "{{$item->nip_peserta}}".split(',');
         var peserta = "{{$item->peserta}}".split(',');
+        var divisi = "{{$item->divisi}}".split(',');
+        var status_kepesertaan = "{{$item->status_kepesertaan}}".split(',');
         // console.log(nip_peserta);
         for(var i=0; i<nip_peserta.length; i++){
             $('button#add_participant').trigger('click');
-            $('#participant_table tbody tr:last').find('select[name="peserta[]"]').append('<option value="'+nip_peserta[i]+'">'+peserta[i]+'</option>');
+            $('#participant_table tbody tr:last').find('select[name="peserta[]"]').next('span').remove();
+            $('#participant_table tbody tr:last').find('select[name="peserta[]"]').replaceWith(peserta[i]);
+            $('#participant_table tbody tr:last td:eq(2)').html(nip_peserta[i]);
+            $('#participant_table tbody tr:last td:eq(3)').html(divisi[i]);
+            $('#participant_table tbody tr:last td:eq(4)').html(status_kepesertaan[i]);
+            $('#participant_table tbody tr:last').find('button.remove_row').replaceWith('<button type="button" class="font-medium text-red-400 dark:text-red-200 hover:underline cancel_student">Batal</button>');
+
+            var this_row = $('#participant_table tbody tr:last td:eq(4)').closest('tr');
+            switch(status_kepesertaan[i]){
+                case "CANCELLED":
+                    this_row.addClass('bg-red-200');
+                    this_row.find('.cancel_student').remove();
+                break;
+            }
         }
+    });
+    $(document).off('click', '.cancel_student').on('click', '.cancel_student', function(){
+        var nip = $(this).closest('tr').find('td:eq(2)').html();
+        var class_session_id = '{{$item->id}}';
+        var this_row = $(this).closest('tr');
+        Swal.fire({
+            icon: "question",
+            title: "Yakin?",
+            text: "Yakin untuk membatalkan peserta di sesi kelas ini?",
+            showConfirmButton: true,
+            confirmButtonText: "Ya",
+            showDenyButton: true,
+            denyButtonText: "Tidak",
+            showDenyButton: true,
+            allowOutsideClick: false
+        })
+        .then((feedback)=>{
+            if(feedback.isConfirmed){
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    url: "{{route('class_sessions.cancel_student')}}",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        nip: nip,
+                        class_session_id: class_session_id
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response);
+                        if(response == 1){
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil",
+                                text: "Berhasil membatalkan peserta",
+                                showConfirmButton: true,
+                                confirmButtonText: "Ya",
+                                allowOutsideClick: false
+                            })
+                            .then((feedback)=>{
+                                if(feedback.isConfirmed){
+                                    this_row.addClass('bg-red-200');
+                                    this_row.find('td:eq(4)').html('CANCELLED');
+                                    this_row.find('.cancel_student').remove();
+                                }
+                            })
+                        }
+                    }
+                });
+            }
+        });
+    });
+    $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
+        var nip = $(this).val();
+        var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+        var divisi = data.division;
+
+        $(this).closest('tr').find('td:eq(2)').html(nip);
+        $(this).closest('tr').find('td:eq(3)').html(divisi);
+        $(this).closest('tr').find('td:eq(4)').html('REGISTERED');
     });
 </script>

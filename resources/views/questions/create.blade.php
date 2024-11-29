@@ -41,14 +41,14 @@
                     @csrf
                     {{-- @method('put') --}}
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="my-1">
-                            <x-input-label for="test_id" :value="__('Tes')"></x-input-label>
-                            <x-select-option id="test_id" name="test_id">
+                    <div class="grid lg:grid-cols-4 sm:grid-cols-1 gap-4">
+                        <div class="my-1 mt-3 col-span-3">
+                            <x-input-label for="test_ids" :value="__('Tes')"></x-input-label>
+                            <x-select-option id="test_ids" name="test_ids[]" multiple="multiple" class="h-10">
                                 <x-slot name="options">
-                                    <option class="disabled" value="null" selected disabled>
+                                    {{-- <option class="disabled" value="null" selected disabled>
                                         Pilih Tes ...
-                                    </option>
+                                    </option> --}}
                                     @forelse ($tests as $index => $item)
                                         <option value="{{ $item->id }}" {{ old('test_id') == $item->id ? 'selected' : '' }}>
                                             {{ $item->test_name }}
@@ -58,7 +58,25 @@
                                     @endforelse
                                 </x-slot>
                             </x-select-option>
-                            @error('test_id')
+                            @error('test_ids')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="my-1">
+                            <x-input-label for="points" :value="__('Poin')"></x-input-label>
+                            <x-select-option id="points" name="points">
+                                <x-slot name="options">
+                                    <option class="disabled" value="null" selected disabled>
+                                        Pilih Jumlah Poin ...
+                                    </option>
+                                    @for ($i = 1; $i <= 20; $i++)
+                                        <option value="{{ $i }}" {{ old('points') == $item->id ? 'selected' : '' }}>
+                                            {{ $i }} Poin
+                                        </option>
+                                    @endfor
+                                </x-slot>
+                            </x-select-option>
+                            @error('points')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
@@ -118,3 +136,13 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+    $(document).ready(function () {
+        $('[name="points"]').val(10);
+        $('select[name="test_ids[]"]').select2({
+            placeholder: 'Pilih Tes',
+            allowClear: true,
+            width: 'resolve'
+        })
+    });
+</script>

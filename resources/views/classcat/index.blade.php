@@ -59,6 +59,9 @@
                                         Nama
                                     </th>
                                     <th scope="col" class="px-6 py-3">
+                                        Tipe Kategori
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
                                         Deskripsi
                                     </th>
                                     <th scope="col" class="px-6 py-3">
@@ -79,6 +82,9 @@
                                         </th>
                                         <td class="px-6 py-4">
                                             {{ $value->class_category }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $value->category_type }}
                                         </td>
                                         <td class="px-6 py-4">
                                             {{ $value->desc }}

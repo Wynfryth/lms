@@ -1,8 +1,3 @@
-<style>
-    #detail_table tbody tr{
-        cursor: pointer;
-    }
-</style>
 <x-app-layout>
     <x-slot name="header">
         <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700" aria-label="Breadcrumb">
@@ -49,8 +44,6 @@
                         <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="" width="1%">
-                                    </th>
                                     <th scope="col" class="px-6 py-3">
                                         #
                                     </th>
@@ -69,16 +62,13 @@
                                     <th scope="col" class="px-6 py-3">
                                         Aksi
                                     </th>
+                                    <th scope="col" class="" width="1%">
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($participants as $index => $value)
-                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700" onClick="toggleDetail(this)">
-                                        <td>
-                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 10 4 4 4-4"/>
-                                            </svg>
-                                        </td>
+                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {{ $index + $participants->firstItem() }}
                                         </th>
@@ -96,6 +86,13 @@
                                         </td>
                                         <td class="px-6 py-4">
 
+                                        </td>
+                                        <td>
+                                            <button type="button" class="text-white bg-white hover:bg-blue-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick="toggleDetail(this)">
+                                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 10 4 4 4-4"/>
+                                                </svg>
+                                            </button>
                                         </td>
                                     </tr>
                                     <tr class="bg-gray-400 class_detail hidden" id="detail_{{$value->emp_nip}}">
@@ -132,7 +129,7 @@
                                                         </tr>
                                                         <tr>
                                                             <td>
-                                                                <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Terdaftar</span>
+                                                                <span class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Gagal</span>
                                                             </td>
                                                             <td>:</td>
                                                             <td class="text-white">
@@ -151,6 +148,13 @@
                                                     </table>
                                                 </div>
                                                 <div class="col-span-2 grid grid-cols-1 gap-2">
+                                                    <div class="flex items-center">
+                                                        <span class="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Terdaftar</span>
+                                                        <span class="bg-purple-100 text-purple-800 dark:bg-purple-700 dark:text-purple-300 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Sedang Mengikuti</span>
+                                                        <span class="bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-300 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Lulus</span>
+                                                        <span class="bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-300 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Gagal</span>
+                                                        <span class="bg-black text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded">Dibatalkan</span>
+                                                    </div>
                                                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                                         <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                                                             <tr>
@@ -162,7 +166,6 @@
                                                         <tbody>
                                                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                                                 <td class="px-6 py-4">
-                                                                    {{-- <ol class="ps-5 mt-2 space-y-1 list-decimal list-inside"> --}}
                                                                     <div class="grid lg:grid-cols-5 sm:grid-cols-3 gap-2">
                                                                         @php
                                                                             $classes = explode(',', $value->nama_kelas);
@@ -172,23 +175,25 @@
                                                                             @php
                                                                                 switch($enrollment_status[$index]){
                                                                                     case "REGISTERED":
-                                                                                        $color = 'gray-100';
-                                                                                        $text = 'gray-800';
-                                                                                        $dark = 'gray-900';
-                                                                                        $text_dark = 'gray-300';
+                                                                                        $bg_color = "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
                                                                                     break;
-                                                                                    default:
-                                                                                        $color = 'red-100';
-                                                                                        $text = 'red-800';
-                                                                                        $dark = 'red-900';
-                                                                                        $text_dark = 'red-900';
+                                                                                    case "ON GOING":
+                                                                                        $bg_color = "bg-purple-100 text-purple-800 dark:bg-purple-700 dark:text-purple-300";
+                                                                                    break;
+                                                                                    case "PASSED":
+                                                                                        $bg_color = "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-300";
+                                                                                    break;
+                                                                                    case "FAILED":
+                                                                                        $bg_color = "bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-300";
+                                                                                    break;
+                                                                                    case "CANCELLED":
+                                                                                        $bg_color = "bg-black text-white";
                                                                                     break;
                                                                                 }
                                                                             @endphp
-                                                                            <span class="bg-{{$color}} text-{{$text}} text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-{{$dark}} dark:text-{{$text_dark}} text-center">{{$class}}</span>
+                                                                            <span class="{{$bg_color}} text-xs font-medium me-2 px-2.5 py-0.5 rounded text-center">{{$class}}</span>
                                                                         @endforeach
                                                                     </div>
-                                                                    {{-- </ol> --}}
                                                                 </td>
                                                             </tr>
                                                         </tbody>

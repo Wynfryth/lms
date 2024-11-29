@@ -24,8 +24,9 @@ class ClassSessionsController extends Controller
             ->leftJoin('tm_class_category AS g', 'g.id', '=', 'b.class_category_id')
             ->leftJoin('tr_enrollment AS h', 'h.class_session_id', '=', 'a.id')
             ->leftJoin('miegacoa_employees.emp_employee AS i', 'i.nip', '=', 'h.emp_nip')
+            ->leftJoin('tm_enrollment_status AS j', 'j.id', '=', 'h.enrollment_status_id')
             ->select('a.id', 'a.session_name', 'a.desc', 'b.class_title', 'g.class_category', 'f.Employee_name', 'd.location_type', 'e.tc_name', 'a.start_effective_date', 'a.end_effective_date', 'a.is_active')
-            ->selectRaw(DB::raw('COUNT(h.id) AS jumlah_peserta, GROUP_CONCAT(i.Employee_name) AS participants'))
+            ->selectRaw(DB::raw('COUNT(h.id) AS jumlah_peserta, GROUP_CONCAT(i.Employee_name) AS participants, GROUP_CONCAT(j.enrollment_status) AS status_kepesertaan'))
             ->orderByDesc('a.id')
             ->groupBy('a.id');
         if ($class_sessions_kywd != null) {
@@ -203,9 +204,10 @@ class ClassSessionsController extends Controller
     {
         $item = DB::table('t_class_session AS a')
             ->select('a.*')
-            ->selectRaw(DB::raw('GROUP_CONCAT(b.emp_nip) AS nip_peserta, GROUP_CONCAT(c.Employee_name) AS peserta'))
+            ->selectRaw(DB::raw('GROUP_CONCAT(b.emp_nip) AS nip_peserta, GROUP_CONCAT(c.Employee_name) AS peserta, GROUP_CONCAT(c.Organization) AS divisi, GROUP_CONCAT(d.enrollment_status) AS status_kepesertaan'))
             ->leftJoin('tr_enrollment AS b', 'b.class_session_id', '=', 'a.id')
             ->leftJoin('miegacoa_employees.emp_employee AS c', 'c.nip', '=', 'b.emp_nip')
+            ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'b.enrollment_status_id')
             ->where('a.id', $id)
             ->first();
         $classes = DB::table('t_class_header AS a')
@@ -271,9 +273,6 @@ class ClassSessionsController extends Controller
         $update_action = DB::table('t_class_session AS a')
             ->where('a.id', $id)
             ->update($update_data);
-        $delete_enrollment = DB::table('tr_enrollment')
-            ->where('class_session_id', $id)
-            ->delete();
         if (count($request->peserta) > 0) {
             foreach ($request->peserta as $item) {
                 $update_enrollment_data = [
@@ -281,11 +280,32 @@ class ClassSessionsController extends Controller
                     'class_session_id' => $id,
                     'enrollment_date' => Carbon::now(),
                     'enrollment_status_id' => 1, // 1 is registered
-                    'modified_by' => Auth::id(),
-                    'modified_date' => Carbon::now()
+                    'created_by' => Auth::id(),
+                    'created_date' => Carbon::now()
                 ];
+                // sebenarnya insert sih cuman karena ini update makanya namanya update action
                 $update_enrollment = DB::table('tr_enrollment')
                     ->insertGetId($update_enrollment_data);
+                $user = User::where(['nip' => $item])->first();
+                if ($user) {
+                    $user->removeRole('Guest');
+                    $user->assignRole('Student');
+                }
+                $notification_title = "Ditambahkan ke Sesi Kelas \"" . $request->nama_sesi . "\" sebagai Peserta";
+                $notification_content = "Anda ditambahkan sebagai Peserta ke Sesi Kelas \"" . $request->nama_sesi . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+                $insert_notification = [
+                    'notification_title' => $notification_title,
+                    'notification_content' => $notification_content,
+                    'created_by' => Auth::id(),
+                    'created_date' => Carbon::now()
+                ];
+                $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+                $insert_notif_receipt = [
+                    'notification_id' => $notification_id,
+                    'user_nip' => $item,
+                    'read_status' => 0
+                ];
+                DB::table('t_notification_receipt')->insert($insert_notif_receipt);
             }
         }
         if ($update_action > 0) {
@@ -421,5 +441,37 @@ class ClassSessionsController extends Controller
         } else {
             return 'failed to recover';
         }
+    }
+
+    public function cancel_student(Request $request)
+    {
+        $nip = $request->nip;
+        $class_session_id = $request->class_session_id;
+        $where_params = [
+            'emp_nip' => $nip,
+            'class_session_id' => $class_session_id
+        ];
+        $update_data = [
+            'enrollment_status_id' => 5 // id cancelled
+        ];
+        $cancel_action = DB::table('tr_enrollment')->where($where_params)->update($update_data);
+        // notify the student
+        $class_session = DB::table('t_class_session AS a')->where('a.id', $class_session_id)->first();
+        $notification_title = "Kepesertaan anda dibatalkan di Sesi Kelas \"" . $class_session->session_name  . "\"";
+        $notification_content = "Sesi Kelas \"" . $class_session->session_name . "\" anda sebagai peserta dibatalkan oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+        $insert_notification = [
+            'notification_title' => $notification_title,
+            'notification_content' => $notification_content,
+            'created_by' => Auth::id(),
+            'created_date' => Carbon::now()
+        ];
+        $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+        $insert_notif_receipt = [
+            'notification_id' => $notification_id,
+            'user_nip' => $nip,
+            'read_status' => 0
+        ];
+        DB::table('t_notification_receipt')->insert($insert_notif_receipt);
+        return $cancel_action;
     }
 }

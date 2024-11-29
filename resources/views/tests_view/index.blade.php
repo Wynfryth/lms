@@ -61,7 +61,13 @@
                                         Kategori
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Deskripsi
+                                        Untuk Materi
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Jumlah Soal
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Total Poin
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Keaktifan
@@ -86,7 +92,13 @@
                                             {{ $value->test_category }}
                                         </td>
                                         <td class="px-6 py-4">
-                                            {{ $value->test_desc }}
+                                            {{ $value->study_material_title }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            {{ $value->jumlah_soal }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            {{ $value->total_poin }}
                                         </td>
                                         <td class="px-6 py-4">
                                             @if ($value->is_active == 1)

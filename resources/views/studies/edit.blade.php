@@ -104,9 +104,9 @@
                                         <th scope="col" class="px-6 py-3">
                                             File
                                         </th>
-                                        <th scope="col" class="px-6 py-3">
+                                        {{-- <th scope="col" class="px-6 py-3">
                                             Bobot Nilai
-                                        </th>
+                                        </th> --}}
                                         <th scope="col" class="px-6 py-3">
                                             Perkiraan Waktu
                                         </th>
@@ -150,9 +150,9 @@
                                                     @endif
                                                 @endif
                                             </td>
-                                            <td class="px-6 py-4">
+                                            {{-- <td class="px-6 py-4">
                                                 {{$value->scoring_weight}}
-                                            </td>
+                                            </td> --}}
                                             <td class="px-6 py-4">
                                                 @if (count($estimated_time) > 1)
                                                     <ul class="list-disc">

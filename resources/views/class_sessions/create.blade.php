@@ -184,6 +184,15 @@
                                         <th scope="col" class="px-6 py-3 text-center">
                                             Nama Peserta
                                         </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            NIP
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Divisi
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Status
+                                        </th>
                                         @canany(['edit sesi kelas','delete sesi kelas'])
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
                                             Aksi
@@ -213,3 +222,14 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+    $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
+        var nip = $(this).val();
+        var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+        var divisi = data.division;
+
+        $(this).closest('tr').find('td:eq(2)').html(nip);
+        $(this).closest('tr').find('td:eq(3)').html(divisi);
+        $(this).closest('tr').find('td:eq(4)').html('REGISTERED');
+    });
+</script>

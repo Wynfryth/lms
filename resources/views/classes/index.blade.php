@@ -1,8 +1,3 @@
-<style>
-    #detail_table tbody tr{
-        cursor: pointer;
-    }
-</style>
 <x-app-layout>
     <x-slot name="header">
         {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -56,8 +51,6 @@
                         <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="" width="1%">
-                                    </th>
                                     <th scope="col" class="px-6 py-3">
                                         #
                                     </th>
@@ -67,14 +60,8 @@
                                     <th scope="col" class="px-6 py-3">
                                         Kategori
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Periode
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Mulai
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Sampai
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Jumlah Materi
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Keaktifan
@@ -84,16 +71,13 @@
                                         Aksi
                                     </th>
                                     @endcanany
+                                    <th scope="col" class="" width="1%">
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($classes as $index => $value)
-                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700" onClick="toggleDetail(this)">
-                                        <td>
-                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 10 4 4 4-4"/>
-                                            </svg>
-                                        </td>
+                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {{ $index + $classes->firstItem() }}
                                         </th>
@@ -103,14 +87,8 @@
                                         <td class="px-6 py-4">
                                             {{ $value->class_category }}
                                         </td>
-                                        <td class="px-6 py-4">
-                                            {{ $value->class_period }}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            {{ $value->start_eff_date }}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            {{ $value->end_eff_date }}
+                                        <td class="px-6 py-4 text-center">
+                                            {{ $value->jumlah_materi }}
                                         </td>
                                         <td class="px-6 py-4">
                                             @if ($value->is_active == 1)
@@ -139,6 +117,13 @@
                                             @endif
                                         </td>
                                         @endcanany
+                                        <td>
+                                            <button type="button" class="text-white bg-white hover:bg-blue-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick="toggleDetail(this)">
+                                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 10 4 4 4-4"/>
+                                                </svg>
+                                            </button>
+                                        </td>
                                     </tr>
                                     <tr class="bg-blue-50 class_detail hidden" id="detail_{{$value->id}}">
                                         <td class="p-3" colspan="100%">

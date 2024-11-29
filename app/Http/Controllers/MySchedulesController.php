@@ -14,6 +14,7 @@ class MySchedulesController extends Controller
             ->leftJoin('t_class_session AS b', 'b.id', '=', 'a.class_session_id')
             ->leftJoin('tm_trainer_data AS c', 'c.id', '=', 'b.trainer_id')
             ->leftJoin('miegacoa_employees.emp_employee AS d', 'd.nip', '=', 'c.nip')
+            ->leftJoin('tm_enrollment_status AS e', 'e.id', '=', 'a.enrollment_status_id')
             ->where('a.emp_nip', Auth::user()->nip)
             ->get();
         return view('myschedules.index', compact('events'));

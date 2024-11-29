@@ -61,8 +61,8 @@
                                     <th scope="col" class="px-6 py-3">
                                         Tes
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Kategori Tes
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Poin
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Keaktifan
@@ -85,7 +85,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             @php
-                                                $answers = explode(', ', $value->answer);
+                                                $answers = explode('; ', $value->answers);
                                                 $correct_status = explode(', ', $value->correct_status);
                                                 if(count($answers) > 0){
                                                     $answers = array_map(function($answer, $correct_status) {
@@ -101,10 +101,17 @@
                                             @endphp
                                         </td>
                                         <td class="px-6 py-4">
-                                            {{ $value->test_name }}
+                                            @php
+                                                $test_name = explode('; ', $value->test_name);
+                                            @endphp
+                                            @forelse ($test_name as $item)
+                                                <li>{{ $item }}</li>
+                                            @empty
+
+                                            @endforelse
                                         </td>
-                                        <td class="px-6 py-4">
-                                            {{ $value->test_category }}
+                                        <td class="px-6 py-4 text-center">
+                                            {{ $value->points }}
                                         </td>
                                         <td class="px-6 py-4">
                                             @if ($value->is_active == 1)

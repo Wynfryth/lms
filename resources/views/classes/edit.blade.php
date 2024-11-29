@@ -45,128 +45,43 @@
                     @csrf
                     {{-- @method('put') --}}
 
-                    <div>
-                        <x-input-label for="nama_kelas" :value="__('Nama')" />
-                        <x-text-input id="nama_kelas" name="nama_kelas" type="text" class="mt-1 block w-full" value="{{ $item->class_title }}"/>
-                        @error('nama_kelas')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="my-1">
+                            <x-input-label for="nama_kelas" :value="__('Nama')" />
+                            <x-text-input id="nama_kelas" name="nama_kelas" type="text" class="mt-1 block w-full" value="{{ $item->class_title }}"/>
+                            @error('nama_kelas')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="my-1">
+                            <x-input-label for="kategori_kelas" :value="__('Kategori')"></x-input-label>
+                            <x-select-option id="kategori_kelas" name="kategori_kelas">
+                                <x-slot name="options">
+                                    <option class="disabled" value="null" selected disabled>
+                                        Pilih Kategori ...
+                                    </option>
+                                    @forelse ($kategori as $key => $value)
+                                        <option value="{{ $value->id }}" data-category-type="{{ $value->category_type }}" {{ $value->id == $item->class_category_id ? 'selected' : '' }}>
+                                            {{ $value->class_category }}
+                                        </option>
+                                    @empty
+                                        {{-- do nothing --}}
+                                    @endforelse
+                                </x-slot>
+                            </x-select-option>
+                            @error('kategori_kelas')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
+
 
                     <div>
                         <x-input-label for="deskripsi_kelas" :value="__('Deskripsi')" />
                         <x-textarea-input id="deskripsi_kelas" name="deskripsi_kelas" class="mt-1 block w-full">{{ $item->class_desc }}</x-textarea-input>
                     </div>
 
-                    <div class="my-1">
-                        <x-input-label for="kategori_kelas" :value="__('Kategori')"></x-input-label>
-                        <x-select-option id="kategori_kelas" name="kategori_kelas">
-                            <x-slot name="options">
-                                <option class="disabled" value="null" selected disabled>
-                                    Pilih Kategori ...
-                                </option>
-                                @forelse ($kategori as $key => $value)
-                                    <option value="{{ $value->id }}" {{ $value->id == $item->class_category_id ? 'selected' : '' }}>
-                                        {{ $value->class_category }}
-                                    </option>
-                                @empty
-                                    {{-- do nothing --}}
-                                @endforelse
-                            </x-slot>
-                        </x-select-option>
-                        @error('kategori_kelas')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <h6 class="font-semibold">Periode:</h6>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <x-input-label for="bulan_periode_kelas" :value="__('Bulan')"></x-input-label>
-                                <x-select-option id="bulan_periode_kelas" name="bulan_periode_kelas">
-                                    <x-slot name="options">
-                                        <option value="null" selected disabled>
-                                            Pilih Bulan...
-                                        </option>
-                                        @php
-                                            $bulan = [
-                                                'Januari',
-                                                'Februari',
-                                                'Maret',
-                                                'April',
-                                                'Mei',
-                                                'Juni',
-                                                'Juli',
-                                                'Agustus',
-                                                'September',
-                                                'Oktober',
-                                                'November',
-                                                'Desember',
-                                            ];
-                                        @endphp
-                                        @forelse ($bulan as $index => $value)
-                                            <option value="{{ $index + 1 }}" {{ intval(date('m', strtotime($item->class_period))) == ($index+1) ? 'selected' : '' }}>
-                                                {{ $value }}
-                                            </option>
-                                        @empty
-                                            {{-- do nothing --}}
-                                        @endforelse
-                                    </x-slot>
-                                </x-select-option>
-                                @error('bulan_periode_kelas')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <x-input-label for="tahun_periode_kelas" :value="__('Tahun')"></x-input-label>
-                                <x-select-option id="tahun_periode_kelas" name="tahun_periode_kelas">
-                                    <x-slot name="options">
-                                        <option value="null" selected disabled>
-                                            Pilih Tahun...
-                                        </option>
-                                        @php
-                                            $past_year = date('Y')-5;
-                                        @endphp
-                                        @for ($i = 0; $i <= 10; $i++)
-                                            <option value="{{ intval($past_year)+$i }}" {{ intval(date('Y', strtotime($item->class_period))) == (intval($past_year)+$i) ? 'selected' : '' }}>
-                                                {{ intval($past_year)+$i }}
-                                            </option>
-                                        @endfor
-                                    </x-slot>
-                                </x-select-option>
-                                @error('tahun_periode_kelas')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h6 class="font-semibold">Periode Efektif:</h6>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <div>
-                                    <x-input-label for="periode_efektif_kelas_mulai" :value="__('Dari')"></x-input-label>
-                                    <x-text-input id="periode_efektif_kelas_mulai" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="periode_efektif_kelas_mulai" type="text" class="mt-1 block w-full datepicker" value="{{ date('d-m-Y', strtotime($item->start_eff_date)) }}" />
-                                    @error('periode_efektif_kelas_mulai')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    <x-input-label for="periode_efektif_kelas_sampai" :value="__('Sampai')"></x-input-label>
-                                    <x-text-input id="periode_efektif_kelas_sampai" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="periode_efektif_kelas_sampai" type="text" class="mt-1 block w-full datepicker" value="{{ date('d-m-Y', strtotime($item->end_eff_date)) }}" />
-                                    @error('periode_efektif_kelas_sampai')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="my-1">
+                    <div id="div_studies_table" class="my-1 hidden">
                         <div class="my-4 ">
                             @can('create master kelas')
                             <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_studies">
@@ -182,7 +97,47 @@
                                             #
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-center">
-                                            Nama Peserta
+                                            Materi Pembelajaran (+ Pre & Post Tes)
+                                        </th>
+                                        {{-- <th scope="col" class="px-6 py-3 text-center">
+                                            Jumlah Lampiran Materi/Soal
+                                        </th> --}}
+                                        @canany(['edit master kelas','delete master kelas'])
+                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                            Aksi
+                                        </th>
+                                        @endcanany
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="row_no_data">
+                                        <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="div_tests_table" class="my-1 hidden">
+                        <div class="my-4 ">
+                            @can('create master kelas')
+                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_pretest">
+                                + Pre-test
+                            </button>
+                            @endcan
+                        </div>
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            <table id="pretests_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                            #
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Pre-tes
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Jumlah Soal
                                         </th>
                                         @canany(['edit master kelas','delete master kelas'])
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
@@ -215,42 +170,68 @@
 </x-app-layout>
 <script>
     $(document).ready(function () {
-        $('select[name="studies[]"]').select2({
-            placeholder: 'Pilih Peserta',
-            allowClear: true,
-            minimumInputLength: 3, // only start searching when the user has input 3 or more characters
-            ajax: {
-                async: false,
-                url: "{{ route('classes.studies_selectpicker') }}",
-                dataType: "JSON",
-                type: "POST",
-                quietMillis: 50,
-                delay: 250,
-                data: function (term) {
-                    return {
-                        term: term,
-                        _token: '{{ csrf_token() }}'
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                id: item.id,
-                                text: item.study_material_title
-                            }
-                        })
-                    };
-                },
-                cache: true
-            }
-        });
-        var id_studies = "{{$item->id_studies}}".split(',');
+        $(document).find('[name="kategori_kelas"]').val('{{$item->class_category_id}}').trigger('change');
+        var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
+        var id_materials = "{{$item->id_materials}}".split(',');
         var studies = "{{$item->studies}}".split(',');
-        // console.log(nip_peserta);
-        for(var i=0; i<id_studies.length; i++){
-            $('button#add_studies').trigger('click');
-            $('#studies_table tbody tr:last').find('select[name="studies[]"]').append('<option value="'+id_studies[i]+'">'+studies[i]+'</option>');
+        switch(category_type){
+            case "Pre-test Class":
+                var jumlah_soal = "{{$item->jumlah_soal}}".split(',');
+                for(var i=0; i<id_materials.length; i++){
+                    $('button#add_pretest').trigger('click');
+                    $('#pretests_table tbody tr:last').find('select[name="materials[]"]').append('<option value="'+id_materials[i]+'">'+studies[i]+'</option>');
+                    $('#pretests_table tbody tr:last').find('td:eq(2)').html(jumlah_soal[i]);
+                    $('#pretests_table tbody tr:last').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Tes">');
+                }
+            break;
+            case "Training Class":
+                for(var i=0; i<id_materials.length; i++){
+                    $('button#add_studies').trigger('click');
+                    $('#studies_table tbody tr:last').find('select[name="materials[]"]').append('<option value="'+id_materials[i]+'">'+studies[i]+'</option>');
+                    $('#studies_table tbody tr:last').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Materi">');
+                }
+            break;
+        }
+    });
+    $(document).off('change', '[name="kategori_kelas"]').on('change', '[name="kategori_kelas"]', function(){
+        var id_kategori_kelas = $(this).val();
+        var category_type = $(this).find('option:selected').data('category-type');
+        switch(category_type){
+            case "Pre-test Class":
+                // nampilin yang pretest doang
+                $('#div_tests_table').removeClass('hidden');
+                $('#div_studies_table table tbody').empty();
+                update_dynaTable_index($('#div_studies_table table'));
+                $('#div_studies_table').addClass('hidden');
+            break;
+            case "Training Class":
+                // nampilin yang materi doang
+                $('#div_studies_table').removeClass('hidden');
+                $('#div_tests_table table tbody').empty();
+                update_dynaTable_index($('#div_tests_table table'));
+                $('#div_tests_table').addClass('hidden');
+            break;
+        }
+    });
+    $(document).off('change', 'select[name="materials[]"]').on('change', 'select[name="materials[]"]', function(){
+        var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
+        switch(category_type){
+            case "Pre-test Class":
+                var id_test = $(this).val();
+                var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+                var jumlah_soal = data.jumlah_soal;
+                var tipe = data.tipe;
+                console.log(data);
+                $(this).closest('tr').find('td:eq(2)').html(jumlah_soal);
+                $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
+            break;
+            case "Training Class":
+                var id_studies = $(this).val();
+                var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+                var pretest_postest = data.pretest_postest;
+                var tipe = data.tipe;
+                $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
+            break;
         }
     });
 </script>

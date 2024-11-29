@@ -10,13 +10,13 @@
         @enderror
     </div>
 
-    <div>
+    {{-- <div>
         <x-input-label for="bobot_pembelajaran" :value="__('Bobot Pembelajaran *harus angka')" />
         <x-text-input id="bobot_pembelajaran" name="bobot_pembelajaran" type="number" class="mt-1 block w-full serialize" value="{{ $details->scoring_weight }}"/>
         @error('bobot_pembelajaran')
             <span class="text-red-500 text-sm">{{ $message }}</span>
         @enderror
-    </div>
+    </div> --}}
 
     <div class="my-1">
         <x-add-button href="#" id="add_attachment">

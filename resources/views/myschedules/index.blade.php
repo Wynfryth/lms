@@ -30,6 +30,13 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Terdaftar</span>
+                        <span class="bg-purple-100 text-purple-800 dark:bg-purple-700 dark:text-purple-300 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Sedang Mengikuti</span>
+                        <span class="bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-300 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Lulus</span>
+                        <span class="bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-300 text-xs font-medium me-2 px-2.5 py-0.5 rounded">Gagal</span>
+                        <span class="bg-black text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded">Dibatalkan</span>
+                    </div>
                     <div id="calendar"></div>
                 </div>
             </div>
@@ -58,7 +65,35 @@
 <script>
     $(document).ready(function () {
         var events = {!! json_encode($events) !!};
+        var colors = [];
+        var textColors = [];
         var events = events.map(function(item){
+            switch(item.enrollment_status){
+                case "REGISTERED":
+                    colors.push("#f3f4f6");
+                    textColors.push("#363f4b");
+                break;
+                case "ON GOING":
+                    colors.push("#edebfe");
+                    textColors.push("#6233bb");
+                break;
+                case "PASSED":
+                    colors.push("#def7ec");
+                    textColors.push("#196550");
+                break;
+                case "FAILED":
+                    colors.push("#fde8e8");
+                    textColors.push("#b04747");
+                break;
+                case "CANCELLED":
+                    colors.push("#000000");
+                    textColors.push("#f5f5f5");
+                break;
+                default:
+                    colors.push("#f0f9ff");
+                    textColors.push("#000000");
+                break;
+            }
             return {
                 title: item.session_name+' - '+item.Employee_name,
                 start: item.start_effective_date,
@@ -74,7 +109,9 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
             },
             initialView: 'dayGridMonth',
-            events: events
+            events: events,
+            eventBackgroundColor: colors,
+            eventTextColor: textColors,
         })
         calendar.render()
     });

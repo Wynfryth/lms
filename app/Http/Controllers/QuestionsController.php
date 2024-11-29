@@ -14,12 +14,19 @@ class QuestionsController extends Controller
     public function index($questions_kywd = null)
     {
         $questions = DB::table('tm_question_bank AS a')
-            ->leftJoin('tm_answer_bank AS b', 'b.question_id', '=', 'a.id')
-            ->leftJoin('tm_test AS c', 'c.id', '=', 'a.test_id')
-            ->leftJoin('tm_test_category AS d', 'd.id', '=', 'c.test_cat_id')
-            ->select('a.id', 'a.question', DB::raw('GROUP_CONCAT(b.answer SEPARATOR ", ") AS answer'), DB::raw('GROUP_CONCAT(b.correct_status SEPARATOR ", ") AS correct_status'), 'c.test_name', 'd.test_category', 'a.is_active')
-            ->groupBy('a.id')
-            ->orderBy('a.id', 'desc');
+            ->select('xx.id', 'xx.question', 'xx.points', 'xx.is_active', 'xx.answers', 'xx.correct_status', 'yy.test_name')
+            ->from(DB::raw('(SELECT
+                            a.id, a.question, a.points, a.is_active, GROUP_CONCAT(b.answer SEPARATOR "; ") AS answers, GROUP_CONCAT(b.correct_status SEPARATOR ", ") AS correct_status
+                            FROM tm_question_bank AS a
+                            LEFT JOIN tm_answer_bank AS b ON b.question_id = a.id
+                            GROUP BY a.id) AS xx'))
+            ->leftJoin(DB::raw('(SELECT
+                                a.id, GROUP_CONCAT(c.test_name SEPARATOR "; ") AS test_name
+                                FROM tm_question_bank AS a
+                                LEFT JOIN test_has_questions AS b ON b.question_id = a.id
+                                LEFT JOIN tm_test AS c ON c.id = b.test_id
+                                GROUP BY a.id) AS yy'), 'yy.id', '=', 'xx.id')
+            ->orderBy('xx.id', 'DESC');
         if ($questions_kywd != null) {
             $any_params = [
                 'a.question',
@@ -46,25 +53,28 @@ class QuestionsController extends Controller
             $request->all(),
             [
                 'question' => 'required',
-                'test_id' => 'required',
+                // 'test_id' => 'required',
+                'points' => 'required',
             ],
             [
                 'question.required' => 'Pertanyaan belum terisi.',
-                'test_id.required' => 'Nama tes belum terisi.',
+                // 'test_id.required' => 'Nama tes belum terisi.',
+                'points.required' => 'Poin belum terisi.',
             ]
         );
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
         $insert_question = [
-            'test_id' => $request->test_id,
             'question' => $request->question,
+            'points' => $request->points,
             'is_active' => 1,
             'created_by' => Auth::id(),
             'created_date' => Carbon::now()
         ];
         $insert_question_action = DB::table('tm_question_bank')
             ->insertGetId($insert_question);
+        // masukkan jawaban
         if ($request->answers != null) {
             foreach ($request->answers as $key => $answer) {
                 if ($request->answer_status == $key) {
@@ -83,6 +93,17 @@ class QuestionsController extends Controller
                     ->insertGetId($insert_answer);
             }
         }
+        // masukkan ke tes-tes yang dipilih
+        if ($request->test_ids != null) {
+            foreach ($request->test_ids as $key => $test_id) {
+                $insert_test_has_questions = [
+                    'test_id' => $test_id,
+                    'question_id' => $insert_question_action
+                ];
+                DB::table('test_has_questions')
+                    ->insert($insert_test_has_questions);
+            }
+        }
         if ($insert_question_action > 0) {
             $status = [
                 'status' => 'insert',
@@ -95,7 +116,12 @@ class QuestionsController extends Controller
     public function edit($id)
     {
         $item = DB::table('tm_question_bank AS a')
+            ->select('a.id', 'a.question', 'a.points', 'a.is_active')
+            ->selectRaw(DB::raw('GROUP_CONCAT(c.id) AS test_ids, GROUP_CONCAT(c.test_name) AS test_names'))
+            ->leftJoin('test_has_questions AS b', 'b.question_id', '=', 'a.id')
+            ->leftJoin('tm_test AS c', 'c.id', '=', 'b.test_id')
             ->where('a.id', $id)
+            ->groupBy('a.id')
             ->first();
         $tests = DB::table('tm_test AS a')
             ->get();
@@ -111,19 +137,21 @@ class QuestionsController extends Controller
             $request->all(),
             [
                 'question' => 'required',
-                'test_id' => 'required',
+                // 'test_id' => 'required',
+                'points' => 'required',
             ],
             [
                 'question.required' => 'Pertanyaan belum terisi.',
-                'test_id.required' => 'Nama tes belum terisi.',
+                // 'test_id.required' => 'Nama tes belum terisi.',
+                'points.required' => 'Poin belum terisi.',
             ]
         );
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
         $update_question = [
-            'test_id' => $request->test_id,
             'question' => $request->question,
+            'points' => $request->points,
             'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
         ];
@@ -150,6 +178,20 @@ class QuestionsController extends Controller
                 ];
                 $update_answer_action = DB::table('tm_answer_bank')
                     ->insertGetId($update_answer);
+            }
+        }
+        // masukkan ke tes-tes yang dipilih
+        $delete_test_has_question = DB::table('test_has_questions')
+            ->where('question_id', $id)
+            ->delete();
+        if ($request->test_ids != null) {
+            foreach ($request->test_ids as $key => $test_id) {
+                $insert_test_has_questions = [
+                    'test_id' => $test_id,
+                    'question_id' => $id
+                ];
+                DB::table('test_has_questions')
+                    ->insert($insert_test_has_questions);
             }
         }
         if ($update_question_action > 0) {

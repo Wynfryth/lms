@@ -20,10 +20,14 @@ class StudiesController extends Controller
     public function index($studies_kywd = null)
     {
         $studies = DB::table('tm_study_material_header AS a')
-            ->leftJoin('tm_study_material_category AS b', 'a.category_id', '=', 'b.id')
             ->select('a.id', 'a.study_material_title', 'a.study_material_desc', 'b.study_material_category', 'a.is_active')
-            // ->where('a.is_active', 1)
-            ->orderByDesc('a.id');
+            ->selectRaw('GROUP_CONCAT(e.id) AS kategori_tes, GROUP_CONCAT(d.test_name) AS tests')
+            ->leftJoin('tm_study_material_category AS b', 'b.id', '=', 'a.category_id')
+            ->leftJoin('t_test_with_materials_list AS c', 'c.study_materials_id', '=', 'a.id')
+            ->leftJoin('tm_test AS d', 'd.id', '=', 'c.test_id')
+            ->leftJoin('tm_test_category AS e', 'e.id', '=', 'd.test_cat_id')
+            ->orderByDesc('a.id')
+            ->groupBy('a.id');
         if ($studies_kywd != null) {
             $any_params = [
                 'a.study_material_title',

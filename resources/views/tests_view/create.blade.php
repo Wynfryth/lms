@@ -26,7 +26,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('testcat') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Kategori Tes</a>
+                    <a href="{{ route('testcat') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Tes</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -77,6 +77,27 @@
                         @enderror
                     </div>
 
+                    <div id="materi_div" class="my-1 hidden">
+                        <x-input-label for="materi" :value="__('Untuk Materi')"></x-input-label>
+                        <x-select-option id="materi" name="materi">
+                            <x-slot name="options">
+                                <option class="disabled" value="null" selected disabled>
+                                    Pilih Materi...
+                                </option>
+                                @forelse ($studies as $index => $item)
+                                    <option value="{{ $item->id }}" {{ old('materi') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->study_material_title }}
+                                    </option>
+                                @empty
+                                    {{-- do nothing --}}
+                                @endforelse
+                            </x-slot>
+                        </x-select-option>
+                        @error('materi')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
                     <div>
                         <x-input-label for="deskripsi_tes" :value="__('Deskripsi')" />
                         <x-textarea-input id="deskripsi_tes" name="deskripsi_tes" class="mt-1 block w-full">{{ old('deskripsi_tes') }}</x-textarea-input>
@@ -98,3 +119,13 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+    $(document).off('change', '[name="kategori_tes"]').on('change', '[name="kategori_tes"]', function(){
+        var kategori_tes = $(this).val();
+        if(kategori_tes != '1'){
+            $('#materi_div').removeClass('hidden');
+        }else{
+            $('#materi_div').addClass('hidden');
+        }
+    })
+</script>

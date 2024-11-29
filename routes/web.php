@@ -105,6 +105,7 @@ Route::middleware('auth')->group(function () {
         Route::get('classes/index/{classes_kywd?}', 'index')->middleware(['permission:list master kelas'])->name('classes');
         Route::get('classes/create', 'create')->middleware(['permission:create master kelas'])->name('classes.create');
         Route::post('classes/studies_selectpicker', 'studies_selectpicker')->middleware(['permission:create master kelas|edit master kelas'])->name('classes.studies_selectpicker');
+        Route::post('classes/pretests_selectpicker', 'pretests_selectpicker')->middleware(['permission:create master kelas|edit master kelas'])->name('classes.pretests_selectpicker');
         Route::post('classes/store', 'store')->middleware(['permission:create master kelas'])->name('classes.store');
         Route::get('classes/edit/{id}', 'edit')->middleware(['permission:edit master kelas'])->name('classes.edit');
         Route::post('classes/update/{id}', 'update')->middleware(['permission:edit master kelas'])->name('classes.update');
@@ -118,6 +119,7 @@ Route::middleware('auth')->group(function () {
         Route::post('class_sessions/participant_selectpicker', 'participant_selectpicker')->middleware(['permission:create sesi kelas|edit sesi kelas'])->name('class_sessions.participant_selectpicker');
         Route::post('class_sessions/store', 'store')->middleware(['permission:create sesi kelas'])->name('class_sessions.store');
         Route::get('class_sessions/edit/{id}', 'edit')->middleware(['permission:edit sesi kelas'])->name('class_sessions.edit');
+        Route::post('class_sessions/cancel_student', 'cancel_student')->middleware(['permission:edit sesi kelas'])->name('class_sessions.cancel_student');
         Route::post('class_sessions/update/{id}', 'update')->middleware(['permission:edit sesi kelas'])->name('class_sessions.update');
         Route::post('class_sessions/delete', 'delete')->middleware(['permission:delete sesi kelas'])->name('class_sessions.delete');
         Route::post('class_sessions/recover', 'recover')->middleware(['permission:delete sesi kelas'])->name('class_sessions.recover');
@@ -189,7 +191,7 @@ Route::middleware('auth')->group(function () {
     });
     // Users
     Route::controller(UsersController::class)->group(function () {
-        Route::get('users/index/{users_kywd?}', 'index')->name('users');
+        Route::get('users/index/{users_kywd?}', 'index')->middleware(['permission:list users'])->name('users');
         Route::get('users/edit/{id}', 'edit')->middleware(['permission:edit users'])->name('users.edit');
         Route::post('users/update/{id}', 'update')->middleware(['permission:edit users'])->name('users.update');
         Route::post('users/delete', 'delete')->name('users.delete');
