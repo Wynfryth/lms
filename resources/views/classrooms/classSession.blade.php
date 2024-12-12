@@ -27,10 +27,14 @@
                         {{ $index + $sessionSchedules->firstItem(); }}
                     </th>
                     <td class="px-6 py-4">
+                        @php
+                            $materialId = $schedule->study_id ?? $schedule->test_id;
+                            $sessionRoute = $schedule->study_id ? 'studySessions' : 'testSessions';
+                        @endphp
                         @if ($schedule->schedule_status == 'OPEN')
-                            <a class="hover:underline" href="#">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
+                            <a class="hover:underline" href="{{route($sessionRoute, $materialId)}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
                         @else
-                            <a class="hover:underline" href="#">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
+                            <a class="hover:underline" href="{{route($sessionRoute, $materialId)}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
                             {{-- {{ $schedule->study_material_title ?? $schedule->test_name }} --}}
                         @endif
                     </td>

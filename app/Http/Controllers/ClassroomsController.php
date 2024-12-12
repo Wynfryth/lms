@@ -47,7 +47,9 @@ class ClassroomsController extends Controller
                 'b.end_eff_date',
                 'f.Employee_name AS trainer',
                 'g.location_type',
+                'c.id AS study_id',
                 'c.study_material_title',
+                'd.id AS test_id',
                 'd.test_name',
                 'h.type'
             )

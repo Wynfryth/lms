@@ -21,8 +21,10 @@ use App\Http\Controllers\StudiesController;
 use App\Http\Controllers\StudyCatController;
 use App\Http\Controllers\StudyDetController;
 use App\Http\Controllers\StudyMatController;
+use App\Http\Controllers\StudySessionsController;
 use App\Http\Controllers\TestCatController;
 use App\Http\Controllers\TestsController;
+use App\Http\Controllers\TestSessionsController;
 use App\Http\Controllers\TrainCtsController;
 use App\Http\Controllers\TrainerSchedulesController;
 use App\Http\Controllers\TrainersController;
@@ -278,6 +280,33 @@ Route::middleware('auth')->group(function () {
         // Route::post('classrooms/update/{id}', 'update')->middleware(['permission:edit ruang kelas'])->name('classrooms.update');
         // Route::post('classrooms/delete', 'delete')->middleware(['permission:delete ruang kelas'])->name('classrooms.delete');
         // Route::post('classrooms/recover', 'recover')->middleware(['permission:delete ruang kelas'])->name('classrooms.recover');
+    });
+
+    // Study Sessions
+    Route::controller(StudySessionsController::class)->group(function () {
+        Route::get('studySessions/index/{testId }', 'index')->middleware(['permission:list ruang kelas'])->name('studySessions');
+        Route::post('studySessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('studySessions.getClassSessions');
+        Route::get('studySessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('studySessions.getSessionSchedule');
+        // Route::get('studySessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('studySessions.create');
+        // Route::post('studySessions/store', 'store')->middleware(['permission:create ruang kelas'])->name('studySessions.store');
+        // Route::get('studySessions/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('studySessions.edit');
+        // Route::post('studySessions/update/{id}', 'update')->middleware(['permission:edit ruang kelas'])->name('studySessions.update');
+        // Route::post('studySessions/delete', 'delete')->middleware(['permission:delete ruang kelas'])->name('studySessions.delete');
+        // Route::post('studySessions/recover', 'recover')->middleware(['permission:delete ruang kelas'])->name('studySessions.recover');
+    });
+
+    // Test Sessions
+    Route::controller(TestSessionsController::class)->group(function () {
+        Route::get('testSessions/index/{testId}', 'index')->middleware(['permission:list ruang kelas'])->name('testSessions');
+        Route::get('testSessions/question/{testId}/{questionId}/{questionOrder}', 'question')->middleware(['permission:list ruang kelas'])->name('testSessions.question');
+        // Route::post('testSessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('testSessions.getClassSessions');
+        // Route::get('testSessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('testSessions.getSessionSchedule');
+        // Route::get('testSessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('testSessions.create');
+        // Route::post('testSessions/store', 'store')->middleware(['permission:create ruang kelas'])->name('testSessions.store');
+        // Route::get('testSessions/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('testSessions.edit');
+        // Route::post('testSessions/update/{id}', 'update')->middleware(['permission:edit ruang kelas'])->name('testSessions.update');
+        // Route::post('testSessions/delete', 'delete')->middleware(['permission:delete ruang kelas'])->name('testSessions.delete');
+        // Route::post('testSessions/recover', 'recover')->middleware(['permission:delete ruang kelas'])->name('testSessions.recover');
     });
 });
 

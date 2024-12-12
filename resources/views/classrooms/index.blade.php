@@ -1,7 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
         <h6><a href="{{ route('classrooms', $class[0]->classId) }}" class="mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white hover:underline">{{$class[0]->class_title}}</a></h6>
-
     </x-slot>
 
     <div class="p-4 sm:ml-64">
