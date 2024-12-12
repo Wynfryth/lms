@@ -14,7 +14,7 @@ class TestsController extends Controller
     public function index($tests_kywd = null)
     {
         $tests = DB::table('tm_test AS a')
-            ->select('a.id', 'b.test_category', 'a.test_code', 'a.test_name', 'study_material_title', 'a.test_desc', 'a.is_active')
+            ->select('a.id', 'b.test_category', 'a.test_code', 'a.test_name', 'study_material_title', 'a.test_desc', 'a.estimated_time', 'a.is_active')
             ->selectRaw(DB::raw('COUNT(d.id) AS jumlah_soal, IF(SUM(d.points) IS NULL, 0, SUM(d.points)) AS total_poin'))
             ->leftJoin('tm_test_category AS b', 'b.id', '=', 'a.test_cat_id')
             ->leftJoin('test_has_questions AS c', 'c.test_id', '=', 'a.id')
@@ -40,6 +40,7 @@ class TestsController extends Controller
     {
         $testcats = DB::table('tm_test_category AS a')
             ->select('a.id', 'a.test_category')
+            ->where('a.is_active', 1)
             ->orderBy('a.id')
             ->get();
         $studies = DB::table('tm_study_material_header AS a')
@@ -57,11 +58,12 @@ class TestsController extends Controller
                 'nama_tes' => 'required',
                 'kategori_tes' => 'required',
                 'deskripsi_tes' => 'required',
+                'durasi_tes' => 'required',
             ],
             [
                 'nama_tes.required' => 'Nama tes belum terisi.',
                 'kategori_tes.required' => 'Kategori tes belum terisi.',
-                'deskripsi_tes.required' => 'Deskripsi tes belum terisi.',
+                'durasi_tes.required' => 'Durasi tes belum terisi.',
             ]
         );
         if ($validator->fails()) {
@@ -71,6 +73,7 @@ class TestsController extends Controller
             'test_cat_id' => $request->kategori_tes,
             'test_name' => $request->nama_tes,
             'test_desc' => $request->deskripsi_tes,
+            'estimated_time' => $request->durasi_tes,
             'is_active' => 1,
             'created_by' => Auth::id(),
             'created_date' => Carbon::now()
@@ -100,7 +103,7 @@ class TestsController extends Controller
     public function edit($id)
     {
         $item = DB::table('tm_test AS a')
-            ->select('a.id', 'a.test_cat_id', 'a.test_code', 'a.test_name', 'a.test_desc', 'a.is_active', 'c.study_materials_id')
+            ->select('a.id', 'a.test_cat_id', 'a.test_code', 'a.test_name', 'a.test_desc', 'a.estimated_time', 'a.is_active', 'c.study_materials_id')
             ->leftJoin('tm_test_category AS b', 'b.id', '=', 'a.test_cat_id')
             ->leftJoin('t_test_with_materials_list AS c', 'c.test_id', '=', 'a.id')
             ->where('a.id', $id)
@@ -124,11 +127,13 @@ class TestsController extends Controller
                 'nama_tes' => 'required',
                 'kategori_tes' => 'required',
                 'deskripsi_tes' => 'required',
+                'durasi_tes' => 'required',
             ],
             [
                 'nama_tes.required' => 'Nama tes belum terisi.',
                 'kategori_tes.required' => 'Kategori tes belum terisi.',
                 'deskripsi_tes.required' => 'Deskripsi tes belum terisi.',
+                'durasi_tes.required' => 'Durasi tes belum terisi.',
             ]
         );
         if ($validator->fails()) {
@@ -138,6 +143,7 @@ class TestsController extends Controller
             'test_cat_id' => $request->kategori_tes,
             'test_name' => $request->nama_tes,
             'test_desc' => $request->deskripsi_tes,
+            'estimated_time' => $request->durasi_tes,
             'is_active' => 1,
             'modified_by' => Auth::id(),
             'modified_date' => Carbon::now()
@@ -146,21 +152,25 @@ class TestsController extends Controller
             ->where('a.id', $id)
             ->update($update_data);
         // menautkan ke study material
+        DB::table('t_test_with_materials_list')
+            ->where('test_id', $id)
+            ->delete();
         if ($request->kategori_tes != 1) {
             $update_test_in_material_data = [
-                'test_id' => $update_action,
+                'test_id' => $id,
                 'study_materials_id' => $request->materi,
                 'created_by' => Auth::id(),
                 'created_date' => Carbon::now()
             ];
             $update_test_in_material_action = DB::table('t_test_with_materials_list')
-                ->where(['test_id' => $id, 'study_materials_id' => $request->materi])
-                ->update($update_test_in_material_data);
-        } else {
-            DB::table('t_test_with_materials_list')
-                ->where(['test_id' => $id, 'study_materials_id' => $request->materi])
-                ->delete();
+                // ->where(['test_id' => $id, 'study_materials_id' => $request->materi])
+                ->insert($update_test_in_material_data);
         }
+        // else {
+        //     DB::table('t_test_with_materials_list')
+        //         ->where(['test_id' => $id, 'study_materials_id' => $request->materi])
+        //         ->delete();
+        // }
         if ($update_action > 0) {
             $status = [
                 'status' => 'update',

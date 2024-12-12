@@ -69,6 +69,9 @@
                                     <th scope="col" class="px-6 py-3 text-center">
                                         Total Poin
                                     </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Durasi
+                                    </th>
                                     <th scope="col" class="px-6 py-3">
                                         Keaktifan
                                     </th>
@@ -99,6 +102,30 @@
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             {{ $value->total_poin }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            @php
+                                                if($value->estimated_time != null){
+                                                    $total_waktu = explode(':', $value->estimated_time);
+                                                    $durasi = '';
+                                                    if(intval($total_waktu[0]) > 0 || intval($total_waktu[1]) > 0 || intval($total_waktu[2]) != 0){
+                                                        if(intval($total_waktu[0]) != 0){
+                                                            $durasi .= intval($total_waktu[0]).' jam ';
+                                                        }
+                                                        if(intval($total_waktu[1]) != 0){
+                                                            $durasi .= intval($total_waktu[1]).' menit ';
+                                                        }
+                                                        if(intval($total_waktu[2]) != 0){
+                                                            $durasi .= intval($total_waktu[2]).' detik ';
+                                                        }
+                                                    }else{
+                                                        $durasi = '-';
+                                                    }
+                                                }else{
+                                                    $durasi = '-';
+                                                }
+                                            @endphp
+                                            {{ $durasi }}
                                         </td>
                                         <td class="px-6 py-4">
                                             @if ($value->is_active == 1)

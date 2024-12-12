@@ -1,8 +1,3 @@
-<style>
-    #detail_table tbody tr{
-        cursor: pointer;
-    }
-</style>
 <x-app-layout>
     <x-slot name="header">
         {{-- <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -76,11 +71,13 @@
                                         Aksi
                                     </th>
                                     @endcanany
+                                    <th scope="col" class="px-6 py-3">
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($myteaches as $index => $value)
-                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800" onClick="toggleDetail(this)">
+                                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800">
                                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {{ $index + $myteaches->firstItem() }}
                                         </th>
@@ -119,23 +116,53 @@
                                             @endif
                                         </td>
                                         @endcanany
-                                    </tr>
-                                    <tr class="border-b dark:border-gray-700" onclick="toggleDetail(this)">
                                         <td>
-                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 10 4 4 4-4"/>
-                                            </svg>
+                                            <button type="button" class="text-white bg-white hover:bg-blue-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick="toggleDetail(this)">
+                                                <svg class="w-6 h-6 text-gray-800 hover:text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 10 4 4 4-4"/>
+                                                </svg>
+                                            </button>
                                         </td>
+                                    </tr>
+                                    <tr class="class_detail hidden"  id="detail_{{$value->id}}">
+                                        <td colspan="100%">
+                                            <div class="grid lg:grid-cols-5 sm:grid-cols-3 gap-2 p-4">
+                                                @php
+                                                    $participants = explode(',', $value->peserta);
+                                                    $statuses = explode(',', $value->status_kepesertaan);
+                                                @endphp
+                                                @foreach($participants as $index => $participant)
+                                                    @php
+                                                        switch($statuses[$index]){
+                                                            case "REGISTERED":
+                                                                $bg_color = "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+                                                            break;
+                                                            case "ON GOING":
+                                                                $bg_color = "bg-purple-100 text-purple-800 dark:bg-purple-700 dark:text-purple-300";
+                                                            break;
+                                                            case "PASSED":
+                                                                $bg_color = "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-300";
+                                                            break;
+                                                            case "FAILED":
+                                                                $bg_color = "bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-300";
+                                                            break;
+                                                            case "CANCELLED":
+                                                                $bg_color = "bg-black text-white";
+                                                            break;
+                                                        }
+                                                    @endphp
+                                                    <span class="{{$bg_color}} text-xs font-medium me-2 px-2.5 py-0.5 rounded">{{$participant}}</span>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b dark:border-gray-700">
                                         <td colspan="100%" class="text-right">
                                             <div class="inline-flex rounded-md shadow-sm float-right" role="group">
-                                                <button type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-blue-200 border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                                                <button id="start_class_session" data-session-id="{{$value->id}}" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-blue-200 border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
                                                     <svg class="w-4 h-4 text-gray-800 dark:text-white me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                                         <path fill-rule="evenodd" d="M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z" clip-rule="evenodd"/>
                                                     </svg>
-                                                    {{-- <svg class="w-4 h-4 text-gray-800 dark:text-white me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M14 19V5h4a1 1 0 0 1 1 1v11h1a1 1 0 0 1 0 2h-6Z"/>
-                                                        <path fill-rule="evenodd" d="M12 4.571a1 1 0 0 0-1.275-.961l-5 1.428A1 1 0 0 0 5 6v11H4a1 1 0 0 0 0 2h1.86l4.865 1.39A1 1 0 0 0 12 19.43V4.57ZM10 11a1 1 0 0 1 1 1v.5a1 1 0 0 1-2 0V12a1 1 0 0 1 1-1Z" clip-rule="evenodd"/>
-                                                    </svg> --}}
                                                     Mulai
                                                 </button>
                                                 <button type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-red-200 border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
@@ -153,9 +180,6 @@
                                                 </button>
                                             </div>
                                         </td>
-                                    </tr>
-                                    <tr class="class_detail hidden">
-                                        <td colspan="100%">Nanti detail kelasnya di sini (tergantung dari academy, peserta boleh liat detail kelasnya sebelum dimulai kelasnya ato nggak)</td>
                                     </tr>
                                 @empty
                                     <tr class="row_no_data">
@@ -193,144 +217,6 @@
 </script>
 @endif
 <script>
-    $(document).ready(function() {
-        $('#table_id').DataTable({
-            scrollX: true,
-            language: {
-                "emptyTable": "Tidak ada data",
-                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
-                "infoFiltered": "(disaring dari _MAX_ total data)",
-                "infoPostFix": "",
-                "thousands": ",",
-                "lengthMenu": "Tampilkan _MENU_ data",
-                "loadingRecords": "Memuat...",
-                "processing": "",
-                "search": "Cari:",
-                "zeroRecords": "Tidak ada data yang cocok",
-                "paginate": {
-                    "first": "Awal",
-                    "last": "Akhir",
-                    "next": ">",
-                    "previous": "<"
-                },
-                "aria": {
-                    "orderable": "Order by this column",
-                    "orderableReverse": "Reverse order this column"
-                }
-            }
-        });
-    });
-    $(document).off('click', '.delete').on('click', '.delete', function() {
-        // console.log($(this).data('id'))
-        var myteaches_id = $(this).data('id');
-        Swal.fire({
-            icon: "question",
-            title: "Hapus",
-            text: "Yakin untuk menghapus?",
-            showConfirmButton: true,
-            confirmButtonText: "Ya",
-            showDenyButton: true,
-            denyButtonText: "Tidak",
-            allowOutsideClick: false
-        })
-        .then((response) => {
-            if (response.isConfirmed) {
-                $.ajax({
-                    async: false,
-                    type: "POST",
-                    url: "{{route('myteaches.delete')}}",
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "id": myteaches_id
-                    },
-                    dataType: "JSON",
-                    success: function (response) {
-                        // console.log(response);
-                        if(response != 'failed to delete'){
-                            Swal.fire({
-                                icon: "success",
-                                title: "Berhasil!",
-                                text: "Berhasil menghapus data.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK",
-                                allowOutsideClick: false
-                            })
-                            .then((feedback)=>{
-                                if(feedback.isConfirmed){
-                                    window.location = "{{ route('myteaches') }}";
-                                }
-                            })
-                        }else{
-                            Swal.fire({
-                                icon: "error",
-                                title: "Gagal!",
-                                text: "Gagal menghapus data.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK",
-                                allowOutsideClick: false
-                            })
-                        }
-                    }
-                });
-            }
-        })
-    });
-
-    $(document).off('click', '.recover').on('click', '.recover', function() {
-        var myteaches_id = $(this).data('id');
-        Swal.fire({
-            icon: "question",
-            title: "Pulihkan",
-            text: "Yakin untuk memulihkan data?",
-            showConfirmButton: true,
-            confirmButtonText: "Ya",
-            showDenyButton: true,
-            denyButtonText: "Tidak",
-            allowOutsideClick: false
-        })
-        .then((response) => {
-            if (response.isConfirmed) {
-                $.ajax({
-                    async: false,
-                    type: "POST",
-                    url: "{{ route('myteaches.recover') }}",
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "id": myteaches_id
-                    },
-                    dataType: "JSON",
-                    success: function(response) {
-                        // console.log(response);
-                        if(response > 0){
-                            Swal.fire({
-                                icon: "success",
-                                title: "Berhasil!",
-                                text: "Berhasil memulihkan data.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK",
-                                allowOutsideClick: false
-                            })
-                            .then((feedback)=>{
-                                if(feedback.isConfirmed){
-                                    window.location = "{{ route('myteaches') }}";
-                                }
-                            })
-                        }else{
-                            Swal.fire({
-                                icon: "error",
-                                title: "Gagal!",
-                                text: "Gagal memulihkan data. Silahkan coba beberapa saat lagi.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK",
-                                allowOutsideClick: false
-                            })
-                        }
-                    }
-                });
-            }
-        })
-    });
     $('body').off('keypress', '[name="myteaches_kywd"]').on('keypress', '[name="myteaches_kywd"]', function(e){
         if(e.which == 13) {
             var myteaches_kywd = $(this).val();
@@ -338,5 +224,21 @@
             url = url.replace(':myteaches_kywd', myteaches_kywd);
             window.location.href = url;
         }
+    });
+    $(document).off('click', '#start_class_session').on('click', '#start_class_session', function(){
+        var class_session_id = $(this).data('session-id');
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "{{ route('myteaches.startClassSession') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                class_session_id: class_session_id
+            },
+            dataType: "JSON",
+            success: function (response) {
+                console.log(response);
+            }
+        });
     })
 </script>

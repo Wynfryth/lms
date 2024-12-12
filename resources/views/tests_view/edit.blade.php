@@ -55,25 +55,42 @@
                         @enderror
                     </div>
 
-                    <div class="my-1">
-                        <x-input-label for="kategori_tes" :value="__('Kategori')"></x-input-label>
-                        <x-select-option id="kategori_tes" name="kategori_tes">
-                            <x-slot name="options">
-                                <option class="disabled" value="null" selected disabled>
-                                    Pilih Kategori ...
-                                </option>
-                                @forelse ($testcats as $key => $value)
-                                    <option value="{{ $value->id }}" {{ $value->id == $item->test_cat_id ? 'selected' : '' }}>
-                                        {{ $value->test_category }}
+                    <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                        <div class="my-1">
+                            <x-input-label for="kategori_tes" :value="__('Kategori')"></x-input-label>
+                            <x-select-option id="kategori_tes" name="kategori_tes">
+                                <x-slot name="options">
+                                    <option class="disabled" value="null" selected disabled>
+                                        Pilih Kategori ...
                                     </option>
-                                @empty
-                                    {{-- do nothing --}}
-                                @endforelse
-                            </x-slot>
-                        </x-select-option>
-                        @error('kategori_tes')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                                    @forelse ($testcats as $key => $value)
+                                        <option value="{{ $value->id }}" {{ $value->id == $item->test_cat_id ? 'selected' : '' }}>
+                                            {{ $value->test_category }}
+                                        </option>
+                                    @empty
+                                        {{-- do nothing --}}
+                                    @endforelse
+                                </x-slot>
+                            </x-select-option>
+                            @error('kategori_tes')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="my-1">
+                            <x-input-label for="durasi_tes" :value="__('Durasi Tes')" />
+                            <div class="flex">
+                                <x-text-input id="durasi_tes" name="durasi_tes" type="text" class="mt-1 block w-full timepicker" value="{{ $item->estimated_time }}"/>
+                                <span class="inline-flex items-center mt-1 px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-md border-gray-300 border-s-0 rounded-s-0 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                    {{-- <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
+                                    </svg> --}}
+                                    Jam
+                                </span>
+                            </div>
+                            @error('durasi_tes')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
 
                     <div id="materi_div" class="my-1 hidden">
@@ -135,6 +152,11 @@
 <script>
     $(document).ready(function () {
         $(document).find('[name="kategori_tes"]').trigger('change');
+        $(document).find('.timepicker').timepicker({
+            timeFormat: 'H:mm',
+            interval: 15,
+            maxTime: '5:00'
+        });
     });
     $(document).off('change', '[name="kategori_tes"]').on('change', '[name="kategori_tes"]', function(){
         var kategori_tes = $(this).val();

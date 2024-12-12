@@ -265,11 +265,14 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
                                 '</td>'+
                             '</tr>';
         break;
-        case 'studies_table':
+        case 'class_session_table':
             var row_html =  '<tr>'+
                                 '<td class="row_index text-center"></td>'+
                                 '<td class="p-2">'+
-                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="materials[]" type="text"></select>'+
+                                    '<label for="materials[]" class="mb-4 text-black">Materi</label>'+
+                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="materials[]" type="text" multiple="multiple"></select>'+
+                                    '<label for="trainer[]" class="mb-4 text-black">Trainer</label>'+
+                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="trainer[]" type="text"></select>'+
                                 '</td>'+
                                 // '<td class="p-2 text-center">'+
 
@@ -333,39 +336,81 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
         case 'answers_table':
             //
         break;
-        case 'studies_table':
-            table.find('tbody tr:last').find('select[name="materials[]"]').select2({
-                placeholder: 'Pilih Materi',
-                allowClear: true,
-                minimumInputLength: 3, // only start searching when the user has input 3 or more characters
-                ajax: {
-                    async: false,
-                    url: "{{ route('classes.studies_selectpicker') }}",
-                    dataType: "JSON",
-                    type: "POST",
-                    quietMillis: 50,
-                    delay: 250,
-                    data: function (term) {
-                        return {
-                            term: term,
-                            _token: '{{ csrf_token() }}'
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: $.map(data, function (item) {
-                                return {
-                                    id: item.id,
-                                    text: item.study_material_title,
-                                    pretest_postest: item.pretest_postest,
-                                    tipe: item.tipe,
-                                }
-                            })
-                        };
-                    },
-                    cache: true
+        case 'class_session_table':
+            $.ajax({
+                async: false,
+                type: "GET",
+                url: "{{route('classes.all_studies')}}",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                },
+                dataType: "JSON",
+                success: function (response) {
+                    // console.log(response);
+                    var html = '';
+                    for(var keys in response){
+                        html += '<option value="'+response[keys].id+'" data-tipe="1">'+response[keys].study_material_title+'</option>';
+                    }
+                    table.find('tbody tr:last').find('select[name="materials[]"]').append(html);
+                    table.find('tbody tr:last').find('select[name="materials[]"]').select2({
+                        placeholder: "Pilih materi...",
+                        allowClear: true
+                    });
                 }
-            })
+            });
+            $.ajax({
+                async: false,
+                type: "GET",
+                url: "{{route('classes.all_trainers')}}",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                },
+                dataType: "JSON",
+                success: function (response) {
+                    // console.log(response);
+                    var html = '';
+                    for(var keys in response){
+                        html += '<option value="'+response[keys].id+'">'+response[keys].Employee_name+'</option>';
+                    }
+                    table.find('tbody tr:last').find('select[name="trainer[]"]').append(html);
+                    table.find('tbody tr:last').find('select[name="trainer[]"]').select2({
+                    placeholder: "Pilih trainer...",
+                        allowClear: true
+                    });
+                }
+            });
+            // table.find('tbody tr:last').find('select[name="materials[]"]').select2({
+            //     placeholder: 'Pilih Materi',
+            //     allowClear: true,
+            //     minimumInputLength: 3, // only start searching when the user has input 3 or more characters
+            //     ajax: {
+            //         async: false,
+            //         url: "{{ route('classes.studies_selectpicker') }}",
+            //         dataType: "JSON",
+            //         type: "POST",
+            //         quietMillis: 50,
+            //         delay: 250,
+            //         data: function (term) {
+            //             return {
+            //                 term: term,
+            //                 _token: '{{ csrf_token() }}'
+            //             };
+            //         },
+            //         processResults: function (data) {
+            //             return {
+            //                 results: $.map(data, function (item) {
+            //                     return {
+            //                         id: item.id,
+            //                         text: item.study_material_title,
+            //                         pretest_postest: item.pretest_postest,
+            //                         tipe: item.tipe,
+            //                     }
+            //                 })
+            //             };
+            //         },
+            //         cache: true
+            //     }
+            // })
         break;
         case 'pretests_table':
             table.find('tbody tr:last').find('select[name="materials[]"]').select2({
@@ -441,7 +486,7 @@ $(document).off('click', '.remove_row').on('click', '.remove_row', function(){
 function toggleDetail(element){
     var object = $(element);
     var detailRow = object.closest('tr').nextAll('.class_detail:first'); // Get the next detail row
-    console.log(detailRow)
+    // console.log(detailRow)
 
     if (detailRow.hasClass('hidden')) {
         // Close all other detail rows
@@ -453,5 +498,45 @@ function toggleDetail(element){
         // Close the clicked detail row
         detailRow.addClass('hidden').removeClass('visible');
     }
+}
+
+function smallSkeleton(object){
+    // Show Tailwind skeleton loader
+    var skeletonLoader = `
+            <div class="space-y-4 animate-pulse">
+                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div class="h-4 bg-gray-300 rounded w-full"></div>
+                <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+            </div>`;
+    object.html(skeletonLoader);
+}
+function mediumSkeleton(object){
+    // Show Tailwind skeleton loader
+    var skeletonLoader = `
+            <div class="space-y-4 animate-pulse">
+                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div class="h-4 bg-gray-300 rounded w-full"></div>
+                <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div class="h-4 bg-gray-300 rounded w-full"></div>
+                <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+            </div>`;
+    object.html(skeletonLoader);
+}
+function largeSkeleton(object){
+    // Show Tailwind skeleton loader
+    var skeletonLoader = `
+            <div class="space-y-4 animate-pulse">
+                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div class="h-4 bg-gray-300 rounded w-full"></div>
+                <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div class="h-4 bg-gray-300 rounded w-full"></div>
+                <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div class="h-4 bg-gray-300 rounded w-full"></div>
+                <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+            </div>`;
+    object.html(skeletonLoader);
 }
 </script>

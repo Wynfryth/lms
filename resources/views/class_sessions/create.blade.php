@@ -37,11 +37,132 @@
     <div class="p-2 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                {{-- {{dd(Input::all())}} --}}
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table id="participant_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    Kelas
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    Kategori
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    Mulai
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center">
+                                    Sampai
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                    Peserta
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td class="text-center">
+                                {{$class->class_title}}
+                            </td>
+                            <td class="text-center">
+                                {{$class->class_category}}
+                            </td>
+                            <td class="text-center">
+                                {{date('d/m/Y', strtotime($class->start_eff_date))}}
+                            </td>
+                            <td class="text-center">
+                                {{date('d/m/Y', strtotime($class->end_eff_date))}}
+                            </td>
+                            <td class="text-center">
+                                {{$class->jumlah_peserta}}
+                            </td>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="my-1">
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <table id="schedule_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="border-b text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                        #
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Detail
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Materi / Tes
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Mulai
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Selesai
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $session_name = '';
+                                @endphp
+                                @forelse ($class_session_schedules as $index => $schedule)
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    @if ($session_name != $schedule->session_name)
+                                        <td class="px-6 py-3 text-center border-r" rowspan="{{$schedule->session_schedule_count}}">
+                                            {{$index+1}}
+                                        </td>
+                                        <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" rowspan="{{$schedule->session_schedule_count}}">
+                                            Nama: {{$schedule->session_name}} <br/>
+                                            Trainer: {{$schedule->trainer}} <br/>
+                                            Tipe: {{$schedule->location_type}}
+                                        </th>
+                                        @php
+                                            $session_name = $schedule->session_name;
+                                        @endphp
+                                    @endif
+                                    <td class="px-6 py-3 border-r">
+                                        {{$schedule->study_material_title ?? $schedule->test_name}}
+                                    </td>
+                                    <td class="px-6 py-3 border-r">
+                                        {{date('d/m/Y H:i:s', strtotime($schedule->start_eff_date))}}
+                                    </td>
+                                    <td class="px-6 py-3 border-r">
+                                        {{date('d/m/Y H:i:s', strtotime($schedule->end_eff_date))}}
+                                    </td>
+                                    <td class="text-center relative">
+                                        <button id="dropdownMenuButton-{{ $schedule->schedule_id }}" data-dropdown-toggle="dropdown-{{ $schedule->schedule_id }}" class="border bg-gray-100 text-gray-500 hover:text-gray-700 focus:outline-none rounded-lg">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v.01M12 12v.01M12 18v.01"></path>
+                                            </svg>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div id="dropdown-{{ $schedule->schedule_id }}" class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow-md absolute top-8 right-0" data-dropdown>
+                                            <ul class="py-1 text-sm text-gray-700">
+                                                <li>
+                                                    <button type="button" data-shceduleid="{{$schedule->schedule_id}}" class="block w-full px-4 py-2 hover:bg-gray-100 editSchedule" data-modal-target="scheduleDet-modal" data-modal-toggle="scheduleDet-modal" >Edit</button>
+                                                </li>
+                                                <li>
+                                                    <button type="button" data-scheduleid="{{$schedule->schedule_id}}" class="block w-full px-4 py-2 hover:bg-gray-100 text-red-600 deleteSchedule">Delete</button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr class="row_no_data">
+                                    <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <form method="POST" action="{{ route('class_sessions.store') }}" class="mt-6 space-y-6">
                     @csrf
-                    {{-- @method('put') --}}
-
+                    <input type="hidden" name="class_id" value="{{$class_id}}">
+                    <input type="hidden" name="class_category_type" value="{{$class_category_type}}">
                     <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
                         <div class="my-1">
                             <x-input-label for="nama_sesi" :value="__('Nama Sesi')" />
@@ -51,45 +172,30 @@
                             @enderror
                         </div>
                         <div class="my-1">
-                            <x-input-label for="kelas" :value="__('Jenis Kelas')"></x-input-label>
-                            <x-select-option id="kelas" name="kelas">
-                                <x-slot name="options">
-                                    <option class="disabled" value="null" selected disabled>
-                                        Pilih Jenis Kelas ...
-                                    </option>
-                                    @forelse ($classes as $index => $item)
-                                        <option value="{{ $item->id }}" {{ old('kelas') == $item->id ? 'selected' : '' }}>
-                                            {{ $item->class_title }}
-                                        </option>
-                                    @empty
-                                        {{-- do nothing --}}
-                                    @endforelse
-                                </x-slot>
-                            </x-select-option>
-                            @error('kelas')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                    <div>
-                        <h6 class="font-semibold">Periode Sesi:</h6>
-                        <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
-                            <div>
-                                <div>
-                                    <x-input-label for="periode_efektif_sesi_mulai" :value="__('Dari')"></x-input-label>
-                                    <x-text-input id="periode_efektif_sesi_mulai" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="periode_efektif_sesi_mulai" type="text" class="mt-1 block w-full datepicker" value="{{ old('periode_efektif_sesi_mulai') }}" />
-                                    @error('periode_efektif_sesi_mulai')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    <x-input-label for="periode_efektif_sesi_sampai" :value="__('Sampai')"></x-input-label>
-                                    <x-text-input id="periode_efektif_sesi_sampai" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="periode_efektif_sesi_sampai" type="text" class="mt-1 block w-full datepicker" value="{{ old('periode_efektif_sesi_sampai') }}" />
-                                    @error('periode_efektif_sesi_sampai')
-                                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                                    @enderror
+                            {{-- <h6 class="font-semibold">Mulai Sesi:</h6> --}}
+                            <div class="grid lg:grid-cols-1 sm:grid-cols-1 gap-4">
+                                <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                                    <div>
+                                        <x-input-label for="session_start_date" :value="__('Tanggal')"></x-input-label>
+                                        <x-text-input id="session_start_date" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="session_start_date" type="text" class="mt-1 block w-full datepicker" value="{{ old('session_start_date') }}" />
+                                        @error('session_start_date')
+                                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <x-input-label for="session_start_time" :value="__('Jam')"></x-input-label>
+                                        <div class="relative mt-1">
+                                            <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </div>
+                                            <input type="time" id="session_start_time" name="session_start_time" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="00:00" required />
+                                        </div>
+                                        @error('session_start_time')
+                                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -158,6 +264,24 @@
                         </div>
                     </div>
 
+                    <div class="my-1">
+                        <x-input-label for="materi" :value="__('Materi')" />
+                        <x-select-option id="materi" name="materi[]" class="w-full" multiple="multiple">
+                            <x-slot name="options">
+                                @forelse ($materials as $material)
+                                    <option value="{{ $material->id }}" {{ old('materi') == $material->id ? 'selected' : '' }}>
+                                        {{ $material->material_name }}
+                                    </option>
+                                @empty
+                                    {{-- do nothing --}}
+                                @endforelse
+                            </x-slot>
+                        </x-select-option>
+                        @error('materi')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
                     <div>
                         <x-input-label for="deskripsi_sesi" :value="__('Deskripsi Sesi')" />
                         <x-textarea-input id="deskripsi_sesi" name="deskripsi_sesi" class="mt-1 block w-full">{{ old('deskripsi_sesi') }}</x-textarea-input>
@@ -166,63 +290,50 @@
                         @enderror
                     </div>
 
-                    <div class="my-1">
-                        <div class="my-4 ">
-                            @can('create sesi kelas')
-                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_participant">
-                                + Peserta
-                            </button>
-                            @endcan
-                        </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table id="participant_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            #
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Nama Peserta
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            NIP
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Divisi
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Status
-                                        </th>
-                                        @canany(['edit sesi kelas','delete sesi kelas'])
-                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            Aksi
-                                        </th>
-                                        @endcanany
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="row_no_data">
-                                        <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                     <div class="flex items-center gap-4">
-                        <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-                        {{-- @if (session('status') === 'password-updated')
-                            <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
-                                class="text-sm text-gray-600 dark:text-gray-400">{{ __('Saved.') }}</p>
-                        @endif --}}
+                        <x-primary-button>{{ __('Tambah') }}</x-primary-button>
+                        <a href="{{route('classes')}}" type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center me-2 mb-0 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">SELESAI</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </x-app-layout>
+<div id="scheduleDet-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-4xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white" id="modal_title">
+                    Edit Jadwal
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="scheduleDet-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div id="modal_body" class="p-4 md:p-5 space-y-4">
+
+            </div>
+            <!-- Modal footer -->
+            {{-- <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button data-modal-hide="studydet-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
+                <button data-modal-hide="studydet-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
+            </div> --}}
+        </div>
+    </div>
+</div>
 <script>
+    $(document).ready(function () {
+        $('[name="materi[]"]').select2({
+            placeholder: "Pilih Materi",
+            allowClear: true
+        })
+    });
     $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
         var nip = $(this).val();
         var data = $(this).select2('data')[0]; // get the selected data (all compilation)
@@ -232,4 +343,63 @@
         $(this).closest('tr').find('td:eq(3)').html(divisi);
         $(this).closest('tr').find('td:eq(4)').html('REGISTERED');
     });
+    $(document).off('click', '.deleteSchedule').on('click', '.deleteSchedule', function(){
+        var id = $(this).data('scheduleid');
+        Swal.fire({
+            icon: "question",
+            title: "Hapus",
+            text: "Hapus jadwal?",
+            showDenyButton: true,
+            denyButtonText: "Tidak",
+            confirmButtontext: "Ya",
+            allowOutsideClick: false
+        })
+        .then((feedback)=>{
+            if(feedback.isConfirmed){
+                $.ajax({
+                    type: "POST",
+                    url: "{{route('class_sessions.deleteSchedule')}}",
+                    data: {
+                        _token: "{{csrf_token()}}",
+                        scheduleId: id
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response)
+                        if(response == 1){
+                            Swal.fire({
+                                icon: "success",
+                                title: "Sukses",
+                                text: "Sukses menghapus jadwal",
+                                confirmButtontext: "Ya",
+                                allowOutsideClick: false
+                            })
+                            .then((feedback2)=>{
+                                if(feedback2.isConfirmed){
+                                    window.location.reload();
+                                }
+                            })
+                        }
+                    }
+                });
+            }
+        })
+    });
+    $(document).off('click', '.editSchedule').on('click', '.editSchedule', function(){
+        var scheduleId = $(this).data('shceduleid');
+        smallSkeleton($('#scheduleDet-modal').find('#modal_body'));
+        var url = "{{route('class_sessions.getScheduleDetail', ':scheduleId')}}";
+        url = url.replace(':scheduleId', scheduleId);
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: {
+                _token: "{{csrf_token()}}"
+            },
+            success: function (response) {
+                // console.log(response);
+                $('#scheduleDet-modal').find('#modal_body').html(response);
+            }
+        });
+    })
 </script>

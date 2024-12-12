@@ -12,16 +12,20 @@ class MyClassesController extends Controller
     {
         $nip = Auth::user()->nip;
         $myclasses = DB::table('tr_enrollment AS a')
-            ->select('a.id', 'b.session_name', 'c.class_title', 'b.start_effective_date', 'b.end_effective_date', 'd.enrollment_status')
-            ->leftJoin('t_class_session AS b', 'b.id', '=', 'a.class_session_id')
-            ->leftJoin('t_class_header AS c', 'c.id', '=', 'b.class_id')
+            ->select('a.id', 'b.id AS class_id', 'b.class_title', 'b.class_desc', 'b.start_eff_date', 'b.end_eff_date', 'd.enrollment_status')
+            ->selectRaw(DB::raw('GROUP_CONCAT(c.session_name) AS session_name'))
+            ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+            ->leftJoin('t_class_session AS c', 'c.class_id', '=', 'b.id')
             ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'a.enrollment_status_id')
             ->where('a.emp_nip', $nip)
-            ->orderBy('a.id', 'desc');
+            ->orderBy('a.id', 'desc')
+            ->groupBy('a.id');
+        //  ->toSql();
+        // dd($myclasses);
         if ($myclasses_kywd != null) {
             $any_params = [
-                'b.session_name',
-                'c.class_title',
+                'b.class_title',
+                'b.class_desc',
                 'd.enrollment_status'
             ];
             $myclasses->whereAny($any_params, 'like', '%' . $myclasses_kywd . '%');

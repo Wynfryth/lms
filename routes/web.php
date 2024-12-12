@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClassCatController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\ClassroomsController;
 use App\Http\Controllers\ClassSessionsController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\FileController;
@@ -105,9 +106,13 @@ Route::middleware('auth')->group(function () {
         Route::get('classes/index/{classes_kywd?}', 'index')->middleware(['permission:list master kelas'])->name('classes');
         Route::get('classes/create', 'create')->middleware(['permission:create master kelas'])->name('classes.create');
         Route::post('classes/studies_selectpicker', 'studies_selectpicker')->middleware(['permission:create master kelas|edit master kelas'])->name('classes.studies_selectpicker');
+        Route::get('classes/all_studies', 'all_studies')->middleware(['permission:create master kelas|edit master kelas'])->name('classes.all_studies');
+        Route::post('classes/check_studies', 'check_studies')->middleware(['permission:create master kelas|edit master kelas'])->name('classes.check_studies');
+        Route::get('classes/all_trainers', 'all_trainers')->middleware(['permission:create master kelas|edit master kelas'])->name('classes.all_trainers');
         Route::post('classes/pretests_selectpicker', 'pretests_selectpicker')->middleware(['permission:create master kelas|edit master kelas'])->name('classes.pretests_selectpicker');
         Route::post('classes/store', 'store')->middleware(['permission:create master kelas'])->name('classes.store');
         Route::get('classes/edit/{id}', 'edit')->middleware(['permission:edit master kelas'])->name('classes.edit');
+        Route::post('classes/cancel_student', 'cancel_student')->middleware(['permission:edit master kelas'])->name('classes.cancel_student');
         Route::post('classes/update/{id}', 'update')->middleware(['permission:edit master kelas'])->name('classes.update');
         Route::post('classes/delete', 'delete')->middleware(['permission:delete master kelas'])->name('classes.delete');
         Route::post('classes/recover', 'recover')->middleware(['permission:delete master kelas'])->name('classes.recover');
@@ -115,13 +120,15 @@ Route::middleware('auth')->group(function () {
     // Class Sessions
     Route::controller(ClassSessionsController::class)->group(function () {
         Route::get('class_sessions/index/{class_sessions_kywd?}', 'index')->middleware(['permission:list sesi kelas'])->name('class_sessions');
-        Route::get('class_sessions/create', 'create')->middleware(['permission:create sesi kelas'])->name('class_sessions.create');
+        Route::get('class_sessions/create/{classId}', 'create')->middleware(['permission:create sesi kelas'])->name('class_sessions.create');
         Route::post('class_sessions/participant_selectpicker', 'participant_selectpicker')->middleware(['permission:create sesi kelas|edit sesi kelas'])->name('class_sessions.participant_selectpicker');
         Route::post('class_sessions/store', 'store')->middleware(['permission:create sesi kelas'])->name('class_sessions.store');
         Route::get('class_sessions/edit/{id}', 'edit')->middleware(['permission:edit sesi kelas'])->name('class_sessions.edit');
+        Route::get('class_sessions/getScheduleDetail/{scheduleId}', 'getScheduleDetail')->middleware(['permission:edit sesi kelas'])->name('class_sessions.getScheduleDetail');
         Route::post('class_sessions/cancel_student', 'cancel_student')->middleware(['permission:edit sesi kelas'])->name('class_sessions.cancel_student');
         Route::post('class_sessions/update/{id}', 'update')->middleware(['permission:edit sesi kelas'])->name('class_sessions.update');
         Route::post('class_sessions/delete', 'delete')->middleware(['permission:delete sesi kelas'])->name('class_sessions.delete');
+        Route::post('class_sessions/deleteSchedule', 'deleteSchedule')->middleware(['permission:delete sesi kelas'])->name('class_sessions.deleteSchedule');
         Route::post('class_sessions/recover', 'recover')->middleware(['permission:delete sesi kelas'])->name('class_sessions.recover');
     });
     // Studies Category
@@ -240,12 +247,13 @@ Route::middleware('auth')->group(function () {
     // Kelas Diampu (Instructor)
     Route::controller(MyTeachesController::class)->group(function () {
         Route::get('myteaches/index/{myteaches_kywd?}', 'index')->middleware(['permission:list kelas diampu'])->name('myteaches');
-        Route::get('myteaches/create', 'create')->middleware(['permission:create kelas diampu'])->name('myteaches.create');
-        Route::post('myteaches/store', 'store')->middleware(['permission:create kelas diampu'])->name('myteaches.store');
-        Route::get('myteaches/edit/{id}', 'edit')->middleware(['permission:edit kelas diampu'])->name('myteaches.edit');
-        Route::post('myteaches/update/{id}', 'update')->middleware(['permission:edit kelas diampu'])->name('myteaches.update');
-        Route::post('myteaches/delete', 'delete')->middleware(['permission:delete kelas diampu'])->name('myteaches.delete');
-        Route::post('myteaches/recover', 'recover')->middleware(['permission:delete kelas diampu'])->name('myteaches.recover');
+        Route::post('myteaches/startClassSession', 'startClassSession')->middleware(['permission:list kelas diampu'])->name('myteaches.startClassSession');
+        // Route::get('myteaches/create', 'create')->middleware(['permission:create kelas diampu'])->name('myteaches.create');
+        // Route::post('myteaches/store', 'store')->middleware(['permission:create kelas diampu'])->name('myteaches.store');
+        // Route::get('myteaches/edit/{id}', 'edit')->middleware(['permission:edit kelas diampu'])->name('myteaches.edit');
+        // Route::post('myteaches/update/{id}', 'update')->middleware(['permission:edit kelas diampu'])->name('myteaches.update');
+        // Route::post('myteaches/delete', 'delete')->middleware(['permission:delete kelas diampu'])->name('myteaches.delete');
+        // Route::post('myteaches/recover', 'recover')->middleware(['permission:delete kelas diampu'])->name('myteaches.recover');
     });
 
     // Jadwalku (Student)
@@ -257,6 +265,19 @@ Route::middleware('auth')->group(function () {
         Route::post('myteachesschedule/update/{id}', 'update')->middleware(['permission:edit jadwal kelas diampu'])->name('myteachesschedule.update');
         Route::post('myteachesschedule/delete', 'delete')->middleware(['permission:delete jadwal kelas diampu'])->name('myteachesschedule.delete');
         Route::post('myteachesschedule/recover', 'recover')->middleware(['permission:delete jadwal kelas diampu'])->name('myteachesschedule.recover');
+    });
+
+    // Classrooms
+    Route::controller(ClassroomsController::class)->group(function () {
+        Route::get('classrooms/index/{class_id}', 'index')->middleware(['permission:list ruang kelas'])->name('classrooms');
+        Route::post('classrooms/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('classrooms.getClassSessions');
+        Route::get('classrooms/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('classrooms.getSessionSchedule');
+        // Route::get('classrooms/create', 'create')->middleware(['permission:create ruang kelas'])->name('classrooms.create');
+        // Route::post('classrooms/store', 'store')->middleware(['permission:create ruang kelas'])->name('classrooms.store');
+        // Route::get('classrooms/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('classrooms.edit');
+        // Route::post('classrooms/update/{id}', 'update')->middleware(['permission:edit ruang kelas'])->name('classrooms.update');
+        // Route::post('classrooms/delete', 'delete')->middleware(['permission:delete ruang kelas'])->name('classrooms.delete');
+        // Route::post('classrooms/recover', 'recover')->middleware(['permission:delete ruang kelas'])->name('classrooms.recover');
     });
 });
 

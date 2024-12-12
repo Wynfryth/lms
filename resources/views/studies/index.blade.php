@@ -70,6 +70,9 @@
                                     <th scope="col" class="px-6 py-3">
                                         Keaktifan
                                     </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Total Durasi
+                                    </th>
                                     @canany(['edit bank materi', 'delete bank materi'])
                                     <th scope="col" class="px-6 py-3 text-center">
                                         Aksi
@@ -117,6 +120,30 @@
                                             @else
                                                 <span class="text-rose-600">{{ 'Non-Aktif' }}</span>
                                             @endif
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @php
+                                                if($value->total_waktu != null){
+                                                    $total_waktu = explode(':', $value->total_waktu);
+                                                    $durasi = '';
+                                                    if(intval($total_waktu[0]) > 0 || intval($total_waktu[1]) > 0 || intval($total_waktu[2]) != 0){
+                                                        if(intval($total_waktu[0]) != 0){
+                                                            $durasi .= intval($total_waktu[0]).' jam ';
+                                                        }
+                                                        if(intval($total_waktu[1]) != 0){
+                                                            $durasi .= intval($total_waktu[1]).' menit ';
+                                                        }
+                                                        if(intval($total_waktu[2]) != 0){
+                                                            $durasi .= intval($total_waktu[2]).' detik ';
+                                                        }
+                                                    }else{
+                                                        $durasi = '-';
+                                                    }
+                                                }else{
+                                                    $durasi = '-';
+                                                }
+                                            @endphp
+                                            {{ $durasi }}
                                         </td>
                                         @canany(['edit bank materi', 'delete bank materi'])
                                         <td class="px-6 py-4" width="15%">

@@ -67,10 +67,47 @@ class ClassSessionsController extends Controller
         return view('class_sessions.index', compact('class_sessions', 'class_sessions_kywd'));
     }
 
-    public function create()
+    public function create($class_id)
     {
-        $classes = DB::table('t_class_header AS a')
-            ->where('a.is_active', 1)
+        $class = DB::table('t_class_header AS a')
+            ->select('a.id', 'a.class_title', 'b.class_category_type_id', 'b.class_category', 'a.start_eff_date', 'a.end_eff_date')
+            ->selectRaw(DB::raw('COUNT(C.id) AS jumlah_peserta'))
+            ->leftJoin('tm_class_category AS b', 'b.id', '=', 'a.class_category_id')
+            ->leftJoin('tr_enrollment AS c', 'c.class_id', '=', 'a.id')
+            ->where(['a.is_active' => 1, 'a.id' => $class_id])
+            ->groupBy('a.id')
+            ->first();
+        $class_session_schedules = DB::table('t_class_session AS a')
+            ->select(
+                'a.id',
+                'a.session_name',
+                'a.desc',
+                'a.class_id',
+                'a.session_order',
+                'b.id AS schedule_id',
+                'b.start_eff_date',
+                'b.end_eff_date',
+                'f.Employee_name AS trainer',
+                'g.location_type',
+                'c.study_material_title',
+                'd.test_name'
+            )
+            ->selectRaw(DB::raw('(SELECT COUNT(*) FROM t_session_material_schedule WHERE class_session_id = a.id) AS session_schedule_count'))
+            ->leftJoin('t_session_material_schedule AS b', 'b.class_session_id', '=', 'a.id')
+            ->leftJoin('tm_study_material_header AS c', function ($join) {
+                $join->on('c.id', '=', 'b.material_id')
+                    ->where('b.material_type', '=', 1);
+            })
+            ->leftJoin('tm_test AS d', function ($join) {
+                $join->on('d.id', '=', 'b.material_id')
+                    ->where('b.material_type', '=', 2);
+            })
+            ->leftJoin('tm_trainer_data AS e', 'e.id', '=', 'a.trainer_id')
+            ->leftJoin('miegacoa_employees.emp_employee AS f', 'f.nip', '=', 'e.nip')
+            ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
+            ->where('a.class_id', $class_id)
+            ->orderBy('a.session_order', 'asc')
+            ->orderBy('b.start_eff_date', 'asc')
             ->get();
         $instructor = DB::table('tm_trainer_data AS a')
             ->select('a.id', 'b.Employee_name')
@@ -83,7 +120,31 @@ class ClassSessionsController extends Controller
         $loc_type = DB::table('tm_location_type AS a')
             ->where('a.is_active', 1)
             ->get();
-        return view('class_sessions.create', compact('classes', 'instructor', 'training_center', 'loc_type'));
+        $class_category_type = $class->class_category_type_id;
+        switch ($class_category_type) {
+            case "1":
+                $materials = DB::table('tm_study_material_header AS a')
+                    ->select('a.id', 'a.study_material_title AS material_name', 'a.study_material_desc', 'b.study_material_category', 'a.is_active')
+                    ->selectRaw('GROUP_CONCAT(e.id) AS kategori_tes, GROUP_CONCAT(d.test_name) AS tests')
+                    ->leftJoin('tm_study_material_category AS b', 'b.id', '=', 'a.category_id')
+                    ->leftJoin('t_test_with_materials_list AS c', 'c.study_materials_id', '=', 'a.id')
+                    ->leftJoin('tm_test AS d', 'd.id', '=', 'c.test_id')
+                    ->leftJoin('tm_test_category AS e', 'e.id', '=', 'd.test_cat_id')
+                    ->groupBy('a.id')
+                    // ->having('(GROUP_CONCAT(e.id) = "3,2" OR GROUP_CONCAT(e.id) = "2,3")')
+                    ->havingRaw('(GROUP_CONCAT(e.id) = ? OR GROUP_CONCAT(e.id) = ?)', ["2,3", "3,2"])
+                    ->orderByDesc('a.id')
+                    ->get();
+                break;
+            case "2":
+                $materials = DB::table('tm_test AS a')
+                    ->leftJoin('tm_test_category AS b', 'b.id', '=', 'a.test_cat_id')
+                    ->select('a.id', 'a.test_name AS material_name')
+                    ->where('a.test_cat_id', 1)
+                    ->get();
+                break;
+        }
+        return view('class_sessions.create', compact('class_id', 'class_session_schedules', 'class_category_type', 'class', 'instructor', 'training_center', 'loc_type', 'materials'));
     }
 
     public function participant_selectpicker(Request $request)
@@ -102,36 +163,40 @@ class ClassSessionsController extends Controller
             $request->all(),
             [
                 'nama_sesi' => 'required',
-                'kelas' => 'required',
-                'periode_efektif_sesi_mulai' => 'required',
-                'periode_efektif_sesi_sampai' => 'required',
+                // 'kelas' => 'required',/
+                'session_start_date' => 'required',
+                'session_start_time' => 'required',
                 'instruktur' => 'required',
                 'training_center' => 'required',
                 'loc_type' => 'required',
-                'deskripsi_sesi' => 'required',
+                // 'deskripsi_sesi' => 'required',
                 // 'peserta' => 'array|required',
             ],
             [
                 'nama_sesi.required' => 'Nama sesi belum terisi.',
-                'kelas.required' => 'Kelas belum terisi.',
-                'periode_efektif_sesi_mulai.required' => 'Periode mulai belum terisi.',
-                'periode_efektif_sesi_sampai.required' => 'Periode sampai belum terisi.',
+                // 'kelas.required' => 'Kelas belum terisi.',
+                'session_start_date.required' => 'Tanggal mulai sesi belum terisi.',
+                'session_start_time.required' => 'Waktu mulai sesi belum terisi.',
                 'instruktur.required' => 'Instruktur belum terisi.',
                 'training_center.required' => 'Training Center belum terisi.',
                 'loc_type.required' => 'Tipe pembelajaran belum terisi.',
-                'deskripsi_sesi.required' => 'Deskripsi sesi belum terisi.',
+                // 'deskripsi_sesi.required' => 'Deskripsi sesi belum terisi.',
                 // 'peserta.required' => 'Peserta belum terisi.',
             ]
         );
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput($request->all());
         }
+        $latest_order = DB::table('t_class_session AS a')
+            ->selectraw('IF(MAX(a.session_order) IS NOT NULL, MAX(a.session_order), 0) AS last_order')
+            ->where('class_id', $request->class_id)
+            ->first();
         $insert_data = [
             'session_name' => $request->nama_sesi,
             'desc' => $request->deskripsi_sesi,
-            'class_id' => $request->kelas,
-            'start_effective_date' => date('Y-m-d', strtotime($request->periode_efektif_sesi_mulai)),
-            'end_effective_date' => date('Y-m-d', strtotime($request->periode_efektif_sesi_sampai)),
+            'class_id' => $request->class_id,
+            'start_effective_date' => date('Y-m-d H:i:s', strtotime($request->session_start_date . ' ' . $request->session_start_time)),
+            'session_order' => $latest_order->last_order + 1,
             'is_active' => 1,
             'trainer_id' => $request->instruktur,
             'loc_type_id' => $request->loc_type,
@@ -141,8 +206,112 @@ class ClassSessionsController extends Controller
         ];
         $insert_action = DB::table('t_class_session')
             ->insertGetId($insert_data);
-        $notification_title = "Ditambahkan ke Sesi Kelas \"" . $request->nama_sesi . "\" sebagai Instruktur";
-        $notification_content = "Anda ditambahkan sebagai Instruktur ke Sesi Kelas \"" . $request->nama_sesi . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+
+        // INSERTING TO MATERIAL SCHEDULE INSIDE CLASS SESSION
+        switch ($request->class_category_type) { // checking if its pre-class or training class
+            case "1": // training class
+                if ($request->materi != null) {
+                    $session_start_datetime = date('Y-m-d H:i:s', strtotime($request->session_start_date . ' ' . $request->session_start_time));
+                    foreach ($request->materi as $material) {
+                        // $session_start_datetime = date('Y-m-d H:i:s', strtotime($request->session_start_date . ' ' . $request->session_start_time));
+
+                        // SEARCHING FOR THE LATEST MATERIAL ORDER FROM THE CLASS SESSION
+                        $latest_order = DB::table('t_session_material_schedule AS a')
+                            ->selectRaw('IF(MAX(a.material_order) IS NOT NULL, MAX(a.material_order), 0) AS last_order')
+                            ->where('class_session_id', $insert_action)
+                            ->first();
+
+                        // INSERTING PRE-TEST
+                        $pretest = DB::table('t_test_with_materials_list AS a')
+                            ->select('a.test_id', 'b.estimated_time')
+                            ->leftJoin('tm_test As b', 'b.id', '=', 'a.test_id')
+                            ->where(['a.study_materials_id' => $material, 'b.test_cat_id' => 2])
+                            ->first();
+                        $insert_pretest_data = [
+                            'class_session_id' => $insert_action,
+                            'material_id' => $pretest->test_id,
+                            'material_type' => 2,
+                            'material_order' => $latest_order->last_order + 1,
+                            'start_eff_date' => $session_start_datetime,
+                            'end_eff_date' => DB::raw("ADDTIME('$session_start_datetime', '$pretest->estimated_time')"),
+                            'created_by' => Auth::id(),
+                            'created_date' => Carbon::now()
+                        ];
+                        $insert_pretest = DB::table('t_session_material_schedule')
+                            ->insertGetId($insert_pretest_data);
+
+                        // INSERTING STUDY
+                        $pretest_schedule = DB::table('t_session_material_schedule AS a')
+                            ->select('a.end_eff_date')
+                            ->where('a.id', $insert_pretest)
+                            ->first();
+                        $study_duration = DB::table('tm_study_material_header AS a')
+                            ->select('a.id')
+                            ->selectRaw('GROUP_CONCAT(b.name) AS pembelajaran, GROUP_CONCAT(c.filename) AS attachments, SEC_TO_TIME( SUM( TIME_TO_SEC(c.estimated_time) ) ) AS total_waktu')
+                            ->leftJoin('tm_study_material_detail AS b', 'b.header_id', '=', 'a.id')
+                            ->leftJoin('tm_study_material_attachments AS c', 'c.study_material_detail_id', '=', 'b.id')
+                            ->where('a.id', $material)
+                            ->groupBy('a.id')
+                            ->first();
+                        $insert_study_data = [
+                            'class_session_id' => $insert_action,
+                            'material_id' => $material,
+                            'material_type' => 1,
+                            'material_order' => $latest_order->last_order + 2,
+                            'start_eff_date' => $pretest_schedule->end_eff_date,
+                            'end_eff_date' => DB::raw("ADDTIME('$pretest_schedule->end_eff_date', '$study_duration->total_waktu')"),
+                            'created_by' => Auth::id(),
+                            'created_date' => Carbon::now()
+                        ];
+                        $insert_study = DB::table('t_session_material_schedule')
+                            ->insertGetId($insert_study_data);
+
+                        // INSERTING POST-TEST
+                        $study_schedule = DB::table('t_session_material_schedule AS a')
+                            ->select('a.end_eff_date')
+                            ->where('a.id', $insert_study)
+                            ->first();
+                        $posttest = DB::table('t_test_with_materials_list AS a')
+                            ->select('a.test_id', 'b.estimated_time')
+                            ->leftJoin('tm_test As b', 'b.id', '=', 'a.test_id')
+                            ->where(['a.study_materials_id' => $material, 'b.test_cat_id' => 3])
+                            ->first();
+                        $insert_posttest_data = [
+                            'class_session_id' => $insert_action,
+                            'material_id' => $posttest->test_id,
+                            'material_type' => 2,
+                            'material_order' => $latest_order->last_order + 3,
+                            'start_eff_date' => $study_schedule->end_eff_date,
+                            'end_eff_date' => DB::raw("ADDTIME('$study_schedule->end_eff_date', '$posttest->estimated_time')"),
+                            'created_by' => Auth::id(),
+                            'created_date' => Carbon::now()
+                        ];
+                        $insert_posttest = DB::table('t_session_material_schedule')
+                            ->insertGetId($insert_posttest_data);
+                        // GETTING THE LATEST END DATE FOR UPDATING THE CLASS SESSION END DATE TIME
+                        $session_end_datetime_query = DB::table('t_session_material_schedule AS a')
+                            ->select('a.end_eff_date')
+                            ->where('a.id', $insert_posttest)
+                            ->first();
+                        $session_start_datetime = $session_end_datetime_query->end_eff_date;
+                    }
+                    $update_class_session_end_datetime = DB::table('t_class_session AS a')
+                        ->where('a.id', $insert_action)
+                        ->update(['end_effective_date' => $session_end_datetime_query->end_eff_date]);
+                }
+                break;
+            case "2": //  pre-class
+
+                break;
+            default:
+                break;
+        }
+
+        // TRAINER'S NOTIFICATON
+        $class = DB::table('t_class_header')->select('class_title')->where('id', $request->class_id)->first();
+        $class_title = $class->class_title;
+        $notification_title = "Ditambahkan ke Kelas \"" . $class_title . "\" (Sesi Kelas \"" . $request->nama_sesi . "\") sebagai Instruktur";
+        $notification_content = "Anda ditambahkan sebagai Instruktur ke Kelas \"" . $class_title . "\" (Sesi Kelas \"" . $request->nama_sesi . "\") oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
         $insert_notification = [
             'notification_title' => $notification_title,
             'notification_content' => $notification_content,
@@ -157,46 +326,14 @@ class ClassSessionsController extends Controller
             'read_status' => 0
         ];
         DB::table('t_notification_receipt')->insert($insert_notif_receipt);
-        if (count($request->peserta) > 0) {
-            foreach ($request->peserta as $item) {
-                $insert_enrollment_data = [
-                    'emp_nip' => $item,
-                    'class_session_id' => $insert_action,
-                    'enrollment_date' => Carbon::now(),
-                    'enrollment_status_id' => 1, // 1 is registered
-                    'created_by' => Auth::id(),
-                    'created_date' => Carbon::now()
-                ];
-                $insert_enrollment = DB::table('tr_enrollment')
-                    ->insertGetId($insert_enrollment_data);
-                $user = User::where(['nip' => $item])->first();
-                if ($user) {
-                    $user->removeRole('Guest');
-                    $user->assignRole('Student');
-                }
-                $notification_title = "Ditambahkan ke Sesi Kelas \"" . $request->nama_sesi . "\" sebagai Peserta";
-                $notification_content = "Anda ditambahkan sebagai Peserta ke Sesi Kelas \"" . $request->nama_sesi . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
-                $insert_notification = [
-                    'notification_title' => $notification_title,
-                    'notification_content' => $notification_content,
-                    'created_by' => Auth::id(),
-                    'created_date' => Carbon::now()
-                ];
-                $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
-                $insert_notif_receipt = [
-                    'notification_id' => $notification_id,
-                    'user_nip' => $item,
-                    'read_status' => 0
-                ];
-                DB::table('t_notification_receipt')->insert($insert_notif_receipt);
-            }
-        }
+
+        // REDIRECTING THE PAGE IF THE INSERT IS SUCCESSFUL
         if ($insert_action > 0) {
             $status = [
                 'status' => 'insert',
                 'status_message' => 'Berhasil menambah data!'
             ];
-            return redirect()->route('class_sessions')->with($status);
+            return redirect()->route('class_sessions.create', $request->class_id)->with($status);
         }
     }
 
@@ -473,5 +610,29 @@ class ClassSessionsController extends Controller
         ];
         DB::table('t_notification_receipt')->insert($insert_notif_receipt);
         return $cancel_action;
+    }
+
+    public function deleteSchedule(Request $request)
+    {
+        $delete_action = DB::table('t_session_material_schedule AS a')
+            ->where('a.id', $request->scheduleId)
+            ->delete();
+        return $delete_action;
+    }
+
+    public function getScheduleDetail($scheduleId)
+    {
+        $schedule = DB::table('t_session_material_schedule AS a')
+            ->leftJoin('tm_study_material_header AS b', function ($join) {
+                $join->on('b.id', '=', 'a.material_id')
+                    ->where('a.material_type', '=', 1);
+            })
+            ->leftJoin('tm_test AS c', function ($join) {
+                $join->on('c.id', '=', 'a.material_id')
+                    ->where('a.material_type', '=', 2);
+            })
+            ->where('a.id', $scheduleId)
+            ->first();
+        return view('class_sessions.editSchedule', compact('schedule'));
     }
 }

@@ -58,12 +58,15 @@
                                         Judul
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Kategori
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-center">
-                                        Jumlah Materi
+                                        Mulai
                                     </th>
                                     <th scope="col" class="px-6 py-3">
+                                        Sampai
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Jumlah Materi/Tes
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
                                         Keaktifan
                                     </th>
                                     @canany(['edit master kelas', 'delete master kelas'])
@@ -85,22 +88,28 @@
                                             {{ $value->class_title }}
                                         </td>
                                         <td class="px-6 py-4">
-                                            {{ $value->class_category }}
+                                            {{ date('d/m/Y', strtotime($value->start_eff_date)) }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ date('d/m/Y', strtotime($value->end_eff_date)) }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             {{ $value->jumlah_materi }}
                                         </td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-6 py-4 text-center">
                                             @if ($value->is_active == 1)
                                                 <span class="text-emerald-600">{{ 'Aktif' }}</span>
                                             @else
                                                 <span class="text-rose-600">{{ 'Non-Aktif' }}</span>
                                             @endif
                                         </td>
-                                        @canany(['edit master kelas', 'delete master kelas'])
+                                        @canany(['create sesi kelas', 'edit master kelas', 'delete master kelas'])
                                         <td class="px-6 py-4" width="15%">
                                             @if ($value->is_active == 1)
                                                 <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                    @can('create sesi kelas')
+                                                    <a type="button" class="font-medium text-blue-400 dark:text-blue-200 hover:underline" href="{{ route('class_sessions.create', $value->id) }}">Sesi</a>
+                                                    @endcan
                                                     @can('edit master kelas')
                                                     <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('classes.edit', $value->id) }}">Edit</a>
                                                     @endcan
@@ -144,6 +153,7 @@
                                                 <div class="col-span-2 grid grid-cols-1 gap-2">
                                                     @php
                                                         $studies = explode(',', $value->studies);
+                                                        $tests = explode(',', $value->tests);
                                                     @endphp
                                                     @if ($studies[0] != '')
                                                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -159,9 +169,15 @@
                                                                 <td class="px-6 py-4">
                                                                     <ol class="ps-5 mt-2 space-y-1 list-decimal list-inside">
                                                                     <div class="grid lg:grid-cols-2 sm:grid-cols-3 gap-2">
+                                                                        @if (substr($value->class_category, 0, 3) == 'Pre')
+                                                                        @foreach($tests as $index => $test)
+                                                                            <li>{{$test}}</li>
+                                                                        @endforeach
+                                                                        @else
                                                                         @foreach($studies as $index => $study)
                                                                             <li>{{$study}}</li>
                                                                         @endforeach
+                                                                        @endif
                                                                     </div>
                                                                     </ol>
                                                                 </td>

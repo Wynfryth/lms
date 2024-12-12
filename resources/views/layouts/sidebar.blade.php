@@ -288,17 +288,17 @@
                     @can('list master kelas')
                     <li>
                         <a href="{{ route('classes') }}" :active="request()->routeIs('classes')" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                            Master Kelas
+                            Daftar Kelas
                         </a>
                     </li>
                     @endcan
-                    @can('list sesi kelas')
+                    {{-- @can('list sesi kelas')
                     <li>
                         <a href="{{ route('class_sessions') }}" :active="request()->routeIs('class_sessions')" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             Sesi Kelas
                         </a>
                     </li>
-                    @endcan
+                    @endcan --}}
                 </ul>
             </li>
             @endcanany

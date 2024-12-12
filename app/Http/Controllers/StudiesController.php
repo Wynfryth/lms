@@ -21,11 +21,18 @@ class StudiesController extends Controller
     {
         $studies = DB::table('tm_study_material_header AS a')
             ->select('a.id', 'a.study_material_title', 'a.study_material_desc', 'b.study_material_category', 'a.is_active')
-            ->selectRaw('GROUP_CONCAT(e.id) AS kategori_tes, GROUP_CONCAT(d.test_name) AS tests')
+            ->selectRaw('GROUP_CONCAT(e.id) AS kategori_tes, GROUP_CONCAT(d.test_name) AS tests, f.pembelajaran, f.attachments, f.total_waktu')
             ->leftJoin('tm_study_material_category AS b', 'b.id', '=', 'a.category_id')
             ->leftJoin('t_test_with_materials_list AS c', 'c.study_materials_id', '=', 'a.id')
             ->leftJoin('tm_test AS d', 'd.id', '=', 'c.test_id')
             ->leftJoin('tm_test_category AS e', 'e.id', '=', 'd.test_cat_id')
+            ->leftJoin(DB::raw('(SELECT
+                a.id, GROUP_CONCAT(b.name) AS pembelajaran, GROUP_CONCAT(c.filename) AS attachments, SEC_TO_TIME( SUM( TIME_TO_SEC(c.estimated_time) ) ) AS total_waktu
+                FROM tm_study_material_header AS a
+                LEFT JOIN tm_study_material_detail AS b ON b.header_id = a.id
+                LEFT JOIN tm_study_material_attachments AS c ON c.study_material_detail_id = b.id
+                GROUP BY a.id) AS f'), 'f.id', '=', 'a.id')
+            ->leftJoin('tm_study_material_attachments AS g', 'g.study_material_detail_id', '=', 'f.id')
             ->orderByDesc('a.id')
             ->groupBy('a.id');
         if ($studies_kywd != null) {

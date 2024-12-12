@@ -81,28 +81,58 @@
                         <x-textarea-input id="deskripsi_kelas" name="deskripsi_kelas" class="mt-1 block w-full">{{ $item->class_desc }}</x-textarea-input>
                     </div>
 
-                    <div id="div_studies_table" class="my-1 hidden">
+                    <div>
+                        <h6 class="font-semibold">Periode Kelas:</h6>
+                        <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
+                            <div>
+                                <div>
+                                    <x-input-label for="class_start" :value="__('Dari')"></x-input-label>
+                                    <x-text-input id="class_start" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="class_start" type="text" class="mt-1 block w-full class_period datepicker" value="{{ date('d-m-Y', strtotime($item->start_eff_date)); }}" />
+                                    @error('class_start')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    <x-input-label for="class_end" :value="__('Sampai')"></x-input-label>
+                                    <x-text-input id="class_end" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="class_end" type="text" class="mt-1 block w-full class_period datepicker" value="{{ date('d-m-Y', strtotime($item->end_eff_date)); }}" />
+                                    @error('class_end')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="my-1">
                         <div class="my-4 ">
-                            @can('create master kelas')
-                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_studies">
-                                + Materi
+                            @can('create sesi kelas')
+                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_participant">
+                                + Peserta
                             </button>
                             @endcan
                         </div>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table id="studies_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <table id="participant_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
                                             #
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-center">
-                                            Materi Pembelajaran (+ Pre & Post Tes)
+                                            Nama Peserta
                                         </th>
-                                        {{-- <th scope="col" class="px-6 py-3 text-center">
-                                            Jumlah Lampiran Materi/Soal
-                                        </th> --}}
-                                        @canany(['edit master kelas','delete master kelas'])
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            NIP
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Divisi
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Status
+                                        </th>
+                                        @canany(['edit sesi kelas','delete sesi kelas'])
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
                                             Aksi
                                         </th>
@@ -118,42 +148,6 @@
                         </div>
                     </div>
 
-                    <div id="div_tests_table" class="my-1 hidden">
-                        <div class="my-4 ">
-                            @can('create master kelas')
-                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_pretest">
-                                + Pre-test
-                            </button>
-                            @endcan
-                        </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table id="pretests_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            #
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Pre-tes
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Jumlah Soal
-                                        </th>
-                                        @canany(['edit master kelas','delete master kelas'])
-                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            Aksi
-                                        </th>
-                                        @endcanany
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="row_no_data">
-                                        <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
 
                     <div class="flex items-center gap-4">
                         <x-primary-button>{{ __('Save') }}</x-primary-button>
@@ -170,68 +164,130 @@
 </x-app-layout>
 <script>
     $(document).ready(function () {
-        $(document).find('[name="kategori_kelas"]').val('{{$item->class_category_id}}').trigger('change');
-        var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
-        var id_materials = "{{$item->id_materials}}".split(',');
-        var studies = "{{$item->studies}}".split(',');
-        switch(category_type){
-            case "Pre-test Class":
-                var jumlah_soal = "{{$item->jumlah_soal}}".split(',');
-                for(var i=0; i<id_materials.length; i++){
-                    $('button#add_pretest').trigger('click');
-                    $('#pretests_table tbody tr:last').find('select[name="materials[]"]').append('<option value="'+id_materials[i]+'">'+studies[i]+'</option>');
-                    $('#pretests_table tbody tr:last').find('td:eq(2)').html(jumlah_soal[i]);
-                    $('#pretests_table tbody tr:last').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Tes">');
-                }
-            break;
-            case "Training Class":
-                for(var i=0; i<id_materials.length; i++){
-                    $('button#add_studies').trigger('click');
-                    $('#studies_table tbody tr:last').find('select[name="materials[]"]').append('<option value="'+id_materials[i]+'">'+studies[i]+'</option>');
-                    $('#studies_table tbody tr:last').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Materi">');
-                }
-            break;
+        // $(document).find('[name="kategori_kelas"]').val('{{$item->class_category_id}}').trigger('change');
+        // var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
+        // var id_materials = "{{$item->id_materials}}".split(',');
+        // var studies = "{{$item->studies}}".split(',');
+        // switch(category_type){
+        //     case "Pre-test Class":
+        //         var jumlah_soal = "{{$item->jumlah_soal}}".split(',');
+        //         for(var i=0; i<id_materials.length; i++){
+        //             $('button#add_pretest').trigger('click');
+        //             // $('#pretests_table tbody tr:last').find('select[name="materials[]"]').append('<option value="'+id_materials[i]+'">'+studies[i]+'</option>');
+        //             $('#pretests_table tbody tr:last').find('select[name="materials[]"]').val(id_materials[i]).trigger('change');
+        //             $('#pretests_table tbody tr:last').find('td:eq(2)').html(jumlah_soal[i]);
+        //             $('#pretests_table tbody tr:last').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Tes">');
+        //         }
+        //     break;
+        //     case "Training Class":
+        //         for(var i=0; i<id_materials.length; i++){
+        //             $('button#add_studies').trigger('click');
+        //             // $('#studies_table tbody tr:last').find('select[name="materials[]"]').append('<option value="'+id_materials[i]+'">'+studies[i]+'</option>');
+        //             $('#studies_table tbody tr:last').find('select[name="materials[]"]').val(id_materials[i]).trigger('change');
+        //             $('#studies_table tbody tr:last').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Materi">');
+        //         }
+        //     break;
+        // }
+        var students = @json($students);
+        // console.log(students);
+        for(var keys in students){
+            $('button#add_participant').trigger('click');
+            $(document).find('#participant_table tbody tr:last').find('[name="peserta[]"]').closest('td').empty().html('<span>'+students[keys].student_name+'</span>');
+            $(document).find('#participant_table tbody tr:last').find('td:eq(2)').html(students[keys].emp_nip);
+            $(document).find('#participant_table tbody tr:last').find('td:eq(3)').html('<span>'+students[keys].Organization+'</span>');
+            $(document).find('#participant_table tbody tr:last').find('td:eq(4)').html('<span>'+students[keys].enrollment_status+'</span>');
+            $(document).find('#participant_table tbody tr:last').find('button.remove_row').removeClass('remove_row').addClass('cancel_student');
         }
     });
-    $(document).off('change', '[name="kategori_kelas"]').on('change', '[name="kategori_kelas"]', function(){
-        var id_kategori_kelas = $(this).val();
-        var category_type = $(this).find('option:selected').data('category-type');
-        switch(category_type){
-            case "Pre-test Class":
-                // nampilin yang pretest doang
-                $('#div_tests_table').removeClass('hidden');
-                $('#div_studies_table table tbody').empty();
-                update_dynaTable_index($('#div_studies_table table'));
-                $('#div_studies_table').addClass('hidden');
-            break;
-            case "Training Class":
-                // nampilin yang materi doang
-                $('#div_studies_table').removeClass('hidden');
-                $('#div_tests_table table tbody').empty();
-                update_dynaTable_index($('#div_tests_table table'));
-                $('#div_tests_table').addClass('hidden');
-            break;
-        }
+    $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
+        var nip = $(this).val();
+        var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+        var divisi = data.division;
+
+        $(this).closest('tr').find('td:eq(2)').html(nip);
+        $(this).closest('tr').find('td:eq(3)').html(divisi);
+        $(this).closest('tr').find('td:eq(4)').html('REGISTERED');
     });
-    $(document).off('change', 'select[name="materials[]"]').on('change', 'select[name="materials[]"]', function(){
-        var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
-        switch(category_type){
-            case "Pre-test Class":
-                var id_test = $(this).val();
-                var data = $(this).select2('data')[0]; // get the selected data (all compilation)
-                var jumlah_soal = data.jumlah_soal;
-                var tipe = data.tipe;
-                console.log(data);
-                $(this).closest('tr').find('td:eq(2)').html(jumlah_soal);
-                $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
-            break;
-            case "Training Class":
-                var id_studies = $(this).val();
-                var data = $(this).select2('data')[0]; // get the selected data (all compilation)
-                var pretest_postest = data.pretest_postest;
-                var tipe = data.tipe;
-                $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
-            break;
-        }
-    });
+    $(document).off('click', '.cancel_student').on('click', '.cancel_student', function(){
+        var student_nip = $(this).closest('tr').find('td:eq(2)').html();
+        var class_id = '{{$item->id}}';
+        Swal.fire({
+            title: 'Batalkan Peserta',
+            text: 'Yakin untuk membatalkan peserta ini?',
+            icon: 'warning',
+            confirmButtonText: 'Ya, batalkan!',
+            showDenyButton: true,
+            denyButtonText: 'Tidak',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('classes.cancel_student') }}",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        class_id: class_id,
+                        student_nip: student_nip
+                    },
+                    success: function(data){
+                        // $(this).closest('tr').remove();
+                        if(data > 0){
+                            Swal.fire({
+                                title: 'Batalkan Peserta',
+                                text: 'Peserta telah dibatalkan',
+                                icon: 'success',
+                                allowOutsideClick: false
+                            })
+                            .then((feedback)=>{
+                                if(feedback.isConfirmed){
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        })
+    })
+    // $(document).off('change', '[name="kategori_kelas"]').on('change', '[name="kategori_kelas"]', function(){
+    //     var id_kategori_kelas = $(this).val();
+    //     var category_type = $(this).find('option:selected').data('category-type');
+    //     switch(category_type){
+    //         case "Pre-test Class":
+    //             // nampilin yang pretest doang
+    //             $('#div_tests_table').removeClass('hidden');
+    //             $('#div_studies_table table tbody').empty();
+    //             update_dynaTable_index($('#div_studies_table table'));
+    //             $('#div_studies_table').addClass('hidden');
+    //         break;
+    //         case "Training Class":
+    //             // nampilin yang materi doang
+    //             $('#div_studies_table').removeClass('hidden');
+    //             $('#div_tests_table table tbody').empty();
+    //             update_dynaTable_index($('#div_tests_table table'));
+    //             $('#div_tests_table').addClass('hidden');
+    //         break;
+    //     }
+    // });
+    // $(document).off('change', 'select[name="materials[]"]').on('change', 'select[name="materials[]"]', function(){
+    //     var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
+    //     switch(category_type){
+    //         case "Pre-test Class":
+    //             var id_test = $(this).val();
+    //             var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+    //             var jumlah_soal = data.jumlah_soal;
+    //             var tipe = data.tipe;
+    //             console.log(data);
+    //             $(this).closest('tr').find('td:eq(2)').html(jumlah_soal);
+    //             $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
+    //         break;
+    //         case "Training Class":
+    //             var id_studies = $(this).val();
+    //             var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+    //             var pretest_postest = data.pretest_postest;
+    //             var tipe = data.tipe;
+    //             $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
+    //         break;
+    //     }
+    // });
 </script>

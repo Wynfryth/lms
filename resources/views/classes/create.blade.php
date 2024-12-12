@@ -22,7 +22,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Master Kelas</a>
+                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Kelas</a>
                     </div>
                 </li>
                 <li aria-current="page">
@@ -40,7 +40,25 @@
     <div class="p-2 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                {{-- {{dd(Input::all())}} --}}
+
+                {{-- <ol class="flex items-center w-full p-0 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse">
+                    <li class="flex items-center text-blue-600 dark:text-blue-500">
+                        <span class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500">
+                            1
+                        </span>
+                        Buat <span class="hidden sm:inline-flex sm:ms-2">Kelas</span>
+                        <svg class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 9 4-4-4-4M1 9l4-4-4-4"/>
+                        </svg>
+                    </li>
+                    <li class="flex items-center">
+                        <span class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+                            2
+                        </span>
+                        Buat <span class="hidden sm:inline-flex sm:ms-2">Sesi</span>
+                    </li>
+                </ol> --}}
+
                 <form method="POST" action="{{ route('classes.store') }}" class="mt-6 space-y-6">
                     @csrf
                     {{-- @method('put') --}}
@@ -80,28 +98,58 @@
                         <x-textarea-input id="deskripsi_kelas" name="deskripsi_kelas" class="mt-1 block w-full">{{ old('deskripsi_kelas') }}</x-textarea-input>
                     </div>
 
-                    <div id="div_studies_table" class="my-1 hidden">
+                    <div>
+                        <h6 class="font-semibold">Periode Kelas:</h6>
+                        <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
+                            <div>
+                                <div>
+                                    <x-input-label for="class_start" :value="__('Dari')"></x-input-label>
+                                    <x-text-input id="class_start" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="class_start" type="text" class="mt-1 block w-full class_period datepicker" value="{{ old('class_start') }}" />
+                                    @error('class_start')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    <x-input-label for="class_end" :value="__('Sampai')"></x-input-label>
+                                    <x-text-input id="class_end" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="class_end" type="text" class="mt-1 block w-full class_period datepicker" value="{{ old('class_end') }}" />
+                                    @error('class_end')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="my-1">
                         <div class="my-4 ">
-                            @can('create master kelas')
-                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_studies">
-                                + Materi
+                            @can('create sesi kelas')
+                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_participant">
+                                + Peserta
                             </button>
                             @endcan
                         </div>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table id="studies_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <table id="participant_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
                                             #
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-center">
-                                            Materi Pembelajaran (+ Pre & Post Tes)
+                                            Nama Peserta
                                         </th>
-                                        {{-- <th scope="col" class="px-6 py-3 text-center">
-                                            Jumlah Lampiran Materi/Soal
-                                        </th> --}}
-                                        @canany(['edit master kelas','delete master kelas'])
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            NIP
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Divisi
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-center">
+                                            Status
+                                        </th>
+                                        @canany(['edit sesi kelas','delete sesi kelas'])
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
                                             Aksi
                                         </th>
@@ -117,26 +165,26 @@
                         </div>
                     </div>
 
-                    <div id="div_tests_table" class="my-1 hidden">
+                    {{-- <div id="div_class_session_table" class="my-1">
                         <div class="my-4 ">
                             @can('create master kelas')
-                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_studies">
-                                + Pre-test
+                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_class_session">
+                                + Sesi Kelas
                             </button>
                             @endcan
                         </div>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table id="pretests_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <table id="class_session_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            #
+                                            Sesi
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-center">
-                                            Pre-tes
+                                            Materi Pembelajaran (+ Pre & Post Tes)
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-center">
-                                            Jumlah Soal
+                                            Instruktur
                                         </th>
                                         @canany(['edit master kelas','delete master kelas'])
                                         <th scope="col" class="px-6 py-3 text-center" width="10%">
@@ -152,7 +200,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="flex items-center gap-4">
                         <x-primary-button>{{ __('Save') }}</x-primary-button>
@@ -169,29 +217,54 @@
 </x-app-layout>
 <script>
     $(document).ready(function () {
+        // console.log($('.class_period'));
+    });
+    $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
+        var nip = $(this).val();
+        var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+        var divisi = data.division;
 
+        $(this).closest('tr').find('td:eq(2)').html(nip);
+        $(this).closest('tr').find('td:eq(3)').html(divisi);
+        $(this).closest('tr').find('td:eq(4)').html('REGISTERED');
     });
-    $(document).off('change', '[name="kategori_kelas"]').on('change', '[name="kategori_kelas"]', function(){
-        var id_kategori_kelas = $(this).val();
-        var category_type = $(this).find('option:selected').data('category-type');
-        switch(category_type){
-            case "Pre-test Class":
-                // nampilin yang pretest doang
-                $('#div_tests_table').removeClass('hidden');
-                $('#div_studies_table table tbody').empty();
-                update_dynaTable_index($('#div_studies_table table'));
-                $('#div_studies_table').addClass('hidden');
-            break;
-            case "Training Class":
-                // nampilin yang materi doang
-                $('#div_studies_table').removeClass('hidden');
-                $('#div_tests_table table tbody').empty();
-                update_dynaTable_index($('#div_tests_table table'));
-                $('#div_tests_table').addClass('hidden');
-            break;
-        }
-    });
+    // $(document).off('blur', '.class_period').on('blur', '.class_period', function(){
+    //     $('.class_period').each(function() {
+    //         if ($(this).val().trim() === '') {
+    //             isEmpty = true; // Found a non-empty input
+    //         }else{
+    //             isEmpty = false;
+    //         }
+    //     });
+
+    //     if (isEmpty) {// there is an empty input
+    //         $('#div_schedule_table').addClass('hidden');
+    //     } else {
+    //         $('#div_schedule_table').removeClass('hidden');
+    //     }
+    // })
+    // $(document).off('change', '[name="kategori_kelas"]').on('change', '[name="kategori_kelas"]', function(){
+    //     var id_kategori_kelas = $(this).val();
+    //     var category_type = $(this).find('option:selected').data('category-type');
+    //     switch(category_type){
+    //         case "Pre-test Class":
+    //             // nampilin yang pretest doang
+    //             $('#div_tests_table').removeClass('hidden');
+    //             $('#div_class_session_table table tbody').empty();
+    //             update_dynaTable_index($('#div_class_session_table table'));
+    //             $('#div_class_session_table').addClass('hidden');
+    //         break;
+    //         case "Training Class":
+    //             // nampilin yang materi doang
+    //             $('#div_class_session_table').removeClass('hidden');
+    //             $('#div_tests_table table tbody').empty();
+    //             update_dynaTable_index($('#div_tests_table table'));
+    //             $('#div_tests_table').addClass('hidden');
+    //         break;
+    //     }
+    // });
     $(document).off('change', 'select[name="materials[]"]').on('change', 'select[name="materials[]"]', function(){
+        var obj = $(this);
         var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
         switch(category_type){
             case "Pre-test Class":
@@ -200,14 +273,51 @@
                 var jumlah_soal = data.jumlah_soal;
                 var tipe = data.tipe;
                 $(this).closest('tr').find('td:eq(2)').html(jumlah_soal);
-                $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
+                $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Tes">');
             break;
             case "Training Class":
                 var id_studies = $(this).val();
                 var data = $(this).select2('data')[0]; // get the selected data (all compilation)
-                var pretest_postest = data.pretest_postest;
-                var tipe = data.tipe;
-                $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
+                // var tipe = data.tipe;
+                // var pretest_postest = data.pretest_postest;
+                console.log(data);
+                $.ajax({
+                    type: "POST",
+                    url: "{{route('classes.check_studies')}}",
+                    data: {
+                        _token: "{{csrf_token()}}",
+                        id_studies: id_studies,
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response);
+                        if(response.length == 2){
+                            obj.closest('tr').find('td:eq(2)').remove('input[name="material_types[]"]');
+                            obj.closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Materi">');
+                        }
+                        // else{
+                        //     Swal.fire({
+                        //         icon: "warning",
+                        //         title: "Perhatian!",
+                        //         text: "Materi yang dipilih belum ada Pre-test dan/atau Post-test nya. Silakan pilih materi lainnya.",
+                        //         allowOutsideClick: false
+                        //     });
+                        //     obj.val(null).trigger('change');
+                        // }
+                    }
+                });
+                // if(pretest_postest.split(',').length < 2){
+                //     Swal.fire({
+                //         icon: "warning",
+                //         title: "Perhatian!",
+                //         text: "Materi yang dipilih belum ada Pre-test dan/atau Post-test nya. Silakan pilih materi lainnya.",
+                //         allowOutsideClick: false
+                //     });
+                //     $(this).empty();
+                //     // console.log(pretest_postest);
+                // }else{
+                    // $(this).closest('tr').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="'+tipe+'">');
+                // }
             break;
         }
     });
