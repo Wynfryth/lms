@@ -20,9 +20,9 @@ class ParticipantsController extends Controller
                         SUM(CASE WHEN d.enrollment_status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelled";
         $participants = DB::table('tr_enrollment AS a')
             ->select('a.emp_nip', 'c.Employee_name', 'c.Organization', 'c.Position_Nama', 'c.Branch_Name')
-            ->selectRaw(DB::raw('GROUP_CONCAT(a.class_session_id) AS id_kelas, GROUP_CONCAT(b.session_name) AS nama_kelas, COUNT(emp_nip) AS jumlah_kelas, GROUP_CONCAT(d.enrollment_status) AS status_peserta'))
+            ->selectRaw(DB::raw('GROUP_CONCAT(a.class_id) AS id_kelas, GROUP_CONCAT(b.class_title) AS nama_kelas, COUNT(emp_nip) AS jumlah_kelas, GROUP_CONCAT(d.enrollment_status) AS status_peserta'))
             ->selectRaw(DB::raw($sum_when))
-            ->leftJoin('t_class_session AS b', 'b.id', '=', 'a.class_session_id')
+            ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
             ->leftJoin('miegacoa_employees.emp_employee AS c', 'c.nip', '=', 'a.emp_nip')
             ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'a.enrollment_status_id')
             ->orderBy('a.emp_nip', 'asc')

@@ -127,6 +127,7 @@ Route::middleware('auth')->group(function () {
         Route::post('class_sessions/store', 'store')->middleware(['permission:create sesi kelas'])->name('class_sessions.store');
         Route::get('class_sessions/edit/{id}', 'edit')->middleware(['permission:edit sesi kelas'])->name('class_sessions.edit');
         Route::get('class_sessions/getScheduleDetail/{scheduleId}', 'getScheduleDetail')->middleware(['permission:edit sesi kelas'])->name('class_sessions.getScheduleDetail');
+        Route::post('class_sessions/updateSchedule', 'updateSchedule')->middleware(['permission:edit sesi kelas'])->name('class_sessions.updateSchedule');
         Route::post('class_sessions/cancel_student', 'cancel_student')->middleware(['permission:edit sesi kelas'])->name('class_sessions.cancel_student');
         Route::post('class_sessions/update/{id}', 'update')->middleware(['permission:edit sesi kelas'])->name('class_sessions.update');
         Route::post('class_sessions/delete', 'delete')->middleware(['permission:delete sesi kelas'])->name('class_sessions.delete');
@@ -284,7 +285,7 @@ Route::middleware('auth')->group(function () {
 
     // Study Sessions
     Route::controller(StudySessionsController::class)->group(function () {
-        Route::get('studySessions/index/{testId }', 'index')->middleware(['permission:list ruang kelas'])->name('studySessions');
+        Route::get('studySessions/index/{studyId}', 'index')->middleware(['permission:list ruang kelas'])->name('studySessions');
         Route::post('studySessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('studySessions.getClassSessions');
         Route::get('studySessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('studySessions.getSessionSchedule');
         // Route::get('studySessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('studySessions.create');

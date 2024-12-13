@@ -623,7 +623,28 @@ class ClassSessionsController extends Controller
     public function getScheduleDetail($scheduleId)
     {
         $schedule = DB::table('t_session_material_schedule AS a')
-            ->leftJoin('tm_study_material_header AS b', function ($join) {
+            ->select(
+                'a.id AS scheduleId',
+                'a.class_session_id',
+                'a.material_type',
+                'a.start_eff_date',
+                'a.end_eff_date',
+                'b.id AS studyId',
+                'b.study_material_title',
+                'b.study_material_desc',
+                'b.study_estimated_time',
+                'c.id AS testId',
+                'c.test_name',
+                'c.test_desc',
+                'c.estimated_time AS test_estimated_time'
+            )
+            ->leftJoin(DB::raw('(SELECT
+                a.id, a.study_material_title, a.study_material_desc, SEC_TO_TIME(SUM(TIME_TO_SEC(c.estimated_time))) AS study_estimated_time
+                FROM tm_study_material_header AS a
+                LEFT JOIN tm_study_material_detail AS b ON b.header_id = a.id
+                LEFT JOIN tm_study_material_attachments AS c ON c.study_material_detail_id = b.id
+                GROUP BY a.id
+                ) AS b'), function ($join) {
                 $join->on('b.id', '=', 'a.material_id')
                     ->where('a.material_type', '=', 1);
             })
@@ -633,6 +654,27 @@ class ClassSessionsController extends Controller
             })
             ->where('a.id', $scheduleId)
             ->first();
-        return view('class_sessions.editSchedule', compact('schedule'));
+        return view('class_sessions.editSchedule', compact('schedule', 'scheduleId'));
+    }
+
+    public function updateSchedule(Request $request)
+    {
+        $scheduleId = $request->schedule_id;
+        $updateSchedule_data = [
+            'start_eff_date' => date('Y-m-d H:i:s', strtotime($request->start_date . ' ' . $request->start_time)),
+            'end_eff_date' => date('Y-m-d H:i:s', strtotime($request->end_date . ' ' . $request->end_time)),
+            'modified_by' => Auth::id(),
+            'modified_date' => Carbon::now()
+        ];
+        $updateSchedule = DB::table('t_session_material_schedule')
+            ->where('id', $scheduleId)
+            ->update($updateSchedule_data);
+        if ($updateSchedule > 0) {
+            $status = [
+                'status' => 'update',
+                'status_message' => 'Berhasil mengedit sesi!'
+            ];
+            return redirect()->back()->with($status);
+        }
     }
 }

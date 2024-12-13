@@ -317,7 +317,15 @@
             </div>
             <!-- Modal body -->
             <div id="modal_body" class="p-4 md:p-5 space-y-4">
-
+                <div>
+                    <div>
+                        <x-input-label for="class_start" :value="__('Dari')"></x-input-label>
+                        <x-text-input id="class_start" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="class_start" type="text" class="mt-1 block w-full class_period datepicker" value="{{ old('class_start') }}" />
+                        @error('class_start')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
             </div>
             <!-- Modal footer -->
             {{-- <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
@@ -327,6 +335,25 @@
         </div>
     </div>
 </div>
+@if (session('status'))
+<script>
+    const Toast =   Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                        });
+                        Toast.fire({
+                        icon: "success",
+                        title: "{{session('status_message')}}"
+                    });
+</script>
+@endif
 <script>
     $(document).ready(function () {
         $('[name="materi[]"]').select2({
@@ -399,7 +426,10 @@
             success: function (response) {
                 // console.log(response);
                 $('#scheduleDet-modal').find('#modal_body').html(response);
+                $('.flowbite-datepicker').datepicker({
+                    dateFormat: "dd-mm-yy"
+                });
             }
         });
-    })
+    });
 </script>
