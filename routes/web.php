@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
     // Participants
     Route::controller(ParticipantsController::class)->group(function () {
         Route::get('participants/index/{participants_kywd?}', 'index')->middleware(['permission:list peserta'])->name('participants');
+        Route::get('participants/cancelledStudents/{cancelledStudents_kywd?}', 'cancelledStudents')->middleware(['permission:list peserta'])->name('participants.cancelledStudents');
         Route::get('participants/create', 'create')->middleware(['permission:create peserta'])->name('participants.create');
         Route::post('participants/store', 'store')->middleware(['permission:create peserta'])->name('participants.store');
         Route::get('participants/edit/{id}', 'edit')->middleware(['permission:edit peserta'])->name('participants.edit');
@@ -285,7 +286,7 @@ Route::middleware('auth')->group(function () {
 
     // Study Sessions
     Route::controller(StudySessionsController::class)->group(function () {
-        Route::get('studySessions/index/{studyId}', 'index')->middleware(['permission:list ruang kelas'])->name('studySessions');
+        Route::get('studySessions/index/{studyId}/{scheduleId}', 'index')->middleware(['permission:list ruang kelas'])->name('studySessions');
         Route::post('studySessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('studySessions.getClassSessions');
         Route::get('studySessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('studySessions.getSessionSchedule');
         // Route::get('studySessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('studySessions.create');
@@ -298,8 +299,12 @@ Route::middleware('auth')->group(function () {
 
     // Test Sessions
     Route::controller(TestSessionsController::class)->group(function () {
-        Route::get('testSessions/index/{testId}', 'index')->middleware(['permission:list ruang kelas'])->name('testSessions');
-        Route::get('testSessions/question/{testId}/{questionId}/{questionOrder}', 'question')->middleware(['permission:list ruang kelas'])->name('testSessions.question');
+        Route::get('testSessions/index/{testId}/{scheduleId}', 'index')->middleware(['permission:list ruang kelas'])->name('testSessions');
+        Route::get('testSessions/questions/{testScheduleId}/{testId}', 'questions')->middleware(['permission:list ruang kelas'])->name('testSessions.questions');
+        Route::post('testSessions/startStudentTest', 'startStudentTest')->middleware(['permission:list ruang kelas'])->name('testSessions.startStudentTest');
+        Route::get('testSessions/getCountdown/{scheduleId}', 'getCountdown')->middleware(['permission:list ruang kelas'])->name('testSessions.getCountdown');
+        Route::post('testSessions/submitTest', 'submitTest')->middleware(['permission:list ruang kelas'])->name('testSessions.submitTest');
+        Route::get('testSessions/testResult/{nip}/{studentTestId}', 'testResult')->middleware(['permission:list ruang kelas'])->name('testSessions.testResult');
         // Route::post('testSessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('testSessions.getClassSessions');
         // Route::get('testSessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('testSessions.getSessionSchedule');
         // Route::get('testSessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('testSessions.create');

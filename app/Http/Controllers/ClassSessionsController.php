@@ -71,7 +71,7 @@ class ClassSessionsController extends Controller
     {
         $class = DB::table('t_class_header AS a')
             ->select('a.id', 'a.class_title', 'b.class_category_type_id', 'b.class_category', 'a.start_eff_date', 'a.end_eff_date')
-            ->selectRaw(DB::raw('COUNT(C.id) AS jumlah_peserta'))
+            ->selectRaw(DB::raw('COUNT(c.id) AS jumlah_peserta'))
             ->leftJoin('tm_class_category AS b', 'b.id', '=', 'a.class_category_id')
             ->leftJoin('tr_enrollment AS c', 'c.class_id', '=', 'a.id')
             ->where(['a.is_active' => 1, 'a.id' => $class_id])

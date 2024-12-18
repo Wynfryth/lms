@@ -30,11 +30,13 @@
                         @php
                             $materialId = $schedule->study_id ?? $schedule->test_id;
                             $sessionRoute = $schedule->study_id ? 'studySessions' : 'testSessions';
+                            $sessionMatType = $schedule->study_id ? 'studyId' : 'testId';
+                            // echo $schedule->schedule_id;
                         @endphp
                         @if ($schedule->schedule_status == 'OPEN')
-                            <a class="hover:underline" href="{{route($sessionRoute, $materialId)}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
+                            <a class="hover:underline" href="{{route($sessionRoute, [$sessionMatType => $materialId, 'scheduleId' => $schedule->schedule_id])}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
                         @else
-                            <a class="hover:underline" href="{{route($sessionRoute, $materialId)}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
+                            <a class="hover:underline" href="{{route($sessionRoute, [$sessionMatType => $materialId, 'scheduleId' => $schedule->schedule_id])}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
                             {{-- {{ $schedule->study_material_title ?? $schedule->test_name }} --}}
                         @endif
                     </td>

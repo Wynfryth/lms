@@ -59,11 +59,13 @@ class TestsController extends Controller
                 'kategori_tes' => 'required',
                 'deskripsi_tes' => 'required',
                 'durasi_tes' => 'required',
+                'min_point' => 'required'
             ],
             [
                 'nama_tes.required' => 'Nama tes belum terisi.',
                 'kategori_tes.required' => 'Kategori tes belum terisi.',
                 'durasi_tes.required' => 'Durasi tes belum terisi.',
+                'min_point' => 'Nilai minimum belum terisi.'
             ]
         );
         if ($validator->fails()) {
@@ -73,6 +75,7 @@ class TestsController extends Controller
             'test_cat_id' => $request->kategori_tes,
             'test_name' => $request->nama_tes,
             'test_desc' => $request->deskripsi_tes,
+            'pass_point' => $request->min_point,
             'estimated_time' => $request->durasi_tes,
             'is_active' => 1,
             'created_by' => Auth::id(),
@@ -103,7 +106,7 @@ class TestsController extends Controller
     public function edit($id)
     {
         $item = DB::table('tm_test AS a')
-            ->select('a.id', 'a.test_cat_id', 'a.test_code', 'a.test_name', 'a.test_desc', 'a.estimated_time', 'a.is_active', 'c.study_materials_id')
+            ->select('a.id', 'a.test_cat_id', 'a.test_code', 'a.test_name', 'a.test_desc', 'a.estimated_time', 'a.pass_point', 'a.is_active', 'c.study_materials_id')
             ->leftJoin('tm_test_category AS b', 'b.id', '=', 'a.test_cat_id')
             ->leftJoin('t_test_with_materials_list AS c', 'c.test_id', '=', 'a.id')
             ->where('a.id', $id)
@@ -128,12 +131,13 @@ class TestsController extends Controller
                 'kategori_tes' => 'required',
                 'deskripsi_tes' => 'required',
                 'durasi_tes' => 'required',
+                'min_point' => 'required'
             ],
             [
                 'nama_tes.required' => 'Nama tes belum terisi.',
                 'kategori_tes.required' => 'Kategori tes belum terisi.',
-                'deskripsi_tes.required' => 'Deskripsi tes belum terisi.',
                 'durasi_tes.required' => 'Durasi tes belum terisi.',
+                'min_point' => 'Nilai minimum belum terisi.'
             ]
         );
         if ($validator->fails()) {
@@ -143,6 +147,7 @@ class TestsController extends Controller
             'test_cat_id' => $request->kategori_tes,
             'test_name' => $request->nama_tes,
             'test_desc' => $request->deskripsi_tes,
+            'pass_point' => $request->min_point,
             'estimated_time' => $request->durasi_tes,
             'is_active' => 1,
             'modified_by' => Auth::id(),

@@ -358,26 +358,60 @@ class ClassesController extends Controller
         $delete_class_has_materials = DB::table('class_has_materials')
             ->where('id_class_header', $id)
             ->delete();
-        if (count($request->materials) > 0) {
-            foreach ($request->materials as $index => $item) {
-                switch ($request->material_types[$index]) {
-                    case "Materi":
-                        $material_type = 1;
-                        break;
-                    case "Tes":
-                        $material_type = 2;
-                        break;
-                }
-                $update_class_has_materials_data = [
-                    'id_class_header' => $id,
-                    'id_material' => $item,
-                    'material_type' => $material_type,
-                    'material_order' => $index + 1,
+        if (count($request->peserta) > 0) {
+            foreach ($request->peserta as $item) {
+                $insert_enrollment_data = [
+                    'emp_nip' => $item,
+                    'class_id' => $id,
+                    'enrollment_date' => Carbon::now(),
+                    'enrollment_status_id' => 1, // 1 is registered
+                    'created_by' => Auth::id(),
+                    'created_date' => Carbon::now()
                 ];
-                $update_class_has_materials = DB::table('class_has_materials')
-                    ->insertGetId($update_class_has_materials_data);
+                $insert_enrollment = DB::table('tr_enrollment')
+                    ->insertGetId($insert_enrollment_data);
+                $user = User::where(['nip' => $item])->first();
+                if ($user) {
+                    $user->removeRole('Guest');
+                    $user->assignRole('Student');
+                }
+                $notification_title = "Ditambahkan ke Kelas \"" . $request->nama_kelas . "\" sebagai Peserta";
+                $notification_content = "Anda ditambahkan sebagai Peserta ke Kelas \"" . $request->nama_kelas . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+                $insert_notification = [
+                    'notification_title' => $notification_title,
+                    'notification_content' => $notification_content,
+                    'created_by' => Auth::id(),
+                    'created_date' => Carbon::now()
+                ];
+                $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+                $insert_notif_receipt = [
+                    'notification_id' => $notification_id,
+                    'user_nip' => $item,
+                    'read_status' => 0
+                ];
+                DB::table('t_notification_receipt')->insert($insert_notif_receipt);
             }
         }
+        // if (count($request->materials) > 0) {
+        //     foreach ($request->materials as $index => $item) {
+        //         switch ($request->material_types[$index]) {
+        //             case "Materi":
+        //                 $material_type = 1;
+        //                 break;
+        //             case "Tes":
+        //                 $material_type = 2;
+        //                 break;
+        //         }
+        //         $update_class_has_materials_data = [
+        //             'id_class_header' => $id,
+        //             'id_material' => $item,
+        //             'material_type' => $material_type,
+        //             'material_order' => $index + 1,
+        //         ];
+        //         $update_class_has_materials = DB::table('class_has_materials')
+        //             ->insertGetId($update_class_has_materials_data);
+        //     }
+        // }
         if ($update_action > 0) {
             $status = [
                 'status' => 'update',

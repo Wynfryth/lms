@@ -95,4 +95,32 @@ class ParticipantsController extends Controller
     {
         // $participant = DB::table('tr_enrollment AS a')
     }
+
+    public function cancelledStudents($cancelledStudent_kywd = null)
+    {
+        $cancelledStudent = DB::table('tr_enrollment AS a')
+            ->select(
+                'a.emp_nip',
+                'c.Employee_name',
+                'c.Organization'
+            )
+            ->selectRaw('GROUP_CONCAT(d.class_title) AS cancelledClasses')
+            ->leftJoin('tm_enrollment_status AS b', 'a.enrollment_status_id', '=', 'b.id')
+            ->leftJoin('miegacoa_employees.emp_employee AS c', 'a.emp_nip', '=', 'c.nip')
+            ->leftJoin('t_class_header AS d', 'd.id', '=', 'a.class_id')
+            ->where('b.enrollment_status', 'CANCELLED')
+            ->orderBy('a.emp_nip', 'asc')
+            ->groupBy('a.emp_nip');
+        if ($cancelledStudent_kywd != null) {
+            $any_params = [
+                'a.emp_nip',
+                'c.Employee_name',
+                'c.Organization'
+            ];
+            $cancelledStudent->whereAny($any_params, 'like', '%' . $cancelledStudent_kywd . '%');
+        }
+        $cancelledStudent = $cancelledStudent->paginate(10);
+
+        return view('participants.cancelledStudent', compact('cancelledStudent', 'cancelledStudent_kywd'));
+    }
 }

@@ -55,7 +55,7 @@
                         @enderror
                     </div>
 
-                    <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                    <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
                         <div class="my-1">
                             <x-input-label for="kategori_tes" :value="__('Kategori')"></x-input-label>
                             <x-select-option id="kategori_tes" name="kategori_tes">
@@ -88,6 +88,13 @@
                                 </span>
                             </div>
                             @error('durasi_tes')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <x-input-label for="min_point" :value="__('Nilai minimum')" />
+                            <x-text-input id="min_point" name="min_point" type="text" class="mt-1 block w-full" value="{{ $item->pass_point }}"/>
+                            @error('min_point')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
