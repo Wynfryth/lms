@@ -14,7 +14,7 @@ class TestsController extends Controller
     public function index($tests_kywd = null)
     {
         $tests = DB::table('tm_test AS a')
-            ->select('a.id', 'b.test_category', 'a.test_code', 'a.test_name', 'study_material_title', 'a.test_desc', 'a.estimated_time', 'a.is_active')
+            ->select('a.id', 'b.test_category', 'a.test_code', 'a.test_name', 'study_material_title', 'a.test_desc', 'a.estimated_time', 'a.is_active', 'a.pass_point', 'a.is_released')
             ->selectRaw(DB::raw('COUNT(d.id) AS jumlah_soal, IF(SUM(d.points) IS NULL, 0, SUM(d.points)) AS total_poin'))
             ->leftJoin('tm_test_category AS b', 'b.id', '=', 'a.test_cat_id')
             ->leftJoin('test_has_questions AS c', 'c.test_id', '=', 'a.id')
@@ -59,13 +59,13 @@ class TestsController extends Controller
                 'kategori_tes' => 'required',
                 'deskripsi_tes' => 'required',
                 'durasi_tes' => 'required',
-                'min_point' => 'required'
+                // 'min_point' => 'required'
             ],
             [
                 'nama_tes.required' => 'Nama tes belum terisi.',
                 'kategori_tes.required' => 'Kategori tes belum terisi.',
                 'durasi_tes.required' => 'Durasi tes belum terisi.',
-                'min_point' => 'Nilai minimum belum terisi.'
+                // 'min_point' => 'Nilai minimum belum terisi.'
             ]
         );
         if ($validator->fails()) {
@@ -106,10 +106,24 @@ class TestsController extends Controller
     public function edit($id)
     {
         $item = DB::table('tm_test AS a')
-            ->select('a.id', 'a.test_cat_id', 'a.test_code', 'a.test_name', 'a.test_desc', 'a.estimated_time', 'a.pass_point', 'a.is_active', 'c.study_materials_id')
+            ->select(
+                'a.id',
+                'a.test_cat_id',
+                'a.test_code',
+                'a.test_name',
+                'a.test_desc',
+                'a.estimated_time',
+                'a.pass_point',
+                'a.is_active',
+                'c.study_materials_id'
+            )
+            ->selectRaw('SUM(e.points) AS max_point')
             ->leftJoin('tm_test_category AS b', 'b.id', '=', 'a.test_cat_id')
             ->leftJoin('t_test_with_materials_list AS c', 'c.test_id', '=', 'a.id')
+            ->leftJoin('test_has_questions AS d', 'd.test_id', '=', 'a.id')
+            ->leftJoin('tm_question_bank AS e', 'e.id', '=', 'd.question_id')
             ->where('a.id', $id)
+            ->groupBy('a.id')
             ->first();
         $testcats = DB::table('tm_test_category AS a')
             ->select('a.id', 'a.test_category')
@@ -183,6 +197,16 @@ class TestsController extends Controller
             ];
             return redirect()->route('tests')->with($status);
         }
+    }
+
+    public function release(Request $request)
+    {
+        $releaseTest = DB::table('tm_test AS a')
+            ->where('a.id', $request->testId)
+            ->update([
+                'is_released' => 1,
+            ]);
+        return response()->json($releaseTest);
     }
 
     public function delete(Request $request)

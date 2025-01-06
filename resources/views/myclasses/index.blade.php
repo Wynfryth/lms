@@ -68,11 +68,13 @@
                                 </div>
                             </div>
                         @empty
-                            Tidak ada kelas.
+                            <h6 class="font-bold text-center text-gray-500 col-span-3 text-6xl opacity-20">😢</h6>
+                            <h6 class="font-bold text-center text-gray-500 col-span-3 text-4xl opacity-20">Oops!</h6>
+                            <h6 class="font-semibold text-center text-gray-500 col-span-3 text-xl opacity-20">Data kelas tidak ditemukan.</h6>
                         @endforelse
-                        <div class="mt-2">
-                            {{ $myclasses->links(); }}
-                        </div>
+                    </div>
+                    <div class="mt-2">
+                        {{ $myclasses->links(); }}
                     </div>
                 </div>
             </div>

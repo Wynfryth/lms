@@ -29,10 +29,9 @@ class QuestionsController extends Controller
             ->orderBy('xx.id', 'DESC');
         if ($questions_kywd != null) {
             $any_params = [
-                'a.question',
-                'b.answer',
-                'c.test_name',
-                'd.test_category'
+                'xx.question',
+                'xx.answers',
+                'yy.test_name',
             ];
             $questions->whereAny($any_params, 'like', '%' . $questions_kywd . '%');
         }

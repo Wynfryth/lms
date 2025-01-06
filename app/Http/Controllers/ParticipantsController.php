@@ -101,6 +101,7 @@ class ParticipantsController extends Controller
         $cancelledStudent = DB::table('tr_enrollment AS a')
             ->select(
                 'a.emp_nip',
+                'a.modified_by',
                 'c.Employee_name',
                 'c.Organization'
             )

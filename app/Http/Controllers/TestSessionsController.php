@@ -19,7 +19,11 @@ class TestSessionsController extends Controller
             ])
             ->first();
         if ($existedTest != null) {
-            return redirect()->route('testSessions.questions', ['testScheduleId' => $existedTest->id, 'testId' => $testId]);
+            if ($existedTest->time_end > Carbon::now()) {
+                return redirect()->route('testSessions.questions', ['testScheduleId' => $existedTest->id, 'testId' => $testId]);
+            } else {
+                return redirect()->route('testSessions.testResult', ['nip' => Auth::user()->nip, 'studentTestId' => $existedTest->id]);
+            }
         } else {
             $test = DB::table('tm_test AS a')
                 ->select(
@@ -102,14 +106,22 @@ class TestSessionsController extends Controller
 
     public function submitTest(Request $request)
     {
-        $answers = $request->answers;
-        foreach ($answers as $answer) {
-            $insert_answer_data = [
-                'emp_test_id' => $request->testScheduleId,
-                'question_id' => key($answer),
-                'answer_id' => $answer[key($answer)]
-            ];
-            $insert_answer_action = DB::table('tr_emp_answer')->insert($insert_answer_data);
+        // check if the user has submitted the test
+        $existedTest = DB::table('tr_emp_answer AS a')
+            ->where('a.emp_test_id', $request->testScheduleId)
+            ->count();
+        if ($existedTest > 0) {
+            $insert_answer_action = $existedTest;
+        } else {
+            $answers = $request->answers;
+            foreach ($answers as $answer) {
+                $insert_answer_data = [
+                    'emp_test_id' => $request->testScheduleId,
+                    'question_id' => key($answer),
+                    'answer_id' => $answer[key($answer)]
+                ];
+                $insert_answer_action = DB::table('tr_emp_answer')->insert($insert_answer_data);
+            }
         }
         if ($insert_answer_action > 0) {
             return response()->json(['success' => true, 'message' => 'Test submitted successfully']);
@@ -169,11 +181,14 @@ class TestSessionsController extends Controller
                 GROUP_CONCAT(c.question) AS question,
                 GROUP_CONCAT(c.points) AS points,
                 SUM(c.points) AS max_point,
+                COUNT(c.id) AS total_questions,
                 SUM(CASE WHEN b.correct_status = 1 THEN 1 ELSE 0 END) AS total_correct,
+                SUM(CASE WHEN b.correct_status = 0 THEN 1 ELSE 0 END) AS total_incorrect,
+                SUM(CASE WHEN b.correct_status IS NULL THEN 1 ELSE 0 END) AS total_not_answered,
                 SUM(CASE WHEN b.correct_status = 1 THEN c.points ELSE 0 END) AS result_point
             ')
             ->leftJoin('tm_answer_bank as b', 'b.id', '=', 'a.answer_id')
-            ->leftJoin('tm_question_bank as c', 'c.id', '=', 'b.question_id')
+            ->leftJoin('tm_question_bank as c', 'c.id', '=', 'a.question_id')
             ->where('a.emp_test_id', '=', $studentTestId)
             ->groupBy('a.emp_test_id')
             ->first();

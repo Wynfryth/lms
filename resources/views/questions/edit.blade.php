@@ -36,7 +36,7 @@
     <div class="p-4 sm:ml-64">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <form method="POST" action="{{ route('questions.update', $item->id) }}"
+                <form id="question_form" method="POST" action="{{ route('questions.update', $item->id) }}"
                     class="mt-6 space-y-6">
                     @csrf
                     {{-- @method('put') --}}
@@ -173,5 +173,37 @@
         placeholder: 'Pilih Tes',
         allowClear: true,
         width: 'resolve'
+    });
+    $(document).off('submit', '#question_form').on('submit', '#question_form', function(){
+        event.preventDefault();
+        var answers_row = $('#answers_table').find('tbody tr').find('input[name="answer_status"]');
+        // console.log(answers_row)
+        if(answers_row.length > 0){
+            var checkedExist = false;
+            answers_row.each(function(index, element){
+                if($(element).is(':checked')){
+                    checkedExist = true;
+                }
+            })
+            if(!checkedExist){
+                Swal.fire({
+                    icon: "warning",
+                    title: "Perhatian!",
+                    text: "Pilih salahsatu jawaban sebagai jawaban yang benar.",
+                    confirmButtontext: "OK",
+                    allowOutsideClick: false
+                })
+            }else if(checkedExist){
+                this.submit();
+            }
+        }else{
+            Swal.fire({
+                icon: "warning",
+                title: "Perhatian!",
+                text: "Harap isi jawaban terlebih dahulu.",
+                confirmButtontext: "OK",
+                allowOutsideClick: false
+            })
+        }
     })
 </script>

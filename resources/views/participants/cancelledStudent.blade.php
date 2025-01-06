@@ -51,6 +51,9 @@
                                     <th scope="col" class="px-6 py-3">
                                         Organisasi
                                     </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Tgl Pembatalan
+                                    </th>
                                     <th scope="col" class="px-6 py-3 text-center">
                                         Kelas yang dibatalkan
                                     </th>
@@ -70,6 +73,9 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             {{ $value->Organization }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $value->modified_by }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             {{ $value->cancelledClasses }}

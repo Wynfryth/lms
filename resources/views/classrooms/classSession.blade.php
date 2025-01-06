@@ -13,6 +13,9 @@
                     Kategori
                 </th>
                 <th scope="col" class="px-6 py-3 text-center">
+                    Nilai Tes
+                </th>
+                <th scope="col" class="px-6 py-3 text-center">
                     Mulai
                 </th>
                 <th scope="col" class="px-6 py-3 text-center">
@@ -42,6 +45,21 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         {{ $schedule->type }}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        @if ($schedule->type == 'Materi')
+                            -
+                        @else
+                            @if ($schedule->result_point != null)
+                                @if ($schedule->result_point >= $schedule->pass_point)
+                                    <span class="font-bold text-green-500">{{$schedule->result_point}}</span>
+                                @else
+                                    <span class="font-bold text-red-500">{{$schedule->result_point}}</span>
+                                @endif
+                            @else
+                                <span>Belum</span>
+                            @endif
+                        @endif
                     </td>
                     <td class="px-6 py-4 text-center">
                         {{ date('d/m/Y H:i:s', strtotime($schedule->start_eff_date)) }}

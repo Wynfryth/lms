@@ -159,142 +159,155 @@
                         </table>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('class_sessions.store') }}" class="mt-6 space-y-6">
-                    @csrf
-                    <input type="hidden" name="class_id" value="{{$class_id}}">
-                    <input type="hidden" name="class_category_type" value="{{$class_category_type}}">
-                    <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
-                        <div class="my-1">
-                            <x-input-label for="nama_sesi" :value="__('Nama Sesi')" />
-                            <x-text-input id="nama_sesi" name="nama_sesi" type="text" class="mt-1 block w-full" value="{{ old('nama_sesi') }}"/>
-                            @error('nama_sesi')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="my-1">
-                            {{-- <h6 class="font-semibold">Mulai Sesi:</h6> --}}
-                            <div class="grid lg:grid-cols-1 sm:grid-cols-1 gap-4">
-                                <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
-                                    <div>
-                                        <x-input-label for="session_start_date" :value="__('Tanggal')"></x-input-label>
-                                        <x-text-input id="session_start_date" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="session_start_date" type="text" class="mt-1 block w-full datepicker" value="{{ old('session_start_date') }}" />
-                                        @error('session_start_date')
-                                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div>
-                                        <x-input-label for="session_start_time" :value="__('Jam')"></x-input-label>
-                                        <div class="relative mt-1">
-                                            <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-                                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
-                                                </svg>
+
+                <div id="accordion-collapse" data-accordion="collapse" class="mt-3">
+                    <h2 id="accordion-collapse-heading-1">
+                        <button type="button" class="flex items-center justify-between w-full p-3 font-medium rtl:text-right text-gray-500 border border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-1" aria-expanded="false" aria-controls="accordion-collapse-body-1">
+                        <span>Form Sesi</span>
+                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                        </svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-collapse-body-1" class="hidden border rounded-xl p-3" aria-labelledby="accordion-collapse-heading-1">
+                        <form method="POST" action="{{ route('class_sessions.store') }}" class="mt-6 space-y-6">
+                            @csrf
+                            <input type="hidden" name="class_id" value="{{$class_id}}">
+                            <input type="hidden" name="class_category_type" value="{{$class_category_type}}">
+                            <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                                <div class="my-1">
+                                    <x-input-label for="nama_sesi" :value="__('Nama Sesi')" />
+                                    <x-text-input id="nama_sesi" name="nama_sesi" type="text" class="mt-1 block w-full" value="{{ old('nama_sesi') }}"/>
+                                    @error('nama_sesi')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="my-1">
+                                    {{-- <h6 class="font-semibold">Mulai Sesi:</h6> --}}
+                                    <div class="grid lg:grid-cols-1 sm:grid-cols-1 gap-4">
+                                        <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                                            <div>
+                                                <x-input-label for="session_start_date" :value="__('Tanggal')"></x-input-label>
+                                                <x-text-input id="session_start_date" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="session_start_date" type="text" class="mt-1 block w-full datepicker" value="{{ old('session_start_date') }}" />
+                                                @error('session_start_date')
+                                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                                @enderror
                                             </div>
-                                            <input type="time" id="session_start_time" name="session_start_time" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="00:00" required />
+                                            <div>
+                                                <x-input-label for="session_start_time" :value="__('Jam')"></x-input-label>
+                                                <div class="relative mt-1">
+                                                    <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                                                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                    </div>
+                                                    <input type="time" id="session_start_time" name="session_start_time" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="00:00" required />
+                                                </div>
+                                                @error('session_start_time')
+                                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                                @enderror
+                                            </div>
                                         </div>
-                                        @error('session_start_time')
-                                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                                        @enderror
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
-                        <div class="my-1">
-                            <x-input-label for="instruktur" :value="__('Instruktur')"></x-input-label>
-                            <x-select-option id="instruktur" name="instruktur">
-                                <x-slot name="options">
-                                    <option class="disabled" value="null" selected disabled>
-                                        Pilih Instruktur ...
-                                    </option>
-                                    @forelse ($instructor as $index => $item)
-                                        <option value="{{ $item->id }}" {{ old('instruktur') == $item->id ? 'selected' : '' }}>
-                                            {{ $item->Employee_name }}
-                                        </option>
-                                    @empty
-                                        {{-- do nothing --}}
-                                    @endforelse
-                                </x-slot>
-                            </x-select-option>
-                            @error('instruktur')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="my-1">
-                            <x-input-label for="training_center" :value="__('Training Center')"></x-input-label>
-                            <x-select-option id="training_center" name="training_center">
-                                <x-slot name="options">
-                                    <option class="disabled" value="null" selected disabled>
-                                        Pilih Training Center ...
-                                    </option>
-                                    @forelse ($training_center as $index => $item)
-                                        <option value="{{ $item->id }}" {{ old('training_center') == $item->id ? 'selected' : '' }}>
-                                            {{ $item->tc_name }}
-                                        </option>
-                                    @empty
-                                        {{-- do nothing --}}
-                                    @endforelse
-                                </x-slot>
-                            </x-select-option>
-                            @error('training_center')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="my-1">
-                            <x-input-label for="loc_type" :value="__('Tipe')"></x-input-label>
-                            <x-select-option id="loc_type" name="loc_type">
-                                <x-slot name="options">
-                                    <option class="disabled" value="null" selected disabled>
-                                        Pilih Tipe Pengajaran ...
-                                    </option>
-                                    @forelse ($loc_type as $index => $item)
-                                        <option value="{{ $item->id }}" {{ old('loc_type') == $item->id ? 'selected' : '' }}>
-                                            {{ $item->location_type }}
-                                        </option>
-                                    @empty
-                                        {{-- do nothing --}}
-                                    @endforelse
-                                </x-slot>
-                            </x-select-option>
-                            @error('loc_type')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
+                            <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
+                                <div class="my-1">
+                                    <x-input-label for="instruktur" :value="__('Instruktur')"></x-input-label>
+                                    <x-select-option id="instruktur" name="instruktur">
+                                        <x-slot name="options">
+                                            <option class="disabled" value="null" selected disabled>
+                                                Pilih Instruktur ...
+                                            </option>
+                                            @forelse ($instructor as $index => $item)
+                                                <option value="{{ $item->id }}" {{ old('instruktur') == $item->id ? 'selected' : '' }}>
+                                                    {{ $item->Employee_name }}
+                                                </option>
+                                            @empty
+                                                {{-- do nothing --}}
+                                            @endforelse
+                                        </x-slot>
+                                    </x-select-option>
+                                    @error('instruktur')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="my-1">
+                                    <x-input-label for="training_center" :value="__('Training Center')"></x-input-label>
+                                    <x-select-option id="training_center" name="training_center">
+                                        <x-slot name="options">
+                                            <option class="disabled" value="null" selected disabled>
+                                                Pilih Training Center ...
+                                            </option>
+                                            @forelse ($training_center as $index => $item)
+                                                <option value="{{ $item->id }}" {{ old('training_center') == $item->id ? 'selected' : '' }}>
+                                                    {{ $item->tc_name }}
+                                                </option>
+                                            @empty
+                                                {{-- do nothing --}}
+                                            @endforelse
+                                        </x-slot>
+                                    </x-select-option>
+                                    @error('training_center')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="my-1">
+                                    <x-input-label for="loc_type" :value="__('Tipe')"></x-input-label>
+                                    <x-select-option id="loc_type" name="loc_type">
+                                        <x-slot name="options">
+                                            <option class="disabled" value="null" selected disabled>
+                                                Pilih Tipe Pengajaran ...
+                                            </option>
+                                            @forelse ($loc_type as $index => $item)
+                                                <option value="{{ $item->id }}" {{ old('loc_type') == $item->id ? 'selected' : '' }}>
+                                                    {{ $item->location_type }}
+                                                </option>
+                                            @empty
+                                                {{-- do nothing --}}
+                                            @endforelse
+                                        </x-slot>
+                                    </x-select-option>
+                                    @error('loc_type')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
 
-                    <div class="my-1">
-                        <x-input-label for="materi" :value="__('Materi')" />
-                        <x-select-option id="materi" name="materi[]" class="w-full" multiple="multiple">
-                            <x-slot name="options">
-                                @forelse ($materials as $material)
-                                    <option value="{{ $material->id }}" {{ old('materi') == $material->id ? 'selected' : '' }}>
-                                        {{ $material->material_name }}
-                                    </option>
-                                @empty
-                                    {{-- do nothing --}}
-                                @endforelse
-                            </x-slot>
-                        </x-select-option>
-                        @error('materi')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
+                            <div class="my-1">
+                                <x-input-label for="materi" :value="__('Materi')" />
+                                <x-select-option id="materi" name="materi[]" class="w-full" multiple="multiple">
+                                    <x-slot name="options">
+                                        @forelse ($materials as $material)
+                                            <option value="{{ $material->id }}" {{ old('materi') == $material->id ? 'selected' : '' }}>
+                                                {{ $material->material_name }}
+                                            </option>
+                                        @empty
+                                            {{-- do nothing --}}
+                                        @endforelse
+                                    </x-slot>
+                                </x-select-option>
+                                @error('materi')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                    <div>
-                        <x-input-label for="deskripsi_sesi" :value="__('Deskripsi Sesi')" />
-                        <x-textarea-input id="deskripsi_sesi" name="deskripsi_sesi" class="mt-1 block w-full">{{ old('deskripsi_sesi') }}</x-textarea-input>
-                        @error('deskripsi_sesi')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
+                            <div>
+                                <x-input-label for="deskripsi_sesi" :value="__('Deskripsi Sesi')" />
+                                <x-textarea-input id="deskripsi_sesi" name="deskripsi_sesi" class="mt-1 block w-full">{{ old('deskripsi_sesi') }}</x-textarea-input>
+                                @error('deskripsi_sesi')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                    <div class="flex items-center gap-4">
-                        <x-primary-button>{{ __('Tambah') }}</x-primary-button>
-                        <a href="{{route('classes')}}" type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center me-2 mb-0 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">SELESAI</a>
+                            <div class="flex items-center gap-4">
+                                <x-primary-button>{{ __('Tambah') }}</x-primary-button>
+                                <a href="{{route('classes')}}" type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center me-2 mb-0 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">SELESAI</a>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

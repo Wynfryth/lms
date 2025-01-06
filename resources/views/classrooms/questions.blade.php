@@ -81,41 +81,6 @@
 </x-app-layout>
 <script>
 var testComp = [];
-// var testComp = [
-//   {
-//     "3": "60"
-//   },
-//   {
-//     "4": "56"
-//   },
-//   {
-//     "5": "69"
-//   },
-//   {
-//     "6": "63"
-//   },
-//   {
-//     "7": "72"
-//   },
-//   {
-//     "8": "77"
-//   },
-//   {
-//     "9": "79"
-//   },
-//   {
-//     "10": "85"
-//   },
-//   {
-//     "11": "88"
-//   },
-//   {
-//     "12": "93"
-//   },
-//   {
-//     "13": "114"
-//   }
-// ];
 var answeredQuestions = 0;
 var unansweredQuestions = 0;
 var questions = @json($questions);
@@ -136,6 +101,15 @@ $(document).ready(function() {
             endTime = response;
         }
     });
+    // $.ajax({
+    //     type: "GET",
+    //     url: "url",
+    //     data: "data",
+    //     dataType: "dataType",
+    //     success: function (response) {
+
+    //     }
+    // });
     var dateString = endTime; // Example date string
     // console.log(endTime)
     var endDate = new Date(dateString + ' GMT+0700'); // Convert to UTC Date object
@@ -159,7 +133,13 @@ $(document).ready(function() {
         if (timeRemaining < 0) {
             clearInterval(countdownInterval);
             $('#countdown').text("Waktu Habis!");
+            submitTest();
         }
+    }
+    for(var keys in questions){
+        testComp.push({
+            [questions[keys].question_id]: null
+        });
     }
 
     // Update the countdown every second
@@ -168,11 +148,7 @@ $(document).ready(function() {
     // Initial call to display the countdown immediately
     updateCountdown();
 
-    for(var keys in questions){
-        testComp.push({
-            [questions[keys].question_id]: null
-        });
-    }
+
     // console.log(testComp);
     $('.questionList:first').trigger('click');
 });
@@ -304,4 +280,28 @@ $(document).off('click', '#submitTest').on('click', '#submitTest', function(){
         }
     })
 })
+
+function submitTest(){
+    // console.log(testComp);
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "{{route('testSessions.submitTest')}}",
+        data: {
+            _token: "{{csrf_token()}}",
+            answers: testComp,
+            testScheduleId: "{{$testScheduleId}}"
+        },
+        dataType: "JSON",
+        success: function (response) {
+            // console.log(response);
+            if(response.success){
+                var url = "{{route('testSessions.testResult', ['nip' => ':nip', 'studentTestId' => ':testScheduleId'])}}";
+                url = url.replace(':nip', "{{Auth::user()->nip}}");
+                url = url.replace(':testScheduleId', "{{$testScheduleId}}");
+                window.location.href = url;
+            }
+        }
+    });
+}
 </script>

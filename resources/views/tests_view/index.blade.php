@@ -70,9 +70,12 @@
                                         Total Poin
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-center">
+                                        Poin Batas Kelulusan
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
                                         Durasi
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3 text-center">
                                         Keaktifan
                                     </th>
                                     @canany(['edit bank materi', 'delete bank materi'])
@@ -104,6 +107,9 @@
                                             {{ $value->total_poin }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
+                                            {{ $value->pass_point }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
                                             @php
                                                 if($value->estimated_time != null){
                                                     $total_waktu = explode(':', $value->estimated_time);
@@ -127,7 +133,7 @@
                                             @endphp
                                             {{ $durasi }}
                                         </td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-6 py-4 text-center">
                                             @if ($value->is_active == 1)
                                                 <span class="text-emerald-600">{{ 'Aktif' }}</span>
                                             @else
@@ -136,20 +142,29 @@
                                         </td>
                                         @canany(['edit bank materi', 'delete bank materi'])
                                         <td class="px-6 py-4" width="15%">
-                                            @if ($value->is_active == 1)
-                                                <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
-                                                    @can('edit bank materi')
-                                                    <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('tests.edit', $value->id) }}">Edit</a>
-                                                    @endcan
-                                                    @can('delete bank materi')
-                                                    <button type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline delete" data-id="{{ $value->id }}">Hapus</button>
-                                                    @endcan
-                                                </div>
+                                            @if ($value->is_released == 0)
+                                                @if ($value->is_active == 1)
+                                                    <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                        @can('edit bank materi')
+                                                        <button type="button" class="font-medium text-blue-400 dark:text-blue-300 hover:underline release" data-id="{{ $value->id }}">Rilis</button>
+                                                        @endcan
+                                                        @can('edit bank materi')
+                                                        <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('tests.edit', $value->id) }}">Edit</a>
+                                                        @endcan
+                                                        @can('delete bank materi')
+                                                        <button type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline delete" data-id="{{ $value->id }}">Hapus</button>
+                                                        @endcan
+                                                    </div>
+                                                @else
+                                                    <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                        @can('delete bank materi')
+                                                        <button type="button" class="font-medium text-green-400 dark:text-green-200 hover:underline recover" data-id="{{ $value->id }}">Pulihkan</button>
+                                                        @endcan
+                                                    </div>
+                                                @endif
                                             @else
-                                                <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
-                                                    @can('delete bank materi')
-                                                    <button type="button" class="font-medium text-green-400 dark:text-green-200 hover:underline recover" data-id="{{ $value->id }}">Pulihkan</button>
-                                                    @endcan
+                                                <div class="text-center">
+                                                    <span class="font-medium text-emerald-600">- RELEASED -</span>
                                                 </div>
                                             @endif
                                         </td>
@@ -360,6 +375,52 @@
             }
         })
     });
+    $(document).off('click', '.release').on('click', '.release', function(){
+        var testId = $(this).data('id');
+        // console.log(testId);
+        Swal.fire({
+            icon: "question",
+            title: "Rilis?",
+            text: "Yakin untuk rilis tes ini, untuk dipakai di dalam kelas? Jika sudah rilis, tidak dapat di un-rilis lagi.",
+            showConfirmButton: true,
+            confirmButtonText: "Ya",
+            showDenyButton: true,
+            denyButtonText: "Tidak",
+            allowOutsideClick: false
+        })
+        .then((response) => {
+            if(response.isConfirmed){
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    url: "{{route('tests.release')}}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        testId: testId
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response);
+                        if(response == 1){
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil!",
+                                text: "Tes telah berhasil dirilis.",
+                                showConfirmButton: true,
+                                confirmButtonText: "OK",
+                                allowOutsideClick: false
+                            })
+                            .then((response) => {
+                                window.location.href = "{{route('tests')}}";
+                            });
+                        }
+                    }
+                });
+            }else if(response.isDenied){
+
+            }
+        });
+    })
     $(document).off('click', '.detail').on('click', '.detail', function() {
         var tests_id = $(this).data('id');
         Swal.fire({

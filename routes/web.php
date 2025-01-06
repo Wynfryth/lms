@@ -4,6 +4,7 @@ use App\Http\Controllers\ClassCatController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClassroomsController;
 use App\Http\Controllers\ClassSessionsController;
+use App\Http\Controllers\DashboardsController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\MyClassesController;
@@ -35,9 +36,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -45,6 +46,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('notifications', [NotificationsController::class, 'usernotifications'])->name('user.notifications');
     Route::get('readnotifications', [NotificationsController::class, 'readnotifications'])->name('user.readnotifications');
+
+    Route::controller(DashboardsController::class)->group(function () {
+        Route::get('dashboard/{year?}', 'index')->middleware(['auth', 'verified'])->name('dashboard');
+    });
 
     // Employees
     Route::controller(EmployeesController::class)->group(function () {
@@ -182,6 +187,7 @@ Route::middleware('auth')->group(function () {
         Route::get('tests/create', 'create')->middleware(['permission:create tes'])->name('tests.create');
         Route::post('tests/store', 'store')->middleware(['permission:create tes'])->name('tests.store');
         Route::get('tests/edit/{id}', 'edit')->middleware(['permission:edit tes'])->name('tests.edit');
+        Route::post('tests/release', 'release')->middleware(['permission:edit tes'])->name('tests.release');
         Route::post('tests/update/{id}', 'update')->middleware(['permission:edit tes'])->name('tests.update');
         Route::post('tests/delete', 'delete')->middleware(['permission:delete tes'])->name('tests.delete');
         Route::post('tests/recover', 'recover')->middleware(['permission:delete tes'])->name('tests.recover');

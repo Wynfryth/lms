@@ -11,6 +11,26 @@
                     <div class="p-1">
                         <span>Hi, <strong>{{ Auth::user()->name; }}</strong>! Welcome to Learning Management System Gacoan!</span>
                     </div>
+                    @php
+                        $currentYear = now()->year; // Get the current year
+                        $startYear = $currentYear - 5; // 5 years ago
+                        $endYear = $currentYear + 5; // 5 years later
+                    @endphp
+                    <div class="py-1">
+                        <select name="year" id="year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            @for ($year = $startYear; $year <= $endYear; $year++)
+                                @if ($dashboardYear != null)
+                                    <option value="{{ $year }}" {{ $year == $dashboardYear ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @else
+                                    <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endif
+                            @endfor
+                        </select>
+                    </div>
                     @role('Academy Admin')
                     <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4">
                         <x-card-dashboard class="hover:bg-blue-700 bg-white hover:text-blue-600 hover:delay-75 group">
@@ -28,7 +48,7 @@
                             <x-slot name="number">
                                 <h2
                                     class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
-                                    122
+                                    {{$allEnrollment}}
                                 </h2>
                             </x-slot>
                         </x-card-dashboard>
@@ -332,7 +352,7 @@
                             <x-slot name="number">
                                 <h2
                                     class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
-                                    8
+                                    {{$attendedClasses}}
                                 </h2>
                             </x-slot>
                         </x-card-dashboard>
@@ -352,11 +372,11 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700 flex-1 float-left">
-                                        5
+                                        0
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
-                                        62 %
+                                        0 %
                                     </h2>
                                 </div>
                             </x-slot>
@@ -377,11 +397,11 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700 flex-1 float-left">
-                                        3
+                                        0
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
-                                        38 %
+                                        0 %
                                     </h2>
                                 </div>
                             </x-slot>
@@ -400,6 +420,12 @@
 $(document).ready(function () {
     mortalityGraph();
     passRateGraph();
+});
+$(document).off('change', '[name="year"]').on('change', '[name="year"]', function(){
+    var year = $(this).val();
+    var url = "{{route('dashboard', ':year')}}";
+    url = url.replace(':year', year);
+    window.location.href = url;
 });
 function mortalityGraph(){
     var options = {

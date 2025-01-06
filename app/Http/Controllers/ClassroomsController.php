@@ -51,7 +51,10 @@ class ClassroomsController extends Controller
                 'c.study_material_title',
                 'd.id AS test_id',
                 'd.test_name',
-                'h.type'
+                'd.pass_point',
+                'h.type',
+                'i.id AS emp_test_id',
+                'j.result_point'
             )
             ->selectRaw(DB::raw(
                 '(SELECT COUNT(*) FROM t_session_material_schedule WHERE class_session_id = a.id) AS session_schedule_count,
@@ -73,6 +76,27 @@ class ClassroomsController extends Controller
             ->leftJoin('miegacoa_employees.emp_employee AS f', 'f.nip', '=', 'e.nip')
             ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
             ->leftJoin('class_material_types AS h', 'h.id', '=', 'b.material_type')
+            ->leftJoin('tr_emp_test AS i', function ($join) {
+                $nip = Auth::user()->nip;
+                $join->on('i.test_sch_id', '=', 'b.id')
+                    ->where(
+                        [
+                            'b.material_type' => 2,
+                            'i.emp_nip' => $nip
+                        ]
+                    );
+            })
+            ->leftJoin(DB::raw('(SELECT
+                                GROUP_CONCAT(a.id) AS studentTestId, a.emp_test_id, GROUP_CONCAT(a.question_id) AS question_id,
+                                GROUP_CONCAT(a.answer_id) AS answer_id, GROUP_CONCAT(b.answer) AS answer, GROUP_CONCAT(b.correct_status) AS correct_status,
+                                GROUP_CONCAT(c.question) AS question, GROUP_CONCAT(c.points) AS points,
+                                SUM(c.points) AS max_point,
+                                SUM(CASE WHEN b.correct_status = 1 THEN 1 ELSE 0 END) AS total_correct,
+                                SUM(CASE WHEN correct_status = 1 THEN c.points ELSE 0 END) AS result_point
+                                FROM tr_emp_answer AS a
+                                LEFT JOIN tm_answer_bank AS b ON b.id = a.answer_id
+                                LEFT JOIN tm_question_bank AS c ON c.id = b.question_id
+                                GROUP BY a.emp_test_id) AS j'), 'j.emp_test_id', '=', 'i.id')
             ->where('a.id', $sessionId)
             ->orderBy('a.session_order', 'asc')
             ->orderBy('b.start_eff_date', 'asc')
