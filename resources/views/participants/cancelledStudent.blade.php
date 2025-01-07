@@ -75,7 +75,7 @@
                                             {{ $value->Organization }}
                                         </td>
                                         <td class="px-6 py-4">
-                                            {{ $value->modified_by }}
+                                            {{ date('d-m-Y H:i:s', strtotime($value->modified_date)) }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             {{ $value->cancelledClasses }}

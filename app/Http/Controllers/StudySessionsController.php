@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class StudySessionsController extends Controller
 {
-    public function index($studyId)
+    public function index($studyId, $scheduleId)
     {
         $study = DB::table('tm_study_material_header as a')
             ->select('a.*', 'a.id AS studyId', 'b.*', 'c.*') // Select all columns or specify required ones
@@ -15,6 +15,27 @@ class StudySessionsController extends Controller
             ->leftJoin('tm_study_material_attachments as c', 'c.study_material_detail_id', '=', 'b.id')
             ->where('a.id', $studyId)
             ->get();
-        return view('classrooms.studySession', compact('study'));
+        foreach ($study as $key => $item) {
+            $attachment = $item->attachment;
+            if (substr($attachment, 0, 5) == 'https') {
+                $videoId = $this->getYoutubeVideoId($attachment);
+            }
+            $item->attachment = 'ytube.' . $videoId;
+        }
+        return view('classrooms.studySession', compact('studyId', 'scheduleId', 'study'));
+    }
+
+    public function getYoutubeVideoId($url)
+    {
+        $pattern = '/youtu\.be\/([^\?&]+)/';
+        if (preg_match($pattern, $url, $matches)) {
+            return $matches[1]; // The video ID
+        }
+        return null; // Return null if no match is found
+    }
+
+    public function studyMaterialPlayback($scheduleId, $attachmentId)
+    {
+        return view('classrooms.studyMaterialPlayback', compact('scheduleId', 'attachmentId'));
     }
 }

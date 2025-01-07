@@ -163,6 +163,7 @@
     </div>
 </x-app-layout>
 <script>
+    var participantsCollection = [];
     $(document).ready(function () {
         // $(document).find('[name="kategori_kelas"]').val('{{$item->class_category_id}}').trigger('change');
         // var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
@@ -197,16 +198,39 @@
             $(document).find('#participant_table tbody tr:last').find('td:eq(3)').html('<span>'+students[keys].Organization+'</span>');
             $(document).find('#participant_table tbody tr:last').find('td:eq(4)').html('<span>'+students[keys].enrollment_status+'</span>');
             $(document).find('#participant_table tbody tr:last').find('button.remove_row').removeClass('remove_row').addClass('cancel_student');
+
+            participantsCollection.push(students[keys].emp_nip);
         }
     });
     $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
-        var nip = $(this).val();
-        var data = $(this).select2('data')[0]; // get the selected data (all compilation)
-        var divisi = data.division;
+        if($(this).val() != null){
+            participantsCollection.push(parseInt($(this).val()));
+            // console.log(participantsCollection);
+            if(findDuplicates(participantsCollection).length > 0){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Peserta duplikat. Mohon cek kembali data yang diinput.',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false
+                })
+                .then((feedback)=>{
+                    if(feedback.isConfirmed){
+                        participantsCollection.pop();
+                        $(this).val('').trigger('change');
+                    }
+                });
+                return;
+            }
 
-        $(this).closest('tr').find('td:eq(2)').html(nip);
-        $(this).closest('tr').find('td:eq(3)').html(divisi);
-        $(this).closest('tr').find('td:eq(4)').html('REGISTERED');
+            var nip = $(this).val();
+            var data = $(this).select2('data')[0]; // get the selected data (all compilation)
+            var divisi = data.division;
+
+            $(this).closest('tr').find('td:eq(2)').html(nip);
+            $(this).closest('tr').find('td:eq(3)').html(divisi);
+            $(this).closest('tr').find('td:eq(4)').html('REGISTERED');
+        }
     });
     $(document).off('click', '.cancel_student').on('click', '.cancel_student', function(){
         var student_nip = $(this).closest('tr').find('td:eq(2)').html();
@@ -247,8 +271,24 @@
                     }
                 });
             }
-        })
-    })
+        });
+    });
+    function findDuplicates(arr) {
+        const seen = new Set();
+        const duplicates = new Set();
+
+        for (const item of arr) {
+            if (item !== null) {
+                if (seen.has(item)) {
+                    duplicates.add(item);
+                } else {
+                    seen.add(item);
+                }
+            }
+        }
+
+        return Array.from(duplicates);
+    }
     // $(document).off('change', '[name="kategori_kelas"]').on('change', '[name="kategori_kelas"]', function(){
     //     var id_kategori_kelas = $(this).val();
     //     var category_type = $(this).find('option:selected').data('category-type');

@@ -295,6 +295,7 @@ Route::middleware('auth')->group(function () {
         Route::get('studySessions/index/{studyId}/{scheduleId}', 'index')->middleware(['permission:list ruang kelas'])->name('studySessions');
         Route::post('studySessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('studySessions.getClassSessions');
         Route::get('studySessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('studySessions.getSessionSchedule');
+        Route::get('studySessions/studyMaterialPlayback/{scheduleId}/{attachmentId}', 'studyMaterialPlayback')->middleware(['permission:list ruang kelas'])->name('studySessions.studyMaterialPlayback');
         // Route::get('studySessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('studySessions.create');
         // Route::post('studySessions/store', 'store')->middleware(['permission:create ruang kelas'])->name('studySessions.store');
         // Route::get('studySessions/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('studySessions.edit');

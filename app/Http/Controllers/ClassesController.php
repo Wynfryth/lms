@@ -201,38 +201,40 @@ class ClassesController extends Controller
         //     'read_status' => 0
         // ];
         // DB::table('t_notification_receipt')->insert($insert_notif_receipt);
-        if (count($request->peserta) > 0) {
-            foreach ($request->peserta as $item) {
-                $insert_enrollment_data = [
-                    'emp_nip' => $item,
-                    'class_id' => $insert_action,
-                    'enrollment_date' => Carbon::now(),
-                    'enrollment_status_id' => 1, // 1 is registered
-                    'created_by' => Auth::id(),
-                    'created_date' => Carbon::now()
-                ];
-                $insert_enrollment = DB::table('tr_enrollment')
-                    ->insertGetId($insert_enrollment_data);
-                $user = User::where(['nip' => $item])->first();
-                if ($user) {
-                    $user->removeRole('Guest');
-                    $user->assignRole('Student');
+        if (isset($request->peserta)) {
+            if (count($request->peserta) > 0) {
+                foreach ($request->peserta as $item) {
+                    $insert_enrollment_data = [
+                        'emp_nip' => $item,
+                        'class_id' => $insert_action,
+                        'enrollment_date' => Carbon::now(),
+                        'enrollment_status_id' => 1, // 1 is registered
+                        'created_by' => Auth::id(),
+                        'created_date' => Carbon::now()
+                    ];
+                    $insert_enrollment = DB::table('tr_enrollment')
+                        ->insertGetId($insert_enrollment_data);
+                    $user = User::where(['nip' => $item])->first();
+                    if ($user) {
+                        $user->removeRole('Guest');
+                        $user->assignRole('Student');
+                    }
+                    $notification_title = "Ditambahkan ke Kelas \"" . $request->nama_kelas . "\" sebagai Peserta";
+                    $notification_content = "Anda ditambahkan sebagai Peserta ke Kelas \"" . $request->nama_kelas . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+                    $insert_notification = [
+                        'notification_title' => $notification_title,
+                        'notification_content' => $notification_content,
+                        'created_by' => Auth::id(),
+                        'created_date' => Carbon::now()
+                    ];
+                    $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+                    $insert_notif_receipt = [
+                        'notification_id' => $notification_id,
+                        'user_nip' => $item,
+                        'read_status' => 0
+                    ];
+                    DB::table('t_notification_receipt')->insert($insert_notif_receipt);
                 }
-                $notification_title = "Ditambahkan ke Kelas \"" . $request->nama_kelas . "\" sebagai Peserta";
-                $notification_content = "Anda ditambahkan sebagai Peserta ke Kelas \"" . $request->nama_kelas . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
-                $insert_notification = [
-                    'notification_title' => $notification_title,
-                    'notification_content' => $notification_content,
-                    'created_by' => Auth::id(),
-                    'created_date' => Carbon::now()
-                ];
-                $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
-                $insert_notif_receipt = [
-                    'notification_id' => $notification_id,
-                    'user_nip' => $item,
-                    'read_status' => 0
-                ];
-                DB::table('t_notification_receipt')->insert($insert_notif_receipt);
             }
         }
         if ($insert_action > 0) {
@@ -319,6 +321,8 @@ class ClassesController extends Controller
             ])
             ->update([
                 'enrollment_status_id' => $cancel_id,
+                'modified_by' => Auth::user()->nip,
+                'modified_date' => Carbon::now(),
             ]);
         return $cancel_action;
     }
@@ -358,38 +362,40 @@ class ClassesController extends Controller
         $delete_class_has_materials = DB::table('class_has_materials')
             ->where('id_class_header', $id)
             ->delete();
-        if (count($request->peserta) > 0) {
-            foreach ($request->peserta as $item) {
-                $insert_enrollment_data = [
-                    'emp_nip' => $item,
-                    'class_id' => $id,
-                    'enrollment_date' => Carbon::now(),
-                    'enrollment_status_id' => 1, // 1 is registered
-                    'created_by' => Auth::id(),
-                    'created_date' => Carbon::now()
-                ];
-                $insert_enrollment = DB::table('tr_enrollment')
-                    ->insertGetId($insert_enrollment_data);
-                $user = User::where(['nip' => $item])->first();
-                if ($user) {
-                    $user->removeRole('Guest');
-                    $user->assignRole('Student');
+        if (isset($request->peserta)) {
+            if (count($request->peserta) > 0) {
+                foreach ($request->peserta as $item) {
+                    $insert_enrollment_data = [
+                        'emp_nip' => $item,
+                        'class_id' => $id,
+                        'enrollment_date' => Carbon::now(),
+                        'enrollment_status_id' => 1, // 1 is registered
+                        'created_by' => Auth::id(),
+                        'created_date' => Carbon::now()
+                    ];
+                    $insert_enrollment = DB::table('tr_enrollment')
+                        ->insertGetId($insert_enrollment_data);
+                    $user = User::where(['nip' => $item])->first();
+                    if ($user) {
+                        $user->removeRole('Guest');
+                        $user->assignRole('Student');
+                    }
+                    $notification_title = "Ditambahkan ke Kelas \"" . $request->nama_kelas . "\" sebagai Peserta";
+                    $notification_content = "Anda ditambahkan sebagai Peserta ke Kelas \"" . $request->nama_kelas . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
+                    $insert_notification = [
+                        'notification_title' => $notification_title,
+                        'notification_content' => $notification_content,
+                        'created_by' => Auth::id(),
+                        'created_date' => Carbon::now()
+                    ];
+                    $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
+                    $insert_notif_receipt = [
+                        'notification_id' => $notification_id,
+                        'user_nip' => $item,
+                        'read_status' => 0
+                    ];
+                    DB::table('t_notification_receipt')->insert($insert_notif_receipt);
                 }
-                $notification_title = "Ditambahkan ke Kelas \"" . $request->nama_kelas . "\" sebagai Peserta";
-                $notification_content = "Anda ditambahkan sebagai Peserta ke Kelas \"" . $request->nama_kelas . "\" oleh " . Auth::user()->name . " pada " . date('d-m-Y H:i:s');
-                $insert_notification = [
-                    'notification_title' => $notification_title,
-                    'notification_content' => $notification_content,
-                    'created_by' => Auth::id(),
-                    'created_date' => Carbon::now()
-                ];
-                $notification_id = DB::table('t_notification')->insertGetId($insert_notification);
-                $insert_notif_receipt = [
-                    'notification_id' => $notification_id,
-                    'user_nip' => $item,
-                    'read_status' => 0
-                ];
-                DB::table('t_notification_receipt')->insert($insert_notif_receipt);
             }
         }
         // if (count($request->materials) > 0) {

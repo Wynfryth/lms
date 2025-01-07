@@ -100,8 +100,8 @@
                         </table>
                     </div>
                 </div>
-                <h6 class="text-center font-bold mt-4 mb-2">DETAIL</h6>
-                <div class="grid grid-cols-2 gap-4">
+                <h6 class="text-center font-bold mt-4 mb-2 hidden">DETAIL</h6>
+                <div class="grid grid-cols-2 gap-4 hidden">
                     @php
                         $questionId = 0;
                         $sequence = 1;
