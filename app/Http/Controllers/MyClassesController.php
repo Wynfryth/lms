@@ -12,7 +12,7 @@ class MyClassesController extends Controller
     {
         $nip = Auth::user()->nip;
         $myclasses = DB::table('tr_enrollment AS a')
-            ->select('a.id', 'b.id AS class_id', 'b.class_title', 'b.class_desc', 'b.start_eff_date', 'b.end_eff_date', 'd.enrollment_status')
+            ->select('a.id', 'b.id AS class_id', 'b.class_title', 'b.class_desc', 'b.start_eff_date', 'b.end_eff_date', 'd.enrollment_status', 'b.is_released')
             ->selectRaw(DB::raw('GROUP_CONCAT(c.session_name) AS session_name'))
             ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
             ->leftJoin('t_class_session AS c', 'c.class_id', '=', 'b.id')

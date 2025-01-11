@@ -64,6 +64,7 @@ class TestsController extends Controller
             [
                 'nama_tes.required' => 'Nama tes belum terisi.',
                 'kategori_tes.required' => 'Kategori tes belum terisi.',
+                'deskripsi_tes.required' => 'Deskripsi tes belum terisi.',
                 'durasi_tes.required' => 'Durasi tes belum terisi.',
                 // 'min_point' => 'Nilai minimum belum terisi.'
             ]
@@ -145,13 +146,13 @@ class TestsController extends Controller
                 'kategori_tes' => 'required',
                 'deskripsi_tes' => 'required',
                 'durasi_tes' => 'required',
-                'min_point' => 'required'
+                // 'min_point' => 'required'
             ],
             [
                 'nama_tes.required' => 'Nama tes belum terisi.',
                 'kategori_tes.required' => 'Kategori tes belum terisi.',
                 'durasi_tes.required' => 'Durasi tes belum terisi.',
-                'min_point' => 'Nilai minimum belum terisi.'
+                // 'min_point' => 'Nilai minimum belum terisi.'
             ]
         );
         if ($validator->fails()) {
@@ -161,7 +162,7 @@ class TestsController extends Controller
             'test_cat_id' => $request->kategori_tes,
             'test_name' => $request->nama_tes,
             'test_desc' => $request->deskripsi_tes,
-            'pass_point' => $request->min_point,
+            // 'pass_point' => $request->min_point,
             'estimated_time' => $request->durasi_tes,
             'is_active' => 1,
             'modified_by' => Auth::id(),
@@ -205,6 +206,7 @@ class TestsController extends Controller
             ->where('a.id', $request->testId)
             ->update([
                 'is_released' => 1,
+                'pass_point' => $request->pass_point,
             ]);
         return response()->json($releaseTest);
     }
@@ -241,5 +243,37 @@ class TestsController extends Controller
         } else {
             return 'failed to recover';
         }
+    }
+
+    public function getTestDetail($testId)
+    {
+        $testDetail = DB::table('tm_test as a')
+            ->select(
+                'a.id',
+                'a.test_name',
+                'a.test_desc',
+                'a.estimated_time',
+                'a.pass_point',
+                'a.is_released',
+                DB::raw('COUNT(c.id) AS question_count'),
+                DB::raw('GROUP_CONCAT(c.question SEPARATOR "|") AS questions'),
+                DB::raw('GROUP_CONCAT(c.points SEPARATOR "|") AS points'),
+                DB::raw('SUM(c.points) AS max_point'),
+                DB::raw('GROUP_CONCAT(d.answer SEPARATOR "|") AS correct_answers')
+            )
+            ->leftJoin('test_has_questions as b', 'b.test_id', '=', 'a.id')
+            ->leftJoin('tm_question_bank as c', function ($join) {
+                $join->on('c.id', '=', 'b.question_id')
+                    ->where('c.is_active', '=', 1);
+            })
+            ->leftJoin('tm_answer_bank as d', function ($join) {
+                $join->on('d.question_id', '=', 'c.id')
+                    ->where('d.correct_status', '=', 1);
+            })
+            ->where('a.id', $testId)
+            ->groupBy('a.id')
+            ->get();
+
+        return $testDetail;
     }
 }

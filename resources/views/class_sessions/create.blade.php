@@ -106,12 +106,13 @@
                             <tbody>
                                 @php
                                     $session_name = '';
+                                    $session_sequence = 1;
                                 @endphp
                                 @forelse ($class_session_schedules as $index => $schedule)
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     @if ($session_name != $schedule->session_name)
                                         <td class="px-6 py-3 text-center border-r" rowspan="{{$schedule->session_schedule_count}}">
-                                            {{$index+1}}
+                                            {{$session_sequence++}}
                                         </td>
                                         <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" rowspan="{{$schedule->session_schedule_count}}">
                                             Nama: {{$schedule->session_name}} <br/>
@@ -125,13 +126,26 @@
                                     <td class="px-6 py-3 border-r">
                                         {{$schedule->study_material_title ?? $schedule->test_name}}
                                     </td>
+                                    @if ($schedule->material_type == 1)
+                                    <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="my-1">
+                                            <x-input-label for="material_percentage" :value="__('Persentase Nilai Materi (%)')" />
+                                            <x-text-input id="material_percentage" name="material_percentage" maxlength="4" type="text" class="mt-1 block w-full" value="{{ old('material_percentage') }}"/>
+                                            @error('material_percentage')
+                                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </th>
+                                    @else
+                                    <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    @endif
                                     <td class="px-6 py-3 border-r">
                                         {{date('d/m/Y H:i:s', strtotime($schedule->start_eff_date))}}
                                     </td>
                                     <td class="px-6 py-3 border-r">
                                         {{date('d/m/Y H:i:s', strtotime($schedule->end_eff_date))}}
                                     </td>
-                                    <td class="text-center relative">
+                                    <td class="text-center relative px-6 py-3 border-r">
                                         <button id="dropdownMenuButton-{{ $schedule->schedule_id }}" data-dropdown-toggle="dropdown-{{ $schedule->schedule_id }}" class="border bg-gray-100 text-gray-500 hover:text-gray-700 focus:outline-none rounded-lg">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v.01M12 12v.01M12 18v.01"></path>
@@ -158,6 +172,13 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                <div class="bg-white sticky bottom-5 p-2 rounded shadow-md border-2 border-gray-500">
+                    <label for="materialPercentageBar" class="text-center">Total Persentase Materi</label>
+                    <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" id="materialPercentageBarDiv">
+                    </div>
+                    <button type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center mt-2 mr-4 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800 w-full" id="save_material_percentage">SIMPAN</button>
                 </div>
 
                 <div id="accordion-collapse" data-accordion="collapse" class="mt-3">
@@ -277,7 +298,7 @@
 
                             <div class="my-1">
                                 <x-input-label for="materi" :value="__('Materi')" />
-                                <x-select-option id="materi" name="materi[]" class="w-full" multiple="multiple">
+                                <x-select-option id="materi" name="materi[]" style="width:100%" multiple="multiple">
                                     <x-slot name="options">
                                         @forelse ($materials as $material)
                                             <option value="{{ $material->id }}" {{ old('materi') == $material->id ? 'selected' : '' }}>
@@ -303,10 +324,13 @@
 
                             <div class="flex items-center gap-4">
                                 <x-primary-button>{{ __('Tambah') }}</x-primary-button>
-                                <a href="{{route('classes')}}" type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center me-2 mb-0 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">SELESAI</a>
                             </div>
                         </form>
                     </div>
+                </div>
+                <div class="mt-3">
+                    {{-- <button type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center mr-4 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800" id="save_material_percentage">SELESAI</button> --}}
+                    {{-- <a href="{{route('classes')}}" type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center mr-4 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">SELESAI</a> --}}
                 </div>
             </div>
         </div>
@@ -368,11 +392,13 @@
 </script>
 @endif
 <script>
+    var materialPercentage = 0;
     $(document).ready(function () {
         $('[name="materi[]"]').select2({
             placeholder: "Pilih Materi",
             allowClear: true
-        })
+        });
+        $('[name="material_percentage"]').trigger('keyup');
     });
     $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
         var nip = $(this).val();
@@ -445,4 +471,82 @@
             }
         });
     });
+    $(document).off('keyup', '[name="material_percentage"]').on('keyup', '[name="material_percentage"]', function(){
+        var sumPercentage = 0;
+        $('[name="material_percentage"]').each(function(index, element){
+            var materialPercentage = !!$(element).val() ? parseInt($(element).val()) : 0;
+            sumPercentage += materialPercentage;
+        });
+        remainingPercentage = 100 - sumPercentage;
+        var color, width, html;
+        // console.log(sumPercentage)
+        if(sumPercentage > 0){
+            if(sumPercentage == 100){
+                color = "green";
+                width = "100";
+                $('#save_material_percentage').removeClass('hidden').addClass('show');
+            }else if(sumPercentage < 100){
+                color = "blue";
+                width = sumPercentage;
+                $('#save_material_percentage').removeClass('show').addClass('hidden');
+            }else if(sumPercentage > 100){
+                color = "red";
+                width = "100";
+                $('#save_material_percentage').removeClass('show').addClass('hidden');
+            }
+        }else{
+            color = "black";
+            width = "100";
+            $('#save_material_percentage').removeClass('show').addClass('hidden');
+        }
+        percentageBar = '<div id="materialPercentageBar" class="bg-'+color+'-600 text-xs font-medium text-'+color+'-100 text-center p-0.5 leading-none rounded-full" style="width: '+width+'%"> '+sumPercentage+'%</div>';
+        $('#materialPercentageBarDiv').html(percentageBar);
+    })
+    $(document).off('click', '#save_material_percentage').on('click', '#save_material_percentage', function(){
+        var percentageCollection = [];
+        $('[name="material_percentage"]').each(function(index, element){
+            var percentage = parseInt($(element).val());
+            percentageCollection.push(percentage);
+        });
+        console.log(percentageCollection);
+        Swal.fire({
+            icon: "question",
+            title: "Simpan",
+            text: "Simpan persentase nilai materi?",
+            showDenyButton: true,
+            denyButtonText: "Tidak",
+            confirmButtontext: "Ya",
+            allowOutsideClick: false
+        })
+        .then((feedback)=>{
+            if(feedback.isConfirmed){
+                // $.ajax({
+                //     type: "POST",
+                //     url: "{{route('classes.updateMaterialPercentage')}}",
+                //     data: {
+                //         _token: "{{csrf_token()}}",
+                //         scheduleId: id
+                //     },
+                //     dataType: "JSON",
+                //     success: function (response) {
+                //         // console.log(response)
+                //         if(response == 1){
+                //             Swal.fire({
+                //                 icon: "success",
+                //                 title: "Sukses",
+                //                 text: "Sukses menghapus jadwal",
+                //                 confirmButtontext: "Ya",
+                //                 allowOutsideClick: false
+                //             })
+                //             .then((feedback2)=>{
+                //                 if(feedback2.isConfirmed){
+                //                     window.location.reload();
+                //                 }
+                //             })
+                //         }
+                //     }
+                // });
+            }
+        })
+    })
 </script>

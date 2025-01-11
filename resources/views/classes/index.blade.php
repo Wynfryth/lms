@@ -94,7 +94,8 @@
                                             {{ date('d/m/Y', strtotime($value->end_eff_date)) }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            {{ $value->jumlah_materi }}
+                                            {{-- {{ $value->jumlah_materi }} --}}
+                                            {{ $value->sum_materi }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             @if ($value->is_active == 1)
@@ -106,7 +107,11 @@
                                         @canany(['create sesi kelas', 'edit master kelas', 'delete master kelas'])
                                         <td class="px-6 py-4" width="15%">
                                             @if ($value->is_active == 1)
-                                                <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                @if ($value->is_released == 0)
+                                                <div class="flex flex-column sm:flex-row flex-wrap space-y-2 gap-2 sm:space-y-0 items-center justify-between">
+                                                    @can('edit master kelas')
+                                                    <button type="button" class="font-medium text-blue-600 dark:text-green-500 hover:underline release" data-id="{{ $value->id }}">Rilis</button>
+                                                    @endcan
                                                     @can('create sesi kelas')
                                                     <a type="button" class="font-medium text-blue-400 dark:text-blue-200 hover:underline" href="{{ route('class_sessions.create', $value->id) }}">Sesi</a>
                                                     @endcan
@@ -117,6 +122,11 @@
                                                     <button type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline delete" data-id="{{ $value->id }}">Hapus</button>
                                                     @endcan
                                                 </div>
+                                                @else
+                                                <div class="text-center">
+                                                    <span class="font-medium text-emerald-600">- RELEASED -</span>
+                                                </div>
+                                                @endif
                                             @else
                                                 <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
                                                     @can('delete master kelas')
@@ -369,5 +379,57 @@
             url = url.replace(':classes_kywd', classes_kywd);
             window.location.href = url;
         }
+    });
+    $(document).off('click', '.release').on('click', '.release', function(){
+        var classId = $(this).data('id');
+        Swal.fire({
+            icon: "question",
+            title: "Rilis?",
+            text: "Rilis kelas? Kelas yang dirilis tidak dapat diedit lagi",
+            showDenyButton: true,
+            denyButtonText: "Tidak",
+            confirmButtonText: "Ya, Rilis",
+            allowOutsideClick: false
+        })
+        .then((feedback)=>{
+            if(feedback.isConfirmed){
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('classes.release') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        classId: classId
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response);
+                        if(response > 0){
+                            Swal.fire({
+                                icon: "success",
+                                title: "Berhasil!",
+                                text: "Berhasil merilis kelas.",
+                                showConfirmButton: true,
+                                confirmButtonText: "OK",
+                                allowOutsideClick: false
+                            })
+                            .then((feedback)=>{
+                                if(feedback.isConfirmed){
+                                    window.location = "{{ route('classes') }}";
+                                }
+                            })
+                        }else{
+                            Swal.fire({
+                                icon: "error",
+                                title: "Gagal!",
+                                text: "Gagal merilis data. Silahkan coba beberapa saat lagi.",
+                                showConfirmButton: true,
+                                confirmButtonText: "OK",
+                                allowOutsideClick: false
+                            })
+                        }
+                    }
+                });
+            }
+        })
     })
 </script>

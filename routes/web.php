@@ -124,6 +124,8 @@ Route::middleware('auth')->group(function () {
         Route::post('classes/update/{id}', 'update')->middleware(['permission:edit master kelas'])->name('classes.update');
         Route::post('classes/delete', 'delete')->middleware(['permission:delete master kelas'])->name('classes.delete');
         Route::post('classes/recover', 'recover')->middleware(['permission:delete master kelas'])->name('classes.recover');
+        Route::post('classes/release', 'release')->middleware(['permission:edit master kelas'])->name('classes.release');
+        Route::post('classes/updateMaterialPercentage', 'updateMaterialPercentage')->middleware(['permission:edit master kelas'])->name('classes.updateMaterialPercentage');
     });
     // Class Sessions
     Route::controller(ClassSessionsController::class)->group(function () {
@@ -191,6 +193,7 @@ Route::middleware('auth')->group(function () {
         Route::post('tests/update/{id}', 'update')->middleware(['permission:edit tes'])->name('tests.update');
         Route::post('tests/delete', 'delete')->middleware(['permission:delete tes'])->name('tests.delete');
         Route::post('tests/recover', 'recover')->middleware(['permission:delete tes'])->name('tests.recover');
+        Route::get('tests/getTestDetail/{testId}', 'getTestDetail')->middleware(['permission:list tes'])->name('tests.getTestDetail');
     });
     // Questions
     Route::controller(QuestionsController::class)->group(function () {
@@ -296,6 +299,7 @@ Route::middleware('auth')->group(function () {
         Route::post('studySessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('studySessions.getClassSessions');
         Route::get('studySessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('studySessions.getSessionSchedule');
         Route::get('studySessions/studyMaterialPlayback/{scheduleId}/{attachmentId}', 'studyMaterialPlayback')->middleware(['permission:list ruang kelas'])->name('studySessions.studyMaterialPlayback');
+        Route::get('studySessions/studyMaterialFile/{scheduleId}/{attachmentId}', 'studyMaterialFile')->middleware(['permission:list ruang kelas'])->name('studySessions.studyMaterialFile');
         // Route::get('studySessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('studySessions.create');
         // Route::post('studySessions/store', 'store')->middleware(['permission:create ruang kelas'])->name('studySessions.store');
         // Route::get('studySessions/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('studySessions.edit');

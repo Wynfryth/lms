@@ -91,14 +91,14 @@
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div>
+                        {{-- <div>
                             <x-input-label for="min_point" :value="__('Nilai minimum (Poin)')" />
                             <x-text-input id="min_point" name="min_point" type="text" class="mt-1 block w-full" value="{{ $item->pass_point }}"/>
                             <span class="text-semibold bg-red-200">Maksimal: <span class="font-bold text-red-600">{{$item->max_point}}</span> Poin</span>
                             @error('min_point')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div id="materi_div" class="my-1 hidden">

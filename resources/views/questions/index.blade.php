@@ -112,6 +112,7 @@
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             {{ $value->points }}
+                                            {{ $value->is_released }}
                                         </td>
                                         <td class="px-6 py-4">
                                             @if ($value->is_active == 1)
@@ -122,21 +123,25 @@
                                         </td>
                                         @canany(['edit pertanyaan', 'delete pertanyaan'])
                                         <td class="px-6 py-4" width="15%">
-                                            @if ($value->is_active == 1)
-                                                <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
-                                                    @can('edit pertanyaan')
-                                                    <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('questions.edit', $value->id) }}">Edit</a>
-                                                    @endcan
-                                                    @can('delete pertanyaan')
-                                                    <button type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline delete" data-id="{{ $value->id }}">Hapus</button>
-                                                    @endcan
-                                                </div>
+                                            @if ($value->is_released == 1)
+                                                <span class="text-semibold text-green-500">-- RELEASED --</span>
                                             @else
-                                                <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
-                                                    @can('delete pertanyaan')
-                                                    <button type="button" class="font-medium text-green-400 dark:text-green-200 hover:underline recover" data-id="{{ $value->id }}">Pulihkan</button>
-                                                    @endcan
-                                                </div>
+                                                @if ($value->is_active == 1)
+                                                    <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                        @can('edit pertanyaan')
+                                                        <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('questions.edit', $value->id) }}">Edit</a>
+                                                        @endcan
+                                                        @can('delete pertanyaan')
+                                                        <button type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline delete" data-id="{{ $value->id }}">Hapus</button>
+                                                        @endcan
+                                                    </div>
+                                                @else
+                                                    <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                        @can('delete pertanyaan')
+                                                        <button type="button" class="font-medium text-green-400 dark:text-green-200 hover:underline recover" data-id="{{ $value->id }}">Pulihkan</button>
+                                                        @endcan
+                                                    </div>
+                                                @endif
                                             @endif
                                         </td>
                                         @endcanany

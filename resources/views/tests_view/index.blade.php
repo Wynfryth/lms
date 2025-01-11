@@ -377,49 +377,168 @@
     });
     $(document).off('click', '.release').on('click', '.release', function(){
         var testId = $(this).data('id');
-        // console.log(testId);
+        var max_point = 0;
         Swal.fire({
-            icon: "question",
-            title: "Rilis?",
-            text: "Yakin untuk rilis tes ini, untuk dipakai di dalam kelas? Jika sudah rilis, tidak dapat di un-rilis lagi.",
-            showConfirmButton: true,
-            confirmButtonText: "Ya",
+            title: 'Rilis Tes',
+            html: `
+                <span class="font-semibold text-red-500">Perhatian! Tes yang sudah dirilis tidak dapat diedit dan dihapus. Mohon diperiksa dengan seksama. Terima kasih. :)</span>
+                <div id="div_release" class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    #
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Pertanyaan
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Jawaban
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Nilai
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-4" colspan="100%"></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="font-bold text-center p-2 text-lg" colspan="3">TOTAL</td>
+                                <td id="total_points" class="font-bold text-green-500 text-center text-lg"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <form id="userForm" class="w-full">
+                    <div>
+                        <label for="pass_point" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Nilai Batas Kelulusan:</label>
+                        <input type="text" id="pass_point" name="pass_point" class="swal2-input border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-0" placeholder="Nilai batas kelulusan..." required>
+                    </div>
+                </form>
+            `,
             showDenyButton: true,
-            denyButtonText: "Tidak",
-            allowOutsideClick: false
-        })
-        .then((response) => {
-            if(response.isConfirmed){
+            denyButtonText: 'Batal',
+            confirmButtonText: 'Rilis',
+            allowOutsideClick: false,
+            width: '80%',
+            preConfirm: () => {
+                const pass_point = document.getElementById('pass_point').value;
+                if (!pass_point) {
+                    Swal.showValidationMessage('Mohon isi nilai minimum dari Tes');
+                    return false;
+                }else{
+                    if(parseInt(pass_point) > parseInt(max_point)){
+                        Swal.showValidationMessage('Nilai minimum tidak boleh lebih dari nilai maksimum.');
+                        return false;
+                    }else{
+                        return { pass_point };
+                    }
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var pass_point = result.value.pass_point;
                 $.ajax({
-                    async: false,
                     type: "POST",
                     url: "{{route('tests.release')}}",
                     data: {
-                        _token: "{{ csrf_token() }}",
+                        _token: "{{csrf_token()}}",
+                        pass_point: result.value.pass_point,
                         testId: testId
                     },
                     dataType: "JSON",
                     success: function (response) {
-                        // console.log(response);
                         if(response == 1){
                             Swal.fire({
-                                icon: "success",
-                                title: "Berhasil!",
-                                text: "Tes telah berhasil dirilis.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK",
-                                allowOutsideClick: false
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: 'Berhasil rilis tes.',
+                                allowOutsideClick: false,
                             })
-                            .then((response) => {
-                                window.location.href = "{{route('tests')}}";
-                            });
+                            .then((result2)=>{
+                                if(result2.isConfirmed){
+                                    window.location.reload();
+                                }
+                            })
                         }
                     }
                 });
-            }else if(response.isDenied){
-
             }
         });
+        smallSkeleton($('#div_release table tbody tr td'));
+        var url = "{{route('tests.getTestDetail', ':testId')}}";
+        url = url.replace(':testId', testId);
+        $.ajax({
+            type: "GET",
+            url: url,
+            // data: "data",
+            dataType: "JSON",
+            success: function (response) {
+                var questions = response[0].questions.split('|');
+                var points = response[0].points.split('|');
+                var correct_answers = response[0].correct_answers.split('|');
+                var tbody = '';
+                for(var keys in questions){
+                    tbody += `
+                        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                            <td class="text-center font-semibold">`+(parseInt(keys)+1)+`</td>
+                            <td>`+questions[keys]+`</td>
+                            <td>`+correct_answers[keys]+`</td>
+                            <td class="text-center">`+points[keys]+`</td>
+                        </tr>
+                    `;
+                }
+                $('#div_release table tbody').html(tbody);
+                $('#div_release td#total_points').html(response[0].max_point);
+                max_point = response[0].max_point;
+            }
+        });
+        // Swal.fire({
+        //     icon: "question",
+        //     title: "Rilis?",
+        //     text: "Yakin untuk rilis tes ini, untuk dipakai di dalam kelas? Jika sudah rilis, tidak dapat di un-rilis lagi.",
+        //     showConfirmButton: true,
+        //     confirmButtonText: "Ya",
+        //     showDenyButton: true,
+        //     denyButtonText: "Tidak",
+        //     allowOutsideClick: false
+        // })
+        // .then((response) => {
+        //     if(response.isConfirmed){
+        //         $.ajax({
+        //             async: false,
+        //             type: "POST",
+        //             url: "{{route('tests.release')}}",
+        //             data: {
+        //                 _token: "{{ csrf_token() }}",
+        //                 testId: testId
+        //             },
+        //             dataType: "JSON",
+        //             success: function (response) {
+        //                 // console.log(response);
+        //                 if(response == 1){
+        //                     Swal.fire({
+        //                         icon: "success",
+        //                         title: "Berhasil!",
+        //                         text: "Tes telah berhasil dirilis.",
+        //                         showConfirmButton: true,
+        //                         confirmButtonText: "OK",
+        //                         allowOutsideClick: false
+        //                     })
+        //                     .then((response) => {
+        //                         window.location.href = "{{route('tests')}}";
+        //                     });
+        //                 }
+        //             }
+        //         });
+        //     }else if(response.isDenied){
+
+        //     }
+        // });
     })
     $(document).off('click', '.detail').on('click', '.detail', function() {
         var tests_id = $(this).data('id');

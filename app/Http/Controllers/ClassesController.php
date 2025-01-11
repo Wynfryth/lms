@@ -20,12 +20,17 @@ class ClassesController extends Controller
     public function index($classes_kywd = null)
     {
         $classes = DB::table('t_class_header AS a')
-            ->select('a.id', 'a.class_title', 'a.start_eff_date', 'a.end_eff_date', 'a.class_desc', 'b.class_category', 'a.is_active')
-            ->selectRaw(DB::raw('GROUP_CONCAT(d.study_material_title) AS studies, GROUP_CONCAT(d.id) AS id_studies, COUNT(d.study_material_title) AS jumlah_materi, GROUP_CONCAT(e.test_name) AS tests, GROUP_CONCAT(e.id) AS id_tests, COUNT(e.test_name) AS jumlah_tes'))
+            ->select('a.id', 'a.class_title', 'a.start_eff_date', 'a.end_eff_date', 'a.class_desc', 'b.class_category', 'a.is_active', 'a.is_released')
+            ->selectRaw(DB::raw('GROUP_CONCAT(d.study_material_title) AS studies, GROUP_CONCAT(d.id) AS id_studies, COUNT(d.study_material_title) AS jumlah_materi, GROUP_CONCAT(e.test_name) AS tests, GROUP_CONCAT(e.id) AS id_tests, COUNT(e.test_name) AS jumlah_tes, COUNT(g.material_id) AS sum_materi'))
             ->leftJoin('tm_class_category AS b', 'a.class_category_id', '=', 'b.id')
             ->leftJoin('class_has_materials AS c', 'c.id_class_header', '=', 'a.id')
             ->leftJoin('tm_study_material_header AS d', 'd.id', '=', 'c.id_material')
             ->leftJoin('tm_test AS e', 'e.id', '=', 'c.id_material')
+            ->leftJoin('t_class_session AS f', 'f.class_id', '=', 'a.id')
+            ->leftJoin('t_session_material_schedule AS g', function ($join) {
+                $join->on('g.class_session_id', '=', 'f.id')
+                    ->where('g.material_type', '=', 1);
+            })
             ->groupBy('a.id')
             ->orderByDesc('a.id');
         if ($classes_kywd != null) {
@@ -467,5 +472,27 @@ class ClassesController extends Controller
         } else {
             return 'failed to recover';
         }
+    }
+
+    public function release(Request $request)
+    {
+        $release_data = [
+            'a.is_released' => 1,
+            'a.release_date' => Carbon::now(),
+            'a.released_by' => Auth::user()->nip
+        ];
+        $release_action = DB::table('t_class_header AS a')
+            ->where('a.id', $request->classId)
+            ->update($release_data);
+        if ($release_action > 0) {
+            return $release_action;
+        } else {
+            return 'failed to release';
+        }
+    }
+
+    public function updateMaterialPercentage(Request $request)
+    {
+        return $request;
     }
 }

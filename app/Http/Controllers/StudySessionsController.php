@@ -10,7 +10,7 @@ class StudySessionsController extends Controller
     public function index($studyId, $scheduleId)
     {
         $study = DB::table('tm_study_material_header as a')
-            ->select('a.*', 'a.id AS studyId', 'b.*', 'c.*') // Select all columns or specify required ones
+            ->select('a.*', 'a.id AS studyId', 'b.*', 'c.*', 'c.id AS attachmentId') // Select all columns or specify required ones
             ->leftJoin('tm_study_material_detail as b', 'b.header_id', '=', 'a.id')
             ->leftJoin('tm_study_material_attachments as c', 'c.study_material_detail_id', '=', 'b.id')
             ->where('a.id', $studyId)
@@ -19,8 +19,8 @@ class StudySessionsController extends Controller
             $attachment = $item->attachment;
             if (substr($attachment, 0, 5) == 'https') {
                 $videoId = $this->getYoutubeVideoId($attachment);
+                $item->attachment = 'ytube.' . $videoId;
             }
-            $item->attachment = 'ytube.' . $videoId;
         }
         return view('classrooms.studySession', compact('studyId', 'scheduleId', 'study'));
     }
@@ -36,6 +36,24 @@ class StudySessionsController extends Controller
 
     public function studyMaterialPlayback($scheduleId, $attachmentId)
     {
-        return view('classrooms.studyMaterialPlayback', compact('scheduleId', 'attachmentId'));
+        $study = DB::table('t_session_material_schedule AS a')
+            ->leftJoin('tm_study_material_header AS b', 'b.id', '=', 'a.material_id')
+            ->where('a.id', $scheduleId)
+            ->get();
+        $videoId = substr($attachmentId, 6);
+        return view('classrooms.studyMaterialPlayback', compact('study', 'scheduleId', 'attachmentId', 'videoId'));
+    }
+
+    public function studyMaterialFile($scheduleId, $attachmentId)
+    {
+        $study = DB::table('t_session_material_schedule AS a')
+            ->leftJoin('tm_study_material_header AS b', 'b.id', '=', 'a.material_id')
+            ->where('a.id', $scheduleId)
+            ->get();
+        $file = DB::table('tm_study_material_attachments AS a')
+            ->where('a.id', $attachmentId)
+            ->get();
+        // $videoId = substr($attachmentId, 6);
+        return view('classrooms.studyMaterialFile', compact('study', 'file', 'scheduleId', 'attachmentId'));
     }
 }

@@ -87,6 +87,7 @@ class ClassSessionsController extends Controller
                 'b.id AS schedule_id',
                 'b.start_eff_date',
                 'b.end_eff_date',
+                'b.material_type',
                 'f.Employee_name AS trainer',
                 'g.location_type',
                 'c.study_material_title',
@@ -614,8 +615,8 @@ class ClassSessionsController extends Controller
 
     public function deleteSchedule(Request $request)
     {
-        $delete_action = DB::table('t_session_material_schedule AS a')
-            ->where('a.id', $request->scheduleId)
+        $delete_action = DB::table('t_session_material_schedule')
+            ->where('id', $request->scheduleId)
             ->delete();
         return $delete_action;
     }

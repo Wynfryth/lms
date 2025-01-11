@@ -14,14 +14,14 @@ class QuestionsController extends Controller
     public function index($questions_kywd = null)
     {
         $questions = DB::table('tm_question_bank AS a')
-            ->select('xx.id', 'xx.question', 'xx.points', 'xx.is_active', 'xx.answers', 'xx.correct_status', 'yy.test_name')
+            ->select('xx.id', 'xx.question', 'xx.points', 'xx.is_active', 'xx.answers', 'xx.correct_status', 'yy.test_name', 'yy.is_released')
             ->from(DB::raw('(SELECT
                             a.id, a.question, a.points, a.is_active, GROUP_CONCAT(b.answer SEPARATOR "; ") AS answers, GROUP_CONCAT(b.correct_status SEPARATOR ", ") AS correct_status
                             FROM tm_question_bank AS a
                             LEFT JOIN tm_answer_bank AS b ON b.question_id = a.id
                             GROUP BY a.id) AS xx'))
             ->leftJoin(DB::raw('(SELECT
-                                a.id, GROUP_CONCAT(c.test_name SEPARATOR "; ") AS test_name
+                                a.id, GROUP_CONCAT(c.test_name SEPARATOR "; ") AS test_name, c.is_released
                                 FROM tm_question_bank AS a
                                 LEFT JOIN test_has_questions AS b ON b.question_id = a.id
                                 LEFT JOIN tm_test AS c ON c.id = b.test_id
