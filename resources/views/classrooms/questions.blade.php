@@ -127,7 +127,11 @@ $(document).ready(function() {
 
         // Display the countdown
         // $('#countdown').text(days + "d " + hours + "h " + minutes + "m " + seconds + "s ");
-        $('#countdown').text(minutes + " : " + seconds);
+        if(hours > 0){
+            $('#countdown').text(hours+" : "+minutes + " : " + seconds);
+        }else{
+            $('#countdown').text(minutes + " : " + seconds);
+        }
 
         // If the countdown is finished, display a message
         if (timeRemaining < 0) {

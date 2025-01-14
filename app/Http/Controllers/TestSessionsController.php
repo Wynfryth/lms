@@ -19,11 +19,34 @@ class TestSessionsController extends Controller
             ])
             ->first();
         if ($existedTest != null) {
-            if ($existedTest->time_end > Carbon::now()) {
-                return redirect()->route('testSessions.questions', ['testScheduleId' => $existedTest->id, 'testId' => $testId]);
-            } else {
+            // ngecek dia udah submit belum, sebelum waktunya selesai
+            $empTestId = $existedTest->id;
+            $existedAnswer = DB::table('tr_emp_answer AS a')
+                ->where([
+                    'a.emp_test_id' => $empTestId
+                ])
+                ->first();
+            if ($existedAnswer != null) {
                 return redirect()->route('testSessions.testResult', ['nip' => Auth::user()->nip, 'studentTestId' => $existedTest->id]);
+            } else {
+                return redirect()->route('testSessions.questions', ['testScheduleId' => $existedTest->id, 'testId' => $testId]);
             }
+            // if ($existedTest->time_end > Carbon::now()) {
+            //     // ngecek dia udah submit belum, sebelum waktunya selesai
+            //     $empTestId = $existedTest->id;
+            //     $existedAnswer = DB::table('tr_emp_answer AS a')
+            //         ->where([
+            //             'a.emp_test_id' => $empTestId
+            //         ])
+            //         ->first();
+            //     if ($existedAnswer != null) {
+            //         return redirect()->route('testSessions.testResult', ['nip' => Auth::user()->nip, 'studentTestId' => $existedTest->id]);
+            //     } else {
+            //         return redirect()->route('testSessions.questions', ['testScheduleId' => $existedTest->id, 'testId' => $testId]);
+            //     }
+            // } else {
+            //     return redirect()->route('testSessions.testResult', ['nip' => Auth::user()->nip, 'studentTestId' => $existedTest->id]);
+            // }
         } else {
             $test = DB::table('tm_test AS a')
                 ->select(

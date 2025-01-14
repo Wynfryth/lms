@@ -85,6 +85,7 @@ class ClassSessionsController extends Controller
                 'a.class_id',
                 'a.session_order',
                 'b.id AS schedule_id',
+                'b.material_percentage',
                 'b.start_eff_date',
                 'b.end_eff_date',
                 'b.material_type',

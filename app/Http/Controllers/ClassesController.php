@@ -479,7 +479,7 @@ class ClassesController extends Controller
         $release_data = [
             'a.is_released' => 1,
             'a.release_date' => Carbon::now(),
-            'a.released_by' => Auth::user()->nip
+            'a.released_by' => Auth::user()->id
         ];
         $release_action = DB::table('t_class_header AS a')
             ->where('a.id', $request->classId)
@@ -493,6 +493,19 @@ class ClassesController extends Controller
 
     public function updateMaterialPercentage(Request $request)
     {
-        return $request;
+        $percentageCollection = $request->percentageCollection;
+        foreach ($percentageCollection as $key => $percentage) {
+            $update_data = [
+                'a.material_percentage' => $percentage['percentage'],
+            ];
+            $update_action = DB::table('t_session_material_schedule AS a')
+                ->where('a.id', $percentage['materialKey'])
+                ->update($update_data);
+        }
+        if ($update_action > 0) {
+            return $update_action;
+        } else {
+            return 'failed to update';
+        }
     }
 }

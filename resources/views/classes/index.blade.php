@@ -64,7 +64,7 @@
                                         Sampai
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-center">
-                                        Jumlah Materi/Tes
+                                        Jumlah Materi
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-center">
                                         Keaktifan

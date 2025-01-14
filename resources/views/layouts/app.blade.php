@@ -500,6 +500,15 @@ function toggleDetail(element){
     }
 }
 
+function tinySkeleton(object){
+    // Show Tailwind skeleton loader
+    var skeletonLoader = `
+            <div class="space-y-4 animate-pulse">
+                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+            </div>`;
+    object.html(skeletonLoader);
+}
+
 function smallSkeleton(object){
     // Show Tailwind skeleton loader
     var skeletonLoader = `

@@ -130,7 +130,7 @@
                                     <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <div class="my-1">
                                             <x-input-label for="material_percentage" :value="__('Persentase Nilai Materi (%)')" />
-                                            <x-text-input id="material_percentage" name="material_percentage" maxlength="4" type="text" class="mt-1 block w-full" value="{{ old('material_percentage') }}"/>
+                                            <x-text-input id="material_percentage" name="material_percentage" data-schedule="{{$schedule->schedule_id}}" maxlength="4" type="text" class="mt-1 block w-full" value="{{ $schedule->material_percentage }}"/>
                                             @error('material_percentage')
                                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                                             @enderror
@@ -184,7 +184,7 @@
                 <div id="accordion-collapse" data-accordion="collapse" class="mt-3">
                     <h2 id="accordion-collapse-heading-1">
                         <button type="button" class="flex items-center justify-between w-full p-3 font-medium rtl:text-right text-gray-500 border border-gray-200 rounded-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-collapse-body-1" aria-expanded="false" aria-controls="accordion-collapse-body-1">
-                        <span>Form Sesi</span>
+                        <span>+ Tambah Sesi</span>
                         <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                         </svg>
@@ -499,16 +499,20 @@
             width = "100";
             $('#save_material_percentage').removeClass('show').addClass('hidden');
         }
-        percentageBar = '<div id="materialPercentageBar" class="bg-'+color+'-600 text-xs font-medium text-'+color+'-100 text-center p-0.5 leading-none rounded-full" style="width: '+width+'%"> '+sumPercentage+'%</div>';
+        percentageBar = '<div id="materialPercentageBar" class="bg-'+color+'-600 text-xs font-medium text-'+color+'-100 text-center p-0.5 leading-none rounded-full" style="width: '+width+'%">'+sumPercentage+'%</div>';
         $('#materialPercentageBarDiv').html(percentageBar);
     })
     $(document).off('click', '#save_material_percentage').on('click', '#save_material_percentage', function(){
         var percentageCollection = [];
         $('[name="material_percentage"]').each(function(index, element){
+            var materialKey = $(element).data('schedule');
             var percentage = parseInt($(element).val());
-            percentageCollection.push(percentage);
+            var obj = {
+                materialKey: materialKey,
+                percentage: percentage
+            }
+            percentageCollection.push(obj);
         });
-        console.log(percentageCollection);
         Swal.fire({
             icon: "question",
             title: "Simpan",
@@ -520,32 +524,32 @@
         })
         .then((feedback)=>{
             if(feedback.isConfirmed){
-                // $.ajax({
-                //     type: "POST",
-                //     url: "{{route('classes.updateMaterialPercentage')}}",
-                //     data: {
-                //         _token: "{{csrf_token()}}",
-                //         scheduleId: id
-                //     },
-                //     dataType: "JSON",
-                //     success: function (response) {
-                //         // console.log(response)
-                //         if(response == 1){
-                //             Swal.fire({
-                //                 icon: "success",
-                //                 title: "Sukses",
-                //                 text: "Sukses menghapus jadwal",
-                //                 confirmButtontext: "Ya",
-                //                 allowOutsideClick: false
-                //             })
-                //             .then((feedback2)=>{
-                //                 if(feedback2.isConfirmed){
-                //                     window.location.reload();
-                //                 }
-                //             })
-                //         }
-                //     }
-                // });
+                $.ajax({
+                    type: "POST",
+                    url: "{{route('classes.updateMaterialPercentage')}}",
+                    data: {
+                        _token: "{{csrf_token()}}",
+                        percentageCollection: percentageCollection
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        console.log(response)
+                        if(response == 1){
+                            Swal.fire({
+                                icon: "success",
+                                title: "Sukses",
+                                text: "Sukses menyimpan persentase nilai",
+                                confirmButtontext: "Ya",
+                                allowOutsideClick: false
+                            })
+                            .then((response)=>{
+                                if(response.isConfirmed){
+                                    window.location = "{{ route('classes') }}";
+                                }
+                            })
+                        }
+                    }
+                });
             }
         })
     })

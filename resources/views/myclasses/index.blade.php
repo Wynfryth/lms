@@ -48,29 +48,44 @@
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg grid lg:grid-cols-3 sm:grid-cols-1 gap-4 p-3">
                         @forelse ($myclasses as $index => $myclass)
                             <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                <div class="p-5">
-                                    @if ($myclass->is_released == 1)
-                                    <a href="{{route('classrooms', $myclass->class_id)}}">
-                                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white hover:underline">{{$myclass->class_title}}</h5>
-                                    </a>
-                                    @else
-                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-500 dark:text-white">{{$myclass->class_title}}</h5>
-                                    <span>(Belum rilis)</span>
-                                    @endif
+                                <div class="flex flex-col h-full p-5">
+                                    <div class="grid grid-cols-4 gap-1">
+                                        <div class="col-span-3">
+                                            @if ($myclass->is_released == 1)
+                                            <a href="{{route('classrooms', $myclass->class_id)}}">
+                                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white hover:underline">{{$myclass->class_title}}</h5>
+                                            </a>
+                                            @else
+                                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-500 dark:text-white">{{$myclass->class_title}}</h5>
+                                            <span>(Belum rilis)</span>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            @if ($myclass->all_test > 0)
+                                                @if (ceil(($myclass->test_done/$myclass->all_test)*100) == 100)
+                                                    <div class="pass_status" data-sessions="{{ $myclass->session_ids }}"></div>
+                                                @endif
+                                            @else
+                                                {{-- <div class="mt-3 pass_status" data-sessions="{{ $myclass->session_ids }}"></div> --}}
+                                            @endif
+                                        </div>
+                                    </div>
                                     <div class="flex items-center">
                                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/>
                                         </svg> &nbsp;{{date('d/m/Y', strtotime($myclass->start_eff_date))}} - {{date('d/m/Y', strtotime($myclass->end_eff_date))}}
                                     </div>
                                     <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{$myclass->class_desc}}</p>
-                                    <div>
+                                    <div class="mt-auto">
                                         @if ($myclass->is_released == 1)
                                         <div class="grid grid-cols-6 gap-4">
                                             <div class="col-span-1"><span class="float-left">Progress:</span></div>
-                                            <div class="col-start-6"><span class="float-right">45%</span></div>
+                                            <div class="col-start-6"><span class="float-right">
+                                                {{ ceil(($myclass->test_done/$myclass->all_test)*100) }}%
+                                            </span></div>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
+                                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ ceil(($myclass->test_done/$myclass->all_test)*100) }}%"></div>
                                         </div>
                                         @endif
                                     </div>
@@ -137,6 +152,7 @@
                 }
             }
         });
+        passStatusCheck();
     });
     $(document).off('click', '.delete').on('click', '.delete', function() {
         // console.log($(this).data('id'))
@@ -256,4 +272,36 @@
             window.location.href = url;
         }
     })
+    function passStatusCheck(){
+        $('.pass_status').each(function(index, element){
+            tinySkeleton($(element));
+            var class_sessions = $(element).data('sessions');
+            var url = "{{ route('myclasses.passStatusCheck', ['class_sessions' => ':class_sessions']) }}";
+            url = url.replace(':class_sessions', class_sessions);
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                // dataType: "JSON",
+                success: function (response) {
+                    // console.log(response);
+                    var classScore = 0;
+                    for(var keys in response){
+                        calculatedScore = Math.ceil((response[keys].material_percentage/100)*response[keys].result_point);
+                        // console.log(calculatedScore);
+                        classScore += calculatedScore;
+                    }
+                    // console.log(classScore);
+                    if(classScore < 80){
+                        $(element).html('<button type="button" class="bg-red-500 p-1 px-2 border rounded-lg font-bold text-white">GAGAL</button>');
+                    }else{
+                        $(element).html('<button type="button" class="bg-green-500 p-1 px-2 border rounded-lg font-bold text-white">LULUS</button>');
+                    }
+                }
+            });
+        })
+
+    }
 </script>

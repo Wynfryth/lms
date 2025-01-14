@@ -244,6 +244,7 @@ Route::middleware('auth')->group(function () {
         Route::post('myclasses/update/{id}', 'update')->middleware(['permission:edit kelasku'])->name('myclasses.update');
         Route::post('myclasses/delete', 'delete')->middleware(['permission:delete kelasku'])->name('myclasses.delete');
         Route::post('myclasses/recover', 'recover')->middleware(['permission:delete kelasku'])->name('myclasses.recover');
+        Route::get('myclasses/passStatusCheck/{class_sessions}', 'passStatusCheck')->middleware(['permission:list kelasku'])->name('myclasses.passStatusCheck');
     });
 
     // Jadwalku (Student)
