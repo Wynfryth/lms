@@ -7,6 +7,7 @@ use App\Http\Controllers\ClassSessionsController;
 use App\Http\Controllers\DashboardsController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\MyClassesController;
 use App\Http\Controllers\MyScheduleController;
 use App\Http\Controllers\MySchedulesController;
@@ -126,6 +127,7 @@ Route::middleware('auth')->group(function () {
         Route::post('classes/recover', 'recover')->middleware(['permission:delete master kelas'])->name('classes.recover');
         Route::post('classes/release', 'release')->middleware(['permission:edit master kelas'])->name('classes.release');
         Route::post('classes/updateMaterialPercentage', 'updateMaterialPercentage')->middleware(['permission:edit master kelas'])->name('classes.updateMaterialPercentage');
+        Route::get('classes/getStudentByNip/{nip}/{index}', 'getStudentByNip')->middleware(['permission:edit master kelas'])->name('classes.getStudentByNip');
     });
     // Class Sessions
     Route::controller(ClassSessionsController::class)->group(function () {
@@ -208,6 +210,10 @@ Route::middleware('auth')->group(function () {
     // File
     Route::controller(FileController::class)->group(function () {
         Route::post('file/uploadatt', 'upload_study_attachment')->name('file.upload_studyatt');
+    });
+    // File Upload (Excel)
+    Route::controller(FileUploadController::class)->group(function () {
+        Route::post('fileUpload/uploadEnrollments', 'uploadEnrollments')->name('fileUpload.uploadEnrollments');
     });
     // Users
     Route::controller(UsersController::class)->group(function () {

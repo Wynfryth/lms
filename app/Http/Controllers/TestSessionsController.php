@@ -145,6 +145,132 @@ class TestSessionsController extends Controller
                 ];
                 $insert_answer_action = DB::table('tr_emp_answer')->insert($insert_answer_data);
             }
+
+            if ($insert_answer_action > 0) {
+                $answer_result = DB::table('tr_emp_answer AS a')
+                    ->selectRaw("
+                        GROUP_CONCAT(a.id) AS emp_answer_ids,
+                        a.emp_test_id,
+                        GROUP_CONCAT(b.id) AS answer_ids,
+                        GROUP_CONCAT(b.correct_status) AS correct_statuses,
+                        SUM(CASE WHEN b.correct_status = 1 THEN c.points ELSE 0 END) AS point_result
+                    ")
+                    ->leftJoin('tm_answer_bank AS b', 'b.id', '=', 'a.answer_id')
+                    ->leftJoin('tm_question_bank AS c', 'c.id', '=', 'a.question_id')
+                    ->where('a.emp_test_id', $request->testScheduleId)
+                    ->groupBy('a.emp_test_id')
+                    ->first();
+                $update_header = DB::table('tr_emp_test')
+                    ->where('id', $request->testScheduleId)
+                    ->update([
+                        'test_score' => $answer_result->point_result
+                    ]);
+            }
+
+            // ngecek apakah udah tes terakhir ato belum
+            $classId = DB::table('tr_emp_test AS b')
+                ->select('d.class_id')
+                ->leftJoin('t_session_material_schedule AS c', 'c.id', '=', 'b.test_sch_id')
+                ->leftJoin('t_class_session AS d', 'd.id', '=', 'c.class_session_id')
+                ->where('b.id', $request->testScheduleId)
+                ->first();
+            $tests = DB::table('tr_enrollment AS a')
+                ->select('a.id AS enrollment_id', 'b.id AS class_id', 'b.class_title', 'b.class_desc', 'b.start_eff_date', 'b.end_eff_date', 'd.enrollment_status', 'b.is_released')
+                ->selectRaw(DB::raw('GROUP_CONCAT(DISTINCT c.id) AS session_ids, GROUP_CONCAT(c.session_name) AS session_name, COUNT(e.id) AS all_test, COUNT(e.emp_test_id) AS test_done'))
+                ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+                ->leftJoin('t_class_session AS c', 'c.class_id', '=', 'b.id')
+                ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'a.enrollment_status_id')
+                ->leftJoin(DB::raw('(SELECT
+                    a.id, GROUP_CONCAT(DISTINCT a.class_session_id) AS class_session_id, GROUP_CONCAT(DISTINCT a.material_id) AS material_ids, GROUP_CONCAT(DISTINCT c.emp_test_id) AS emp_test_id,
+                    GROUP_CONCAT(DISTINCT c.question_id) AS question_ids
+                    FROM t_session_material_schedule AS a
+                    LEFT JOIN tr_emp_test AS b ON b.test_sch_id = a.id
+                    LEFT JOIN tr_emp_answer AS c ON c.emp_test_id = b.id
+                    WHERE material_type = 2
+                    GROUP BY a.id) AS e'), 'e.class_session_id', '=', 'c.id')
+                ->where([
+                    'a.emp_nip' => Auth::user()->nip,
+                    'a.class_id' => $classId->class_id
+                ])
+                ->orderBy('a.id', 'desc')
+                ->groupBy('a.id')
+                ->first();
+            if ($tests->test_done > 0) {
+                if ($tests->all_test == $tests->test_done) {
+                    // harus cek dia lulus ato nggak
+                    $testCategoryId = 3; // ngambil post test nya aja...
+                    $allPostTests = DB::table('t_class_session AS a')
+                        ->selectRaw('
+                            b.id,
+                            b.material_id,
+                            c.test_name,
+                            e.test_score,
+                            f.material_percentage,
+                            CEILING((f.material_percentage/100) * e.test_score) AS final_score
+                        ')
+                        ->leftJoin('t_session_material_schedule AS b', function ($join) {
+                            $join->on('b.class_session_id', '=', 'a.id')
+                                ->where('b.material_type', '=', 2);
+                        })
+                        ->leftJoin('tm_test AS c', 'c.id', '=', 'b.material_id')
+                        ->leftJoin('tm_test_category AS d', 'd.id', '=', 'c.test_cat_id')
+                        ->leftJoin('tr_emp_test AS e', 'e.test_sch_id', '=', 'b.id')
+                        ->leftJoinSub(
+                            DB::table('t_class_session AS a')
+                                ->selectRaw('
+                                    b.class_session_id,
+                                    b.material_id,
+                                    b.material_percentage,
+                                    c.test_id
+                                ')
+                                ->leftJoin('t_session_material_schedule AS b', function ($join) {
+                                    $join->on('b.class_session_id', '=', 'a.id')
+                                        ->where('b.material_type', '=', 1);
+                                })
+                                ->leftJoin('t_test_with_materials_list AS c', 'c.study_materials_id', '=', 'b.material_id')
+                                ->leftJoin('tm_test AS d', 'd.id', '=', 'c.test_id')
+                                ->leftJoin('tm_test_category AS e', 'e.id', '=', 'd.test_cat_id')
+                                ->where('a.class_id', '=', $classId->class_id)
+                                ->where('e.id', '=', $testCategoryId),
+                            'f',
+                            function ($join) {
+                                $join->on('f.test_id', '=', 'b.material_id');
+                            }
+                        )
+                        ->where('a.class_id', $classId->class_id)
+                        ->where('d.id', $testCategoryId)
+                        ->get();
+
+                    $accumulatedFinalScore = 0;
+                    foreach ($allPostTests as $test) {
+                        $accumulatedFinalScore += $test->final_score;
+                    }
+
+                    // semua kelas standard nya 80
+                    if ($accumulatedFinalScore >= 80) {
+                        // update jadi lulus
+                        DB::table('tr_enrollment AS a')
+                            ->where('a.id', $tests->enrollment_id)
+                            ->update([
+                                'a.enrollment_status_id' => 3
+                            ]);
+                    } else {
+                        // update jadi gagal
+                        DB::table('tr_enrollment AS a')
+                            ->where('a.id', $tests->enrollment_id)
+                            ->update([
+                                'a.enrollment_status_id' => 4
+                            ]);
+                    }
+                } else {
+                    // update jadi on-going
+                    DB::table('tr_enrollment AS a')
+                        ->where('a.id', $tests->enrollment_id)
+                        ->update([
+                            'a.enrollment_status_id' => 2
+                        ]);
+                }
+            }
         }
         if ($insert_answer_action > 0) {
             return response()->json(['success' => true, 'message' => 'Test submitted successfully']);

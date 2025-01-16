@@ -25,29 +25,9 @@ class MyClassesController extends Controller
                 LEFT JOIN tr_emp_answer AS c ON c.emp_test_id = b.id
                 WHERE material_type = 2
                 GROUP BY a.id) AS e'), 'e.class_session_id', '=', 'c.id')
-            // ->leftJoin(DB::raw('(SELECT
-            //     a.id, a.class_session_id, a.material_percentage, GROUP_CONCAT(DISTINCT d.test_id) AS test_id, GROUP_CONCAT(DISTINCT d.pass_point) pass_point,
-            //     GROUP_CONCAT(DISTINCT e.id) AS test_sch_id, GROUP_CONCAT(f.id) AS emp_test_id,
-            //     GROUP_CONCAT(g.answer_id) AS answer_ids, GROUP_CONCAT(h.correct_status) AS correct_status, GROUP_CONCAT(i.points) AS points,
-            //     SUM(CASE WHEN h.correct_status = 1 THEN i.points ELSE 0 END) AS result_point
-            //     FROM t_session_material_schedule AS a
-            //     LEFT JOIN
-            //         (SELECT
-            //         c.id AS test_id, b.study_materials_id, c.pass_point
-            //         FROM t_test_with_materials_list AS b
-            //         LEFT JOIN tm_test AS c ON c.id = b.test_id AND c.test_cat_id = 3) AS d ON d.study_materials_id = a.material_id AND d.test_id IS NOT NULL
-            //     LEFT JOIN t_session_material_schedule AS e ON e.material_id = d.test_id AND e.material_type = 2
-            //     LEFT JOIN tr_emp_test AS f ON f.test_sch_id = e.id
-            //     LEFT JOIN tr_emp_answer AS g ON g.emp_test_id = f.id
-            //     LEFT JOIN tm_answer_bank AS h ON h.id = g.answer_id
-            //     LEFT JOIN tm_question_bank AS i ON i.id = g.question_id
-            //     WHERE a.material_type = 1
-            //     GROUP BY a.id) AS f'), 'f.class_session_id', '=', 'c.id')
             ->where('a.emp_nip', $nip)
             ->orderBy('a.id', 'desc')
             ->groupBy('a.id');
-        //  ->toSql();
-        // dd($myclasses);
         if ($myclasses_kywd != null) {
             $any_params = [
                 'b.class_title',

@@ -15,26 +15,39 @@ class DashboardsController extends Controller
         } else {
             $year = date('Y');
         }
-        // all enrollment
-        $whereParams = [
-            'a.enrollment_status_id' => 1
-        ];
-        $allEnrollment = DB::table('tr_enrollment AS a')
-            ->where($whereParams)
-            ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
-            ->count();
 
-        // all attended classes
-        $nip = Auth::user()->nip;
-        $whereParams = [
-            'a.enrollment_status_id' => 1,
-            'a.emp_nip' => $nip
-        ];
-        $attendedClasses = DB::table('tr_enrollment AS a')
-            ->where($whereParams)
-            ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
-            ->count();
+        switch (Auth::user()->roles->pluck('name')[0]) {
+            case "Academy Admin":
+                // all enrollment
+                $whereParams = [
+                    'a.enrollment_status_id' => 1
+                ];
+                $allEnrollment = DB::table('tr_enrollment AS a')
+                    ->where($whereParams)
+                    ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
+                    ->count();
 
-        return view('dashboard', compact('dashboardYear', 'allEnrollment', 'attendedClasses'));
+                // pass rate
+                // -> ambil dari MyClassesController passStatusCheck()
+
+                $compact = compact('dashboardYear', 'allEnrollment');
+                break;
+            case "Student":
+                // all attended classes
+                $nip = Auth::user()->nip;
+                $whereParams = [
+                    'a.enrollment_status_id' => 1,
+                    'a.emp_nip' => $nip
+                ];
+                $attendedClasses = DB::table('tr_enrollment AS a')
+                    ->where($whereParams)
+                    ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
+                    ->count();
+
+                $compact = compact('dashboardYear', 'attendedClasses');
+                break;
+        }
+
+        return view('dashboard', $compact);
     }
 }

@@ -100,6 +100,9 @@
                         </table>
                     </div>
                 </div>
+                <div class="flex justify-center">
+                    <a href="{{route('classrooms', 42)}}" class="border text-center rounded w-full bg-blue-500 hover:bg-blue-400 text-white py-1 mt-2">Kembali ke kelas</a>
+                </div>
                 <h6 class="text-center font-bold mt-4 mb-2 hidden">DETAIL</h6>
                 <div class="grid grid-cols-2 gap-4 hidden">
                     @php
@@ -154,3 +157,11 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+    $(document).ready(function () {
+        window.history.pushState(null, "", window.location.href);
+        window.addEventListener("popstate", function () {
+            window.history.pushState(null, "", window.location.href);
+        });
+    });
+</script>

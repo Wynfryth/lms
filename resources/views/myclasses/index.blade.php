@@ -47,7 +47,24 @@
                     </div>
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg grid lg:grid-cols-3 sm:grid-cols-1 gap-4 p-3">
                         @forelse ($myclasses as $index => $myclass)
+                            @if ($myclass->all_test > 0)
+                                @if (ceil(($myclass->test_done/$myclass->all_test)*100) == 100)
+                                    @switch($myclass->enrollment_status)
+                                        @case('FAILED')
+                                            <div class="max-w-sm bg-red-50 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                            @break
+                                        @case('PASSED')
+                                            <div class="max-w-sm bg-green-50 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                            @break
+                                        @default
+                                        <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                    @endswitch
+                                @else
+                                <div class="max-w-sm bg-white-50 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                                @endif
+                            @else
                             <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                            @endif
                                 <div class="flex flex-col h-full p-5">
                                     <div class="grid grid-cols-4 gap-1">
                                         <div class="col-span-3">
@@ -63,10 +80,18 @@
                                         <div>
                                             @if ($myclass->all_test > 0)
                                                 @if (ceil(($myclass->test_done/$myclass->all_test)*100) == 100)
-                                                    <div class="pass_status" data-sessions="{{ $myclass->session_ids }}"></div>
+                                                    @switch($myclass->enrollment_status)
+                                                        @case('FAILED')
+                                                            <button type="button" class="bg-red-500 p-1 px-2 border rounded-lg font-bold text-white">{{$myclass->enrollment_status}}</button>
+                                                            @break
+                                                        @case('PASSED')
+                                                            <button type="button" class="bg-green-500 p-1 px-2 border rounded-lg font-bold text-white">{{$myclass->enrollment_status}}</button>
+                                                            @break
+                                                        @default
+
+                                                    @endswitch
                                                 @endif
                                             @else
-                                                {{-- <div class="mt-3 pass_status" data-sessions="{{ $myclass->session_ids }}"></div> --}}
                                             @endif
                                         </div>
                                     </div>
@@ -152,7 +177,6 @@
                 }
             }
         });
-        passStatusCheck();
     });
     $(document).off('click', '.delete').on('click', '.delete', function() {
         // console.log($(this).data('id'))
@@ -271,37 +295,5 @@
             url = url.replace(':myclasses_kywd', myclasses_kywd);
             window.location.href = url;
         }
-    })
-    function passStatusCheck(){
-        $('.pass_status').each(function(index, element){
-            tinySkeleton($(element));
-            var class_sessions = $(element).data('sessions');
-            var url = "{{ route('myclasses.passStatusCheck', ['class_sessions' => ':class_sessions']) }}";
-            url = url.replace(':class_sessions', class_sessions);
-            $.ajax({
-                type: "GET",
-                url: url,
-                data: {
-                    _token: "{{ csrf_token() }}"
-                },
-                // dataType: "JSON",
-                success: function (response) {
-                    // console.log(response);
-                    var classScore = 0;
-                    for(var keys in response){
-                        calculatedScore = Math.ceil((response[keys].material_percentage/100)*response[keys].result_point);
-                        // console.log(calculatedScore);
-                        classScore += calculatedScore;
-                    }
-                    // console.log(classScore);
-                    if(classScore < 80){
-                        $(element).html('<button type="button" class="bg-red-500 p-1 px-2 border rounded-lg font-bold text-white">GAGAL</button>');
-                    }else{
-                        $(element).html('<button type="button" class="bg-green-500 p-1 px-2 border rounded-lg font-bold text-white">LULUS</button>');
-                    }
-                }
-            });
-        })
-
-    }
+    });
 </script>

@@ -508,4 +508,12 @@ class ClassesController extends Controller
             return 'failed to update';
         }
     }
+
+    public function getStudentByNip($nip, $index)
+    {
+        $studentData = DB::table('miegacoa_employees.emp_employee AS a')
+            ->where('a.nip', $nip)
+            ->first();
+        return response()->json(['studentData' => $studentData, 'index' => $index]);
+    }
 }

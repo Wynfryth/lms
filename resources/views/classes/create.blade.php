@@ -128,6 +128,16 @@
                             <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_participant">
                                 + Peserta
                             </button>
+                            <button type="button" class="bg-green-500 hover:bg-green-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-green-500 hover:border-transparent rounded float-right" id="import_participants" data-modal-target="uploadParticipants-modal" data-modal-toggle="uploadParticipants-modal">
+                                + Import Peserta
+                            </button>
+                                @if($errors->any())
+                                    <div class="alert alert-danger">
+                                        @foreach($errors->all() as $error)
+                                            <p>{{ $error }}</p>
+                                        @endforeach
+                                    </div>
+                                @endif
                             @endcan
                         </div>
                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -215,9 +225,50 @@
         </div>
     </div>
 </x-app-layout>
+<div id="uploadParticipants-modal" tabindex="-1" aria-hidden="true" data-modal-backdrop="static" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-4xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white" id="modal_title">
+                    {{-- Pembelajaran & File --}}
+                </h3>
+                <button type="button" id="closeModal" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="uploadParticipants-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div id="modal_body" class="p-4 md:p-5 space-y-4">
+                {{-- <form action="{{ route('fileUpload.uploadEnrollments') }}" method="POST" enctype="multipart/form-data"> --}}
+                    @csrf
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Choose Excel File</label>
+                        <input type="file" name="file" id="file" class="form-control" required>
+                    </div>
+                    <button type="button" id="importExcel" class="btn btn-primary">Upload</button>
+                {{-- </form> --}}
+            </div>
+            <!-- Modal footer -->
+            {{-- <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button data-modal-hide="studydet-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
+                <button data-modal-hide="studydet-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
+            </div> --}}
+        </div>
+    </div>
+</div>
 <script>
     $(document).ready(function () {
         // console.log($('.class_period'));
+        var importedParticipants = @json(session('importedParticipants'));
+        if(importedParticipants != undefined){
+            for(var keys in importedParticipants){
+                $('#add_participant').trigger('click');
+            }
+        }
     });
     $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
         var nip = $(this).val();
@@ -321,4 +372,58 @@
             break;
         }
     });
+    $(document).off('click', '#importExcel').on('click', '#importExcel', function(){
+        // console.log($('[name="file"]')[0].files[0]);
+        let formData = new FormData();
+        formData.append('file', $('[name="file"]')[0].files[0]);
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content')); // Add the CSRF token
+
+        $.ajax({
+            type: "POST",
+            url: "{{route('fileUpload.uploadEnrollments')}}",
+            data: formData,
+            contentType: false,
+            processData: false,
+            // dataType: "dataType",
+            success: function (response) {
+                // console.log(response.importedParticipants);
+                if(response.importedParticipants != undefined){
+                    var modal = $('#closeModal').trigger('click');
+                    for(var keys in response.importedParticipants){
+                        $('#add_participant').trigger('click');
+                        $('#participant_table tbody tr:last').find('td:not(.row_index):not(:last-child)').html('<span></span>');
+                        tinySkeleton($('#participant_table tbody tr:last').find('td:not(.row_index):not(:last-child)').find('span'));
+                        var url = "{{route('classes.getStudentByNip', ['nip'=> ':nip', 'index'=> ':index'])}}";
+                        url = url.replace(':nip', response.importedParticipants[keys].nip);
+                        url = url.replace(':index', keys);
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            data: {
+                                _token: "{{csrf_token()}}"
+                            },
+                            dataType: "JSON",
+                            success: function (response) {
+                                // console.log(response);
+                                $('#participant_table tbody tr:eq('+parseInt(response.index)+')').find('td:eq(1)').html(response.studentData.Employee_name);
+                                $('#participant_table tbody tr:eq('+parseInt(response.index)+')').find('td:eq(1)').append('<input type="text" class="hidden" name="peserta[]" value="'+response.studentData.nip+'">');
+                                $('#participant_table tbody tr:eq('+parseInt(response.index)+')').find('td:eq(2)').html(response.studentData.nip);
+                                $('#participant_table tbody tr:eq('+parseInt(response.index)+')').find('td:eq(3)').html(response.studentData.Organization);
+                                $('#participant_table tbody tr:eq('+parseInt(response.index)+')').find('td:eq(4)').html('REGISTERED');
+                            }
+                        });
+                    }
+                }
+            },
+            error: function(xhr){
+                // console.log(JSON.parse(xhr.responseText).errors[0]);
+                Swal.fire({
+                    icon: "error",
+                    title: "Perhatian",
+                    text: JSON.parse(xhr.responseText).errors[0],
+                    allowOutsideClick: false
+                })
+            }
+        });
+    })
 </script>
