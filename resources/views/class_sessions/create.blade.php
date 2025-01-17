@@ -93,6 +93,9 @@
                                         Materi / Tes
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-center">
+                                        Bobot Materi / Tes
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
                                         Mulai
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-center">
@@ -126,7 +129,21 @@
                                     <td class="px-6 py-3 border-r">
                                         {{$schedule->study_material_title ?? $schedule->test_name}}
                                     </td>
-                                    @if ($schedule->material_type == 1)
+                                    @if ($class->class_category_type_id == 1)
+                                        @if ($schedule->material_type == 1)
+                                        <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <div class="my-1">
+                                                <x-input-label for="material_percentage" :value="__('Persentase Nilai Materi (%)')" />
+                                                <x-text-input id="material_percentage" name="material_percentage" data-schedule="{{$schedule->schedule_id}}" maxlength="4" type="text" class="mt-1 block w-full" value="{{ $schedule->material_percentage }}"/>
+                                                @error('material_percentage')
+                                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </th>
+                                        @else
+                                        <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        @endif
+                                    @else
                                     <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         <div class="my-1">
                                             <x-input-label for="material_percentage" :value="__('Persentase Nilai Materi (%)')" />
@@ -136,8 +153,6 @@
                                             @enderror
                                         </div>
                                     </th>
-                                    @else
-                                    <th scope="row" class="border-r px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                     @endif
                                     <td class="px-6 py-3 border-r">
                                         {{date('d/m/Y H:i:s', strtotime($schedule->start_eff_date))}}
@@ -178,7 +193,7 @@
                     <label for="materialPercentageBar" class="text-center">Total Persentase Materi</label>
                     <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700" id="materialPercentageBarDiv">
                     </div>
-                    <button type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center mt-2 mr-4 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800 w-full" id="save_material_percentage">SIMPAN</button>
+                    <button type="button" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-1.5 text-center mt-2 mr-4 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800 hidden w-full" id="save_material_percentage">SIMPAN</button>
                 </div>
 
                 <div id="accordion-collapse" data-accordion="collapse" class="mt-3">

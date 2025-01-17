@@ -174,26 +174,70 @@ class TestSessionsController extends Controller
                 ->leftJoin('t_class_session AS d', 'd.id', '=', 'c.class_session_id')
                 ->where('b.id', $request->testScheduleId)
                 ->first();
+            // $tests = DB::table('tr_enrollment AS a')
+            //     ->select('a.id AS enrollment_id', 'b.id AS class_id', 'b.class_title', 'b.class_desc', 'b.start_eff_date', 'b.end_eff_date', 'd.enrollment_status', 'b.is_released')
+            //     ->selectRaw(DB::raw('GROUP_CONCAT(DISTINCT c.id) AS session_ids, GROUP_CONCAT(c.session_name) AS session_name, COUNT(e.id) AS all_test, COUNT(e.emp_test_id) AS test_done'))
+            //     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+            //     ->leftJoin('t_class_session AS c', 'c.class_id', '=', 'b.id')
+            //     ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'a.enrollment_status_id')
+            //     ->leftJoin(DB::raw('(SELECT
+            //         a.id, GROUP_CONCAT(DISTINCT a.class_session_id) AS class_session_id, GROUP_CONCAT(DISTINCT a.material_id) AS material_ids, GROUP_CONCAT(DISTINCT c.emp_test_id) AS emp_test_id,
+            //         GROUP_CONCAT(DISTINCT c.question_id) AS question_ids
+            //         FROM t_session_material_schedule AS a
+            //         LEFT JOIN tr_emp_test AS b ON b.test_sch_id = a.id AND b.emp_nip = 1014239
+            //         LEFT JOIN tr_emp_answer AS c ON c.emp_test_id = b.id
+            //         WHERE material_type = 2
+            //         GROUP BY a.id) AS e'), 'e.class_session_id', '=', 'c.id')
+            //     ->where([
+            //         'a.emp_nip' => Auth::user()->nip,
+            //         'a.class_id' => $classId->class_id
+            //     ])
+            //     ->orderBy('a.id', 'desc')
+            //     ->groupBy('a.id')
+            //     ->first();
             $tests = DB::table('tr_enrollment AS a')
-                ->select('a.id AS enrollment_id', 'b.id AS class_id', 'b.class_title', 'b.class_desc', 'b.start_eff_date', 'b.end_eff_date', 'd.enrollment_status', 'b.is_released')
-                ->selectRaw(DB::raw('GROUP_CONCAT(DISTINCT c.id) AS session_ids, GROUP_CONCAT(c.session_name) AS session_name, COUNT(e.id) AS all_test, COUNT(e.emp_test_id) AS test_done'))
+                ->select([
+                    'a.id AS enrollment_id',
+                    'b.id AS class_id',
+                    'b.class_title',
+                    'b.class_desc',
+                    'b.start_eff_date',
+                    'b.end_eff_date',
+                    'd.enrollment_status',
+                    'b.is_released',
+                    DB::raw('GROUP_CONCAT(DISTINCT c.id) AS session_ids'),
+                    DB::raw('GROUP_CONCAT(c.session_name) AS session_name'),
+                    DB::raw('COUNT(e.id) AS all_test'),
+                    DB::raw('COUNT(e.emp_test_id) AS test_done')
+                ])
                 ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                 ->leftJoin('t_class_session AS c', 'c.class_id', '=', 'b.id')
                 ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'a.enrollment_status_id')
-                ->leftJoin(DB::raw('(SELECT
-                    a.id, GROUP_CONCAT(DISTINCT a.class_session_id) AS class_session_id, GROUP_CONCAT(DISTINCT a.material_id) AS material_ids, GROUP_CONCAT(DISTINCT c.emp_test_id) AS emp_test_id,
-                    GROUP_CONCAT(DISTINCT c.question_id) AS question_ids
-                    FROM t_session_material_schedule AS a
-                    LEFT JOIN tr_emp_test AS b ON b.test_sch_id = a.id
-                    LEFT JOIN tr_emp_answer AS c ON c.emp_test_id = b.id
-                    WHERE material_type = 2
-                    GROUP BY a.id) AS e'), 'e.class_session_id', '=', 'c.id')
-                ->where([
-                    'a.emp_nip' => Auth::user()->nip,
-                    'a.class_id' => $classId->class_id
-                ])
-                ->orderBy('a.id', 'desc')
+                ->leftJoinSub(
+                    DB::table('t_session_material_schedule AS a')
+                        ->select([
+                            'a.id',
+                            DB::raw('GROUP_CONCAT(DISTINCT a.class_session_id) AS class_session_id'),
+                            DB::raw('GROUP_CONCAT(DISTINCT a.material_id) AS material_ids'),
+                            DB::raw('GROUP_CONCAT(DISTINCT c.emp_test_id) AS emp_test_id'),
+                            DB::raw('GROUP_CONCAT(DISTINCT c.question_id) AS question_ids')
+                        ])
+                        ->leftJoin('tr_emp_test AS b', function ($join) {
+                            $join->on('b.test_sch_id', '=', 'a.id')
+                                ->where('b.emp_nip', '=', Auth::user()->nip);
+                        })
+                        ->leftJoin('tr_emp_answer AS c', 'c.emp_test_id', '=', 'b.id')
+                        ->where('a.material_type', 2)
+                        ->groupBy('a.id'),
+                    'e',
+                    'e.class_session_id',
+                    '=',
+                    'c.id'
+                )
+                ->where('a.emp_nip', Auth::user()->nip)
+                ->where('a.class_id', $classId->class_id)
                 ->groupBy('a.id')
+                ->orderBy('a.id', 'desc')
                 ->first();
             if ($tests->test_done > 0) {
                 if ($tests->all_test == $tests->test_done) {

@@ -303,7 +303,41 @@ class ClassSessionsController extends Controller
                 }
                 break;
             case "2": //  pre-class
+                if ($request->materi != null) {
+                    $session_start_datetime = date('Y-m-d H:i:s', strtotime($request->session_start_date . ' ' . $request->session_start_time));
+                    foreach ($request->materi as $material) {
+                        // SEARCHING FOR THE LATEST MATERIAL ORDER FROM THE CLASS SESSION
+                        $latest_order = DB::table('t_session_material_schedule AS a')
+                            ->selectRaw('IF(MAX(a.material_order) IS NOT NULL, MAX(a.material_order), 0) AS last_order')
+                            ->where('class_session_id', $insert_action)
+                            ->first();
 
+                        $preClassTest = DB::table('tm_test AS a')
+                            ->where('a.id', $material)
+                            ->first();
+                        $insert_pretest_data = [
+                            'class_session_id' => $insert_action,
+                            'material_id' => $material,
+                            'material_type' => 2,
+                            'material_order' => $latest_order->last_order + 1,
+                            'start_eff_date' => $session_start_datetime,
+                            'end_eff_date' => DB::raw("ADDTIME('$session_start_datetime', '$preClassTest->estimated_time')"),
+                            'created_by' => Auth::id(),
+                            'created_date' => Carbon::now()
+                        ];
+                        $insert_pretest = DB::table('t_session_material_schedule')
+                            ->insertGetId($insert_pretest_data);
+
+                        $session_end_datetime_query = DB::table('t_session_material_schedule AS a')
+                            ->select('a.end_eff_date')
+                            ->where('a.id', $insert_pretest)
+                            ->first();
+                        $session_start_datetime = $session_end_datetime_query->end_eff_date;
+                    }
+                    $update_class_session_end_datetime = DB::table('t_class_session AS a')
+                        ->where('a.id', $insert_action)
+                        ->update(['end_effective_date' => $session_end_datetime_query->end_eff_date]);
+                }
                 break;
             default:
                 break;

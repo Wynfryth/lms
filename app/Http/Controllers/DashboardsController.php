@@ -18,36 +18,88 @@ class DashboardsController extends Controller
 
         switch (Auth::user()->roles->pluck('name')[0]) {
             case "Academy Admin":
-                // all enrollment
+                /* all attended classes in that year */
                 $whereParams = [
-                    'a.enrollment_status_id' => 1
-                ];
-                $allEnrollment = DB::table('tr_enrollment AS a')
-                    ->where($whereParams)
-                    ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
-                    ->count();
-
-                // pass rate
-                // -> ambil dari MyClassesController passStatusCheck()
-
-                $compact = compact('dashboardYear', 'allEnrollment');
-                break;
-            case "Student":
-                // all attended classes
-                $nip = Auth::user()->nip;
-                $whereParams = [
-                    'a.enrollment_status_id' => 1,
-                    'a.emp_nip' => $nip
+                    ['a.enrollment_status_id', '!=', 5],
                 ];
                 $attendedClasses = DB::table('tr_enrollment AS a')
+                    ->selectRaw('COUNT(a.id) AS all_classes,
+                        SUM(case when a.enrollment_status_id = 1 then 1 ELSE 0 END) AS registered,
+                        SUM(case when a.enrollment_status_id = 2 then 1 ELSE 0 END) AS ongoing,
+                        SUM(case when a.enrollment_status_id = 3 then 1 ELSE 0 END) AS passed,
+                        SUM(case when a.enrollment_status_id = 4 then 1 ELSE 0 END) AS failed,
+                        SUM(case when a.enrollment_status_id = 5 then 1 ELSE 0 END) AS cancelled')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
-                    ->count();
+                    ->first();
 
-                $compact = compact('dashboardYear', 'attendedClasses');
+                /* all attended classes in that year in monthly */
+                $monthlyClasses = DB::table(DB::raw('(SELECT 1 AS month UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+                                            SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL
+                                            SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12) months'))
+                    ->leftJoin('tr_enrollment AS a', function ($join) use ($year) {
+                        $join->on(DB::raw('MONTH(a.enrollment_date)'), '=', 'months.month')
+                            ->whereYear('a.enrollment_date', '=', $year);
+                    })
+                    ->select(
+                        'months.month',
+                        DB::raw('COALESCE(COUNT(a.id), 0) AS all_classes'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 1 THEN 1 ELSE 0 END), 0) AS registered'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 2 THEN 1 ELSE 0 END), 0) AS ongoing'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 3 THEN 1 ELSE 0 END), 0) AS passed'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 4 THEN 1 ELSE 0 END), 0) AS failed'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END), 0) AS cancelled')
+                    )
+                    ->groupBy('months.month')
+                    ->orderBy('months.month')
+                    ->get();
+                break;
+            case "Student":
+                $nip = Auth::user()->nip;
+
+                /* all attended classes in that year */
+                $whereParams = [
+                    ['a.emp_nip', '=', $nip],
+                    ['a.enrollment_status_id', '!=', 5],
+                ];
+                $attendedClasses = DB::table('tr_enrollment AS a')
+                    ->selectRaw('a.emp_nip,
+                        COUNT(a.id) AS all_classes,
+                        SUM(case when a.enrollment_status_id = 1 then 1 ELSE 0 END) AS registered,
+                        SUM(case when a.enrollment_status_id = 2 then 1 ELSE 0 END) AS ongoing,
+                        SUM(case when a.enrollment_status_id = 3 then 1 ELSE 0 END) AS passed,
+                        SUM(case when a.enrollment_status_id = 4 then 1 ELSE 0 END) AS failed,
+                        SUM(case when a.enrollment_status_id = 5 then 1 ELSE 0 END) AS cancelled')
+                    ->where($whereParams)
+                    ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
+                    ->groupBy('a.emp_nip')
+                    ->first();
+
+                /* all attended classes in that year in monthly */
+                $monthlyClasses = DB::table(DB::raw('(SELECT 1 AS month UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+                                                    SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL
+                                                    SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12) months'))
+                    ->leftJoin('tr_enrollment AS a', function ($join) use ($year, $nip) {
+                        $join->on(DB::raw('MONTH(a.enrollment_date)'), '=', 'months.month')
+                            ->whereYear('a.enrollment_date', '=', $year)
+                            ->where('a.emp_nip', '=', $nip);
+                    })
+                    ->select(
+                        'a.emp_nip',
+                        'months.month',
+                        DB::raw('COALESCE(COUNT(a.id), 0) AS all_classes'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 1 THEN 1 ELSE 0 END), 0) AS registered'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 2 THEN 1 ELSE 0 END), 0) AS ongoing'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 3 THEN 1 ELSE 0 END), 0) AS passed'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 4 THEN 1 ELSE 0 END), 0) AS failed'),
+                        DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END), 0) AS cancelled')
+                    )
+                    ->groupBy('a.emp_nip', 'months.month')
+                    ->orderBy('months.month')
+                    ->get();
                 break;
         }
 
-        return view('dashboard', $compact);
+        return view('dashboard', compact('dashboardYear', 'attendedClasses', 'monthlyClasses'));
     }
 }

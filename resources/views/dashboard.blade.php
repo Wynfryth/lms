@@ -48,7 +48,7 @@
                             <x-slot name="number">
                                 <h2
                                     class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
-                                    {{$allEnrollment}}
+                                    {{$attendedClasses->all_classes}}
                                 </h2>
                             </x-slot>
                         </x-card-dashboard>
@@ -68,11 +68,11 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700 flex-1 float-left">
-                                        117
+                                        {{$attendedClasses->passed}}
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
-                                        95,9 %
+                                        {{ round($attendedClasses->passed/$attendedClasses->all_classes*100) }} %
                                     </h2>
                                 </div>
                             </x-slot>
@@ -93,11 +93,11 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700 flex-1 float-left">
-                                        5
+                                        {{$attendedClasses->failed}}
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
-                                        4,1 %
+                                        {{ round($attendedClasses->failed/$attendedClasses->all_classes*100) }} %
                                     </h2>
                                 </div>
                             </x-slot>
@@ -352,7 +352,7 @@
                             <x-slot name="number">
                                 <h2
                                     class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
-                                    {{$attendedClasses}}
+                                    {{$attendedClasses->all_classes}}
                                 </h2>
                             </x-slot>
                         </x-card-dashboard>
@@ -372,11 +372,11 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700 flex-1 float-left">
-                                        0
+                                        {{$attendedClasses->passed}}
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
-                                        0 %
+                                        {{ round($attendedClasses->passed/$attendedClasses->all_classes*100) }} %
                                     </h2>
                                 </div>
                             </x-slot>
@@ -397,11 +397,11 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700 flex-1 float-left">
-                                        0
+                                        {{$attendedClasses->failed}}
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
-                                        0 %
+                                        {{ round($attendedClasses->failed/$attendedClasses->all_classes*100) }} %
                                     </h2>
                                 </div>
                             </x-slot>
@@ -418,6 +418,8 @@
 </x-app-layout>
 <script>
 $(document).ready(function () {
+    var role = "{{Auth::user()->nip;}}";
+    console.log(role);
     mortalityGraph();
     passRateGraph();
 });
@@ -428,20 +430,38 @@ $(document).off('change', '[name="year"]').on('change', '[name="year"]', functio
     window.location.href = url;
 });
 function mortalityGraph(){
+    var monthlyClasses = @json($monthlyClasses);
+    var allClasses = [];
+    for(var keys in monthlyClasses){
+        allClasses.push(monthlyClasses[keys].all_classes);
+    }
+    var passedClasses = [];
+    for(var keys in monthlyClasses){
+        passedClasses.push(monthlyClasses[keys].passed);
+    }
+    var failedClasses = [];
+    for(var keys in monthlyClasses){
+        failedClasses.push(monthlyClasses[keys].failed);
+    }
     var options = {
-          series: [{
-          name: 'Peserta',
-          data: [122, 150, 133, 145, 111, 124, 124, 125, 167, 100, 97]
-        }, {
-          name: 'Lulus',
-          data: [117, 141, 123, 140, 100, 120, 124, 124, 167, 95, 96]
-        }, {
-          name: 'Gagal',
-          data: [5, 9, 10, 5, 11, 4, 0, 1, 0, 5, 1]
-        }],
-          chart: {
-          type: 'bar',
-          height: 350
+        series: [
+            {
+                name: 'Kelas',
+                data: allClasses
+            },
+            {
+            name: 'Lulus',
+            data: passedClasses
+            },
+            {
+                name: 'Gagal',
+                data: failedClasses
+            }
+        ],
+        colors: ['#1c64f2', '#059669', '#e11d48'], // Custom colors for each series
+        chart: {
+            type: 'bar',
+            height: 350
         },
         plotOptions: {
           bar: {
@@ -477,7 +497,7 @@ function mortalityGraph(){
           }
         },
         title: {
-            text: 'Tingkat Kelulusan Peserta 2024 (dummy)',
+            text: 'Tingkat Kelulusan Peserta {{$dashboardYear}}',
             align: 'center',
             margin: 10,
             offsetX: 0,
@@ -492,24 +512,42 @@ function mortalityGraph(){
         }
     };
 
-        var chart = new ApexCharts(document.querySelector("#mortalityGraph"), options);
-        chart.render();
+    var chart = new ApexCharts(document.querySelector("#mortalityGraph"), options);
+    chart.render();
 }
 function passRateGraph(){
+    var monthlyClasses = @json($monthlyClasses);
+    var allClasses = [];
+    for(var keys in monthlyClasses){
+        allClasses.push(monthlyClasses[keys].all_classes);
+    }
+    var passedClasses = [];
+    for(var keys in monthlyClasses){
+        passedClasses.push(monthlyClasses[keys].passed);
+    }
+    var failedClasses = [];
+    for(var keys in monthlyClasses){
+        failedClasses.push(monthlyClasses[keys].failed);
+    }
     var options = {
-          series: [{
-          name: 'Peserta',
-          data: [122, 150, 133, 145, 111, 124, 124, 125, 167, 100, 97]
-        }, {
-          name: 'Lulus',
-          data: [117, 141, 123, 140, 100, 120, 124, 124, 167, 95, 96]
-        }, {
-          name: 'Gagal',
-          data: [5, 9, 10, 5, 11, 4, 0, 1, 0, 5, 1]
-        }],
-          chart: {
-          type: 'bar',
-          height: 350
+        series: [
+            {
+                name: 'Kelas',
+                data: allClasses
+            },
+            {
+            name: 'Lulus',
+            data: passedClasses
+            },
+            {
+                name: 'Gagal',
+                data: failedClasses
+            }
+        ],
+        colors: ['#1c64f2', '#059669', '#e11d48'], // Custom colors for each series
+        chart: {
+            type: 'bar',
+            height: 350
         },
         plotOptions: {
           bar: {
@@ -531,7 +569,7 @@ function passRateGraph(){
         },
         yaxis: {
           title: {
-            text: 'Orang'
+            // text: 'Kelas'
           }
         },
         fill: {
@@ -540,27 +578,27 @@ function passRateGraph(){
         tooltip: {
           y: {
             formatter: function (val) {
-              return val + " orang"
+              return val + " "
             }
           }
         },
         title: {
-            text: 'Tingkat Keberhasilan kelas kamu 2024 (dummy)',
+            text: 'Tingkat Keberhasilan kelas kamu {{$dashboardYear}}',
             align: 'center',
             margin: 10,
             offsetX: 0,
             offsetY: 0,
             floating: false,
             style: {
-            fontSize:  '14px',
-            fontWeight:  'bold',
-            fontFamily:  undefined,
-            color:  '#263238'
+                fontSize:  '14px',
+                fontWeight:  'bold',
+                fontFamily:  undefined,
+                color:  '#263238'
             },
         }
     };
 
-        var chart = new ApexCharts(document.querySelector("#passRateGraph"), options);
-        chart.render();
+    var chart = new ApexCharts(document.querySelector("#passRateGraph"), options);
+    chart.render();
 }
 </script>
