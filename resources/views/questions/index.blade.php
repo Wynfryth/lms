@@ -112,7 +112,6 @@
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             {{ $value->points }}
-                                            {{ $value->is_released }}
                                         </td>
                                         <td class="px-6 py-4">
                                             @if ($value->is_active == 1)
