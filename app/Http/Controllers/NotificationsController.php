@@ -13,7 +13,7 @@ class NotificationsController extends Controller
     {
         $usernip = Auth::user()->nip;
         $notifications = DB::table('t_notification_receipt AS a')
-            ->select('a.id', 'b.notification_title', 'b.notification_content', 'a.read_status')
+            ->select('a.id', 'b.notification_title', 'b.notification_content', 'a.read_status', 'b.notification_role_id', 'b.class_id')
             ->join('t_notification AS b', 'a.notification_id', '=', 'b.id')
             ->where('a.user_nip', $usernip)
             ->orderByDesc('b.created_date')

@@ -69,7 +69,7 @@
                                     <div class="grid grid-cols-4 gap-1">
                                         <div class="col-span-3">
                                             @if ($myclass->is_released == 1)
-                                            <a href="{{route('classrooms', $myclass->class_id)}}">
+                                            <a href="{{route('classrooms', ['class_id' => $myclass->class_id, 'role' => 'Student'])}}">
                                                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white hover:underline">{{$myclass->class_title}}</h5>
                                             </a>
                                             @else
@@ -78,8 +78,15 @@
                                             @endif
                                         </div>
                                         <div>
+                                            @php
+                                                if($myclass->all_test > 0){
+                                                    $progress_percentage = ceil(($myclass->test_done/$myclass->all_test)*100);
+                                                }else{
+                                                    $progress_percentage = 0;
+                                                }
+                                            @endphp
                                             @if ($myclass->all_test > 0)
-                                                @if (ceil(($myclass->test_done/$myclass->all_test)*100) == 100)
+                                                @if ($progress_percentage == 100)
                                                     @switch($myclass->enrollment_status)
                                                         @case('FAILED')
                                                             <button type="button" class="bg-red-500 p-1 px-2 border rounded-lg font-bold text-white">{{$myclass->enrollment_status}}</button>
@@ -106,11 +113,11 @@
                                         <div class="grid grid-cols-6 gap-4">
                                             <div class="col-span-1"><span class="float-left">Progress:</span></div>
                                             <div class="col-start-6"><span class="float-right">
-                                                {{ ceil(($myclass->test_done/$myclass->all_test)*100) }}%
+                                                {{ $progress_percentage }}%
                                             </span></div>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ ceil(($myclass->test_done/$myclass->all_test)*100) }}%"></div>
+                                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $progress_percentage }}%"></div>
                                         </div>
                                         @endif
                                     </div>

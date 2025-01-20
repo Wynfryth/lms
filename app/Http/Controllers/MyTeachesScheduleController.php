@@ -15,7 +15,8 @@ class MyTeachesScheduleController extends Controller
             ->selectRaw(DB::raw('COUNT(d.emp_nip) AS jumlah_peserta'))
             ->join('tm_trainer_data AS b', 'b.id', '=', 'a.trainer_id')
             ->leftJoin('miegacoa_employees.emp_employee AS c', 'c.nip', '=', 'b.nip')
-            ->leftJoin('tr_enrollment AS d', 'd.class_session_id', '=', 'a.id')
+            ->leftJoin('t_class_header AS e', 'e.id', '=', 'a.class_id')
+            ->leftJoin('tr_enrollment AS d', 'd.class_id', '=', 'e.id')
             ->where('b.nip', Auth::user()->nip)
             ->groupBy('a.id')
             ->get();

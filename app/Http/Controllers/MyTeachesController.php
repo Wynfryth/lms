@@ -12,16 +12,35 @@ class MyTeachesController extends Controller
     {
         $nip = Auth::user()->nip;
         $myteaches = DB::table('t_class_session AS a')
-            ->select('a.id', 'a.session_name', 'c.class_title', 'a.start_effective_date', 'a.end_effective_date')
-            ->selectRaw(DB::raw('COUNT(d.class_session_id) AS jumlah_peserta, GROUP_CONCAT(e.Employee_name) AS peserta, GROUP_CONCAT(k.enrollment_status) AS status_kepesertaan'))
-            ->leftJoin('tm_trainer_data AS b', 'b.id', '=', 'a.trainer_id')
-            ->leftJoin('t_class_header AS c', 'c.id', '=', 'a.class_id')
-            ->leftJoin('tr_enrollment AS d', 'd.class_session_id', '=', 'a.id')
-            ->leftJoin('miegacoa_employees.emp_employee AS e', 'e.nip', '=', 'd.emp_nip')
-            ->leftJoin('tm_enrollment_status AS k', 'k.id', '=', 'd.enrollment_status_id')
-            ->where('b.nip', $nip)
-            ->groupBy('a.id')
-            ->orderBy('a.id', 'desc');
+            ->select('b.id AS class_id', 'b.class_title', 'b.class_desc', 'b.start_eff_date', 'b.end_eff_date', 'b.is_released', DB::raw('COUNT(a.id) AS total_session'), 'e.total_enrollment')
+            ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+            ->leftJoin('tm_trainer_data AS c', 'c.id', '=', 'a.trainer_id')
+            ->leftJoin('miegacoa_employees.emp_employee AS d', 'd.nip', '=', 'c.nip')
+            ->leftJoinSub(
+                DB::table('t_class_header AS a')
+                    ->select('a.id AS class_id', DB::raw('COUNT(b.id) AS total_enrollment'))
+                    ->leftJoin('tr_enrollment AS b', 'b.class_id', '=', 'a.id')
+                    ->groupBy('a.id'),
+                'e',
+                'e.class_id',
+                '=',
+                'b.id'
+            )
+            ->where('c.nip', '=', $nip)
+            ->groupBy('b.id')
+            ->orderBy('b.id', 'desc');
+
+        // DB::table('t_class_session AS a')
+        //     ->select('a.id', 'a.session_name', 'c.class_title', 'a.start_effective_date', 'a.end_effective_date')
+        //     ->selectRaw(DB::raw('COUNT(d.class_id) AS jumlah_peserta, GROUP_CONCAT(e.Employee_name) AS peserta, GROUP_CONCAT(k.enrollment_status) AS status_kepesertaan'))
+        //     ->leftJoin('tm_trainer_data AS b', 'b.id', '=', 'a.trainer_id')
+        //     ->leftJoin('t_class_header AS c', 'c.id', '=', 'a.class_id')
+        //     ->leftJoin('tr_enrollment AS d', 'd.class_id', '=', 'c.id')
+        //     ->leftJoin('miegacoa_employees.emp_employee AS e', 'e.nip', '=', 'd.emp_nip')
+        //     ->leftJoin('tm_enrollment_status AS k', 'k.id', '=', 'd.enrollment_status_id')
+        //     ->where('b.nip', $nip)
+        //     ->groupBy('a.id')
+        //     ->orderBy('a.id', 'desc');
         if ($myteaches_kywd != null) {
             $any_params = [
                 'a.session_name',

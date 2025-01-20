@@ -64,7 +64,7 @@ class DashboardsController extends Controller
                 ];
                 $attendedClasses = DB::table('tr_enrollment AS a')
                     ->selectRaw('a.emp_nip,
-                        COUNT(a.id) AS all_classes,
+                        IF(COUNT(a.id) != 0, COUNT(a.id), 0)  AS all_classes,
                         SUM(case when a.enrollment_status_id = 1 then 1 ELSE 0 END) AS registered,
                         SUM(case when a.enrollment_status_id = 2 then 1 ELSE 0 END) AS ongoing,
                         SUM(case when a.enrollment_status_id = 3 then 1 ELSE 0 END) AS passed,

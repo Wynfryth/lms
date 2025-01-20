@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h6><a href="{{ route('classrooms', $class[0]->classId) }}" class="mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white hover:underline">{{$class[0]->class_title}}</a></h6>
+        <h6><a href="{{ route('classrooms', ['class_id' => $class[0]->classId, 'role' => $role]) }}" class="mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white hover:underline">{{$class[0]->class_title}}</a></h6>
     </x-slot>
 
     <div class="p-4 sm:ml-64">
@@ -72,8 +72,9 @@
     });
     $(document).off('click', '.classSession').on('click', '.classSession', function(){
         var sessionId = $(this).attr('id');
-        var url = "{{route('classrooms.getSessionSchedule', ':sessionId')}}";
+        var url = "{{route('classrooms.getSessionSchedule', ['sessionId' => ':sessionId', 'role' => ':role'])}}";
         url = url.replace(':sessionId', sessionId);
+        url = url.replace(':role', '{{$role}}');
 
         largeSkeleton($(document).find('div#sessionSchedule_' + sessionId));
 

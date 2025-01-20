@@ -136,12 +136,37 @@ $(window).on('load', function() {
                     }else{
                         bg_color = '';
                     }
-                    html += '<li class="'+bg_color+'" data-notification="'+response[keys].id+'">'+
-                                '<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">'+
-                                    '<strong class="text-blue-500">'+response[keys].notification_title+'</strong><br/>'+
-                                    '<div class=""><span>'+response[keys].notification_content+'</span></div>'+
-                                '</a>'+
-                            '</li>';
+                    if(response[keys].class_id != null){
+                        var url = "{{route('classrooms', ['class_id' => ':classId', 'role' => ':role'])}}";
+                        url = url.replace(':classId', response[keys].class_id);
+                        switch(response[keys].notification_role_id){
+                            case 1:
+                                url = url.replace(':role', 'Instructor');
+                                html += '<li class="'+bg_color+'" data-notification="'+response[keys].id+'">'+
+                                        '<a href="'+url+'" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">'+
+                                            '<strong class="text-blue-500">'+response[keys].notification_title+'</strong><br/>'+
+                                            '<div class=""><span>'+response[keys].notification_content+'</span></div>'+
+                                        '</a>'+
+                                    '</li>';
+                                break;
+                            case 2:
+                                url = url.replace(':role', 'Student');
+                                html += '<li class="'+bg_color+'" data-notification="'+response[keys].id+'">'+
+                                        '<a href="'+url+'" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">'+
+                                            '<strong class="text-blue-500">'+response[keys].notification_title+'</strong><br/>'+
+                                            '<div class=""><span>'+response[keys].notification_content+'</span></div>'+
+                                        '</a>'+
+                                    '</li>';
+                                break;
+                        }
+                    }else{
+                        html += '<li class="'+bg_color+'" data-notification="'+response[keys].id+'">'+
+                                    '<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">'+
+                                        '<strong class="text-blue-500">'+response[keys].notification_title+'</strong><br/>'+
+                                        '<div class=""><span>'+response[keys].notification_content+'</span></div>'+
+                                    '</a>'+
+                                '</li>';
+                    }
                 }
                 if(unread > 0){
                     $('#notifications_length').html(unread);

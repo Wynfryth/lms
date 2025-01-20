@@ -351,6 +351,8 @@ class ClassSessionsController extends Controller
         $insert_notification = [
             'notification_title' => $notification_title,
             'notification_content' => $notification_content,
+            'notification_role_id' => 1, // as Instructor
+            'class_id' => $request->class_id, // class id
             'created_by' => Auth::id(),
             'created_date' => Carbon::now()
         ];
@@ -469,6 +471,8 @@ class ClassSessionsController extends Controller
                 $insert_notification = [
                     'notification_title' => $notification_title,
                     'notification_content' => $notification_content,
+                    'notification_role_id' => 1, // as Instructor
+                    'class_id' => $request->kelas, // class id
                     'created_by' => Auth::id(),
                     'created_date' => Carbon::now()
                 ];
