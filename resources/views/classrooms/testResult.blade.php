@@ -101,7 +101,17 @@
                     </div>
                 </div>
                 <div class="flex justify-center">
-                    <a href="{{route('classrooms', $testResultDetail[0]->class_id)}}" class="border text-center rounded w-full bg-blue-500 hover:bg-blue-400 text-white py-1 mt-2">Kembali ke kelas</a>
+                    @php
+                        switch($role){
+                            case "1":
+                                $roleTarget = "Instructor";
+                            break;
+                            case "2":
+                                $roleTarget = "Student";
+                            break;
+                        }
+                    @endphp
+                    <a href="{{route('classrooms', ['class_id' => $testResultDetail[0]->class_id, 'role' => $roleTarget])}}" class="border text-center rounded w-full bg-blue-500 hover:bg-blue-400 text-white py-1 mt-2">Kembali ke kelas</a>
                 </div>
                 <h6 class="text-center font-bold mt-4 mb-2 hidden">DETAIL</h6>
                 <div class="grid grid-cols-2 gap-4 hidden">

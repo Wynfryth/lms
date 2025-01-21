@@ -72,7 +72,11 @@
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
+                                        @if ($attendedClasses->all_classes > 0)
                                         {{ round($attendedClasses->passed/$attendedClasses->all_classes*100) }} %
+                                        @else
+                                            0%
+                                        @endif
                                     </h2>
                                 </div>
                             </x-slot>
@@ -97,7 +101,11 @@
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
+                                        @if ($attendedClasses->all_classes > 0)
                                         {{ round($attendedClasses->failed/$attendedClasses->all_classes*100) }} %
+                                        @else
+                                        0%
+                                        @endif
                                     </h2>
                                 </div>
                             </x-slot>
@@ -106,7 +114,7 @@
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <div id="mortalityGraph"></div>
                     </div>
-                    <h5 class="ml-2 font-bold tracking-tight text-gray-600">Pre-Test</h5>
+                    <h5 class="ml-2 font-bold tracking-tight text-gray-600">Pre-Class</h5>
                     <div
                         class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4 bg-sky-100 p-3 border-solid border-1 rounded-md border-sky-500">
                         <x-card-dashboard class="hover:bg-blue-700 bg-white hover:text-blue-600 group">
@@ -124,7 +132,7 @@
                             <x-slot name="number">
                                 <h2
                                     class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
-                                    122
+                                    {{$attendedPreClasses->all_classes}}
                                 </h2>
                             </x-slot>
                         </x-card-dashboard>
@@ -144,11 +152,15 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700 flex-1 float-left">
-                                        117
+                                        {{$attendedPreClasses->passed}}
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
-                                        95,9 %
+                                        @if ($attendedClasses->all_classes > 0)
+                                        {{ round($attendedPreClasses->passed/$attendedPreClasses->all_classes*100) }} %
+                                        @else
+                                        0%
+                                        @endif
                                     </h2>
                                 </div>
                             </x-slot>
@@ -169,11 +181,15 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700 flex-1 float-left">
-                                        5
+                                        {{$attendedPreClasses->failed}}
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
-                                        4,1 %
+                                        @if ($attendedClasses->all_classes > 0)
+                                        {{ round($attendedPreClasses->failed/$attendedPreClasses->all_classes*100) }} %
+                                        @else
+                                        0%
+                                        @endif
                                     </h2>
                                 </div>
                             </x-slot>
@@ -197,7 +213,7 @@
                             <x-slot name="number">
                                 <h2
                                     class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
-                                    122
+                                    {{$attendedTrainingClasses->all_classes}}
                                 </h2>
                             </x-slot>
                         </x-card-dashboard>
@@ -217,11 +233,15 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700 flex-1 float-left">
-                                        117
+                                        {{$attendedTrainingClasses->passed}}
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
-                                        95,9 %
+                                        @if ($attendedTrainingClasses->all_classes > 0)
+                                        {{ round($attendedTrainingClasses->passed/$attendedTrainingClasses->all_classes*100) }} %
+                                        @else
+                                        0%
+                                        @endif
                                     </h2>
                                 </div>
                             </x-slot>
@@ -242,11 +262,15 @@
                                 <div class="flex">
                                     <h2
                                         class="text-2xl font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700 flex-1 float-left">
-                                        5
+                                        {{$attendedTrainingClasses->failed}}
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
-                                        4,1 %
+                                        @if ($attendedTrainingClasses->all_classes > 0)
+                                        {{ round($attendedTrainingClasses->failed/$attendedTrainingClasses->all_classes*100) }} %
+                                        @else
+                                        0%
+                                        @endif
                                     </h2>
                                 </div>
                             </x-slot>
@@ -268,13 +292,13 @@
                             <x-slot name="detail">
                                 <p
                                     class="font-normal dark:text-gray-400 mb-1 text-white group-hover:text-cyan-600 group-hover:bg-white">
-                                    Penambahan Peserta Bulan Ini
+                                    Penambahan Peserta Tahun Ini
                                 </p>
                             </x-slot>
                             <x-slot name="number">
                                 <h2
                                     class="text-2xl text-right font-bold tracking-tight text-white dark:text-white group-hover:text-cyan-600 group-hover:bg-white">
-                                    4
+                                    {{$attendedClasses->all_classes - $allClassesYearBefore->all_classes < 0 ? 0 : $attendedClasses->all_classes - $allClassesYearBefore->all_classes}}
                                 </h2>
                             </x-slot>
                         </x-card-dashboard>
@@ -295,13 +319,13 @@
                             <x-slot name="detail">
                                 <p
                                     class="font-normal dark:text-gray-400 mb-1 text-white group-hover:text-orange-600 group-hover:bg-white">
-                                    Pengurangan Peserta Bulan Ini
+                                    Pengurangan Peserta Tahun Ini
                                 </p>
                             </x-slot>
                             <x-slot name="number">
                                 <h2
                                     class="text-2xl text-right font-bold tracking-tight text-white dark:text-white group-hover:text-orange-600 group-hover:bg-white">
-                                    11
+                                    {{$allClassesYearBefore->all_classes - $attendedClasses->all_classes < 0 ? 0 : $allClassesYearBefore->all_classes - $attendedClasses->all_classes}}
                                 </h2>
                             </x-slot>
                         </x-card-dashboard>

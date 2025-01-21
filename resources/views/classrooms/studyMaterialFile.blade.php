@@ -7,7 +7,14 @@
     <div class="p-4">
         <div class="max-w-7xl mx-auto sm:px-2 lg:px-4 space-y-2">
             <div style="width: 100%; max-width: 560px; margin: 0 auto;">
-                {!! $file[0]->attachment !!}
+                @php
+                    $fileFirstFive = substr($file[0]->attachment, 0, 5);
+                @endphp
+                @if ($fileFirstFive == '<ifram')
+                    {!! $file[0]->attachment !!}
+                @else
+                    <iframe src="{{'//storage//'.($file[0]->attachment)}}" width="100%" height="500px"></iframe>
+                @endif
             </div>
         </div>
     </div>

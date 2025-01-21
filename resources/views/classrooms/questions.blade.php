@@ -272,7 +272,7 @@ $(document).off('click', '#submitTest').on('click', '#submitTest', function(){
                         })
                         .then((feedback2)=>{
                             if(feedback2.isConfirmed){
-                                var url = "{{route('testSessions.testResult', ['nip' => ':nip', 'studentTestId' => ':testScheduleId'])}}";
+                                var url = "{{route('testSessions.testResult', ['nip' => ':nip', 'studentTestId' => ':testScheduleId', 'role' => '2'])}}";
                                 url = url.replace(':nip', "{{Auth::user()->nip}}");
                                 url = url.replace(':testScheduleId', "{{$testScheduleId}}");
                                 window.location.href = url;
@@ -300,7 +300,7 @@ function submitTest(){
         success: function (response) {
             // console.log(response);
             if(response.success){
-                var url = "{{route('testSessions.testResult', ['nip' => ':nip', 'studentTestId' => ':testScheduleId'])}}";
+                var url = "{{route('testSessions.testResult', ['nip' => ':nip', 'studentTestId' => ':testScheduleId', 'role' => '2'])}}";
                 url = url.replace(':nip', "{{Auth::user()->nip}}");
                 url = url.replace(':testScheduleId', "{{$testScheduleId}}");
                 window.location.href = url;

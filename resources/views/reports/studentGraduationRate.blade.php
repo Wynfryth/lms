@@ -23,7 +23,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('reports.graduationRate') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Tingkat Kelulusan Kelas</a>
+                    <a href="{{ route('reports.graduationRate') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Tingkat Kelulusan Peserta</a>
                     </div>
                 </li>
             </ol>
@@ -51,64 +51,66 @@
                                         #
                                     </th>
                                     <th scope="col" class="px-6 py-3">
+                                        NIP
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Nama
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Divisi
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
                                         Kelas
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Mulai
+                                        Terdaftar
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Selesai
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Sesi
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Materi
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Peserta
+                                        Sedang Mengikuti
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Lulus
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Tingkat Kelulusan
+                                        Gagal
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Dibatalkan
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($graduationRateResult as $index => $result)
+                                @forelse ($studentsData as $index => $student)
                                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            {{ $index + $graduationRateResult->firstItem() }}
+                                            {{ $index + $studentsData->firstItem() }}
                                         </th>
                                         <td class="px-6 py-4">
-                                            {{ $result->class_title }}
+                                            {{ $student->emp_nip }}
                                         </td>
                                         <td class="px-6 py-4">
-                                            {{ date('d-m-Y', strtotime($result->start_eff_date)) }}
+                                            {{ $student->Employee_name }}
                                         </td>
                                         <td class="px-6 py-4">
-                                            {{ date('d-m-Y', strtotime($result->end_eff_date)) }}
+                                            {{ $student->divisi }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            {{ $result->total_session }}
+                                            {{ $student->all_classes }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            {{ $result->total_material }}
+                                            {{ $student->registered }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            {{ $result->total_enrollment }}
+                                            {{ $student->ongoing }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            {{ $result->passed }}
+                                            {{ $student->passed }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            @if ($result->total_enrollment > 0)
-                                            {{ round(($result->passed/$result->total_enrollment)*100) }} %
-                                            @else
-                                            0 %
-                                            @endif
+                                            {{ $student->failed }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            {{ $student->cancelled }}
                                         </td>
                                     </tr>
                                 @empty
@@ -120,7 +122,7 @@
                         </table>
                     </div>
                     <div class="mt-2">
-                        {{ $graduationRateResult->links(); }}
+                        {{ $studentsData->links(); }}
                     </div>
                 </div>
             </div>

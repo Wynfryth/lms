@@ -27,7 +27,7 @@ class TestSessionsController extends Controller
                 ])
                 ->first();
             if ($existedAnswer != null) {
-                return redirect()->route('testSessions.testResult', ['nip' => Auth::user()->nip, 'studentTestId' => $existedTest->id]);
+                return redirect()->route('testSessions.testResult', ['nip' => Auth::user()->nip, 'studentTestId' => $existedTest->id, 'role' => '2']);
             } else {
                 return redirect()->route('testSessions.questions', ['testScheduleId' => $existedTest->id, 'testId' => $testId]);
             }
@@ -319,7 +319,7 @@ class TestSessionsController extends Controller
         }
     }
 
-    public function testResult($nip, $studentTestId)
+    public function testResult($nip, $studentTestId, $role)
     {
         $testResultDetail = DB::table('tr_emp_test as a')
             ->select([
@@ -384,6 +384,6 @@ class TestSessionsController extends Controller
             ->groupBy('a.emp_test_id')
             ->first();
 
-        return view('classrooms.testResult', compact('testResultDetail', 'testResult'));
+        return view('classrooms.testResult', compact('testResultDetail', 'testResult', 'role'));
     }
 }

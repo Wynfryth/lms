@@ -16,6 +16,11 @@ class DashboardsController extends Controller
             $year = date('Y');
         }
 
+        $allClassesYearBefore = DB::table('tr_enrollment AS a')
+            ->selectRaw('COUNT(a.id) AS all_classes')
+            ->whereRaw('YEAR(a.enrollment_date) = ?', [$year - 1])
+            ->first();
+
         switch (Auth::user()->roles->pluck('name')[0]) {
             case "Academy Admin":
                 /* all attended classes in that year */
@@ -29,6 +34,42 @@ class DashboardsController extends Controller
                         SUM(case when a.enrollment_status_id = 3 then 1 ELSE 0 END) AS passed,
                         SUM(case when a.enrollment_status_id = 4 then 1 ELSE 0 END) AS failed,
                         SUM(case when a.enrollment_status_id = 5 then 1 ELSE 0 END) AS cancelled')
+                    ->where($whereParams)
+                    ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
+                    ->first();
+
+                /* all attended pre-classes in that year */
+                $whereParams = [
+                    ['d.id', '=', 1],
+                ];
+                $attendedPreClasses = DB::table('tr_enrollment AS a')
+                    ->selectRaw('COUNT(a.id) AS all_classes,
+                        SUM(case when a.enrollment_status_id = 1 then 1 ELSE 0 END) AS registered,
+                        SUM(case when a.enrollment_status_id = 2 then 1 ELSE 0 END) AS ongoing,
+                        SUM(case when a.enrollment_status_id = 3 then 1 ELSE 0 END) AS passed,
+                        SUM(case when a.enrollment_status_id = 4 then 1 ELSE 0 END) AS failed,
+                        SUM(case when a.enrollment_status_id = 5 then 1 ELSE 0 END) AS cancelled')
+                    ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+                    ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
+                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->where($whereParams)
+                    ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
+                    ->first();
+
+                /* all attended training-classes in that year */
+                $whereParams = [
+                    ['d.id', '=', 2],
+                ];
+                $attendedTrainingClasses = DB::table('tr_enrollment AS a')
+                    ->selectRaw('COUNT(a.id) AS all_classes,
+                        SUM(case when a.enrollment_status_id = 1 then 1 ELSE 0 END) AS registered,
+                        SUM(case when a.enrollment_status_id = 2 then 1 ELSE 0 END) AS ongoing,
+                        SUM(case when a.enrollment_status_id = 3 then 1 ELSE 0 END) AS passed,
+                        SUM(case when a.enrollment_status_id = 4 then 1 ELSE 0 END) AS failed,
+                        SUM(case when a.enrollment_status_id = 5 then 1 ELSE 0 END) AS cancelled')
+                    ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+                    ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
+                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
@@ -53,6 +94,7 @@ class DashboardsController extends Controller
                     ->groupBy('months.month')
                     ->orderBy('months.month')
                     ->get();
+
                 break;
             case "Student":
                 $nip = Auth::user()->nip;
@@ -73,6 +115,44 @@ class DashboardsController extends Controller
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->groupBy('a.emp_nip')
+                    ->first();
+
+                /* all attended pre-classes in that year */
+                $whereParams = [
+                    ['a.emp_nip', '=', $nip],
+                    ['d.id', '=', 1],
+                ];
+                $attendedPreClasses = DB::table('tr_enrollment AS a')
+                    ->selectRaw('COUNT(a.id) AS all_classes,
+                        SUM(case when a.enrollment_status_id = 1 then 1 ELSE 0 END) AS registered,
+                        SUM(case when a.enrollment_status_id = 2 then 1 ELSE 0 END) AS ongoing,
+                        SUM(case when a.enrollment_status_id = 3 then 1 ELSE 0 END) AS passed,
+                        SUM(case when a.enrollment_status_id = 4 then 1 ELSE 0 END) AS failed,
+                        SUM(case when a.enrollment_status_id = 5 then 1 ELSE 0 END) AS cancelled')
+                    ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+                    ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
+                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->where($whereParams)
+                    ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
+                    ->first();
+
+                /* all attended treining-classes in that year */
+                $whereParams = [
+                    ['a.emp_nip', '=', $nip],
+                    ['d.id', '=', 2],
+                ];
+                $attendedTrainingClasses = DB::table('tr_enrollment AS a')
+                    ->selectRaw('COUNT(a.id) AS all_classes,
+                        SUM(case when a.enrollment_status_id = 1 then 1 ELSE 0 END) AS registered,
+                        SUM(case when a.enrollment_status_id = 2 then 1 ELSE 0 END) AS ongoing,
+                        SUM(case when a.enrollment_status_id = 3 then 1 ELSE 0 END) AS passed,
+                        SUM(case when a.enrollment_status_id = 4 then 1 ELSE 0 END) AS failed,
+                        SUM(case when a.enrollment_status_id = 5 then 1 ELSE 0 END) AS cancelled')
+                    ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+                    ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
+                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->where($whereParams)
+                    ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
 
                 /* all attended classes in that year in monthly */
@@ -100,6 +180,6 @@ class DashboardsController extends Controller
                 break;
         }
 
-        return view('dashboard', compact('dashboardYear', 'attendedClasses', 'monthlyClasses'));
+        return view('dashboard', compact('dashboardYear', 'attendedClasses', 'monthlyClasses', 'attendedPreClasses', 'attendedTrainingClasses', 'allClassesYearBefore'));
     }
 }

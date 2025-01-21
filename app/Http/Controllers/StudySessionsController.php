@@ -13,7 +13,12 @@ class StudySessionsController extends Controller
             ->select('a.*', 'a.id AS studyId', 'b.*', 'c.*', 'c.id AS attachmentId') // Select all columns or specify required ones
             ->leftJoin('tm_study_material_detail as b', 'b.header_id', '=', 'a.id')
             ->leftJoin('tm_study_material_attachments as c', 'c.study_material_detail_id', '=', 'b.id')
-            ->where('a.id', $studyId)
+            ->where(
+                [
+                    ['a.id', '=', $studyId],
+                    ['b.is_active', '!=', 0]
+                ]
+            )
             ->get();
         foreach ($study as $key => $item) {
             $attachment = $item->attachment;

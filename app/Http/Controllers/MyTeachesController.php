@@ -48,7 +48,7 @@ class MyTeachesController extends Controller
             ];
             $myteaches->whereAny($any_params, 'like', '%' . $myteaches_kywd . '%');
         }
-        $myteaches = $myteaches->paginate(10);
+        $myteaches = $myteaches->paginate(12);
         return view('myteaches.index', compact('myteaches', 'myteaches_kywd'));
     }
 

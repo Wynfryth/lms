@@ -323,7 +323,7 @@ Route::middleware('auth')->group(function () {
         Route::post('testSessions/startStudentTest', 'startStudentTest')->middleware(['permission:list ruang kelas'])->name('testSessions.startStudentTest');
         Route::get('testSessions/getCountdown/{scheduleId}', 'getCountdown')->middleware(['permission:list ruang kelas'])->name('testSessions.getCountdown');
         Route::post('testSessions/submitTest', 'submitTest')->middleware(['permission:list ruang kelas'])->name('testSessions.submitTest');
-        Route::get('testSessions/testResult/{nip}/{studentTestId}', 'testResult')->middleware(['permission:list ruang kelas'])->name('testSessions.testResult');
+        Route::get('testSessions/testResult/{nip}/{studentTestId}/{role}', 'testResult')->middleware(['permission:list ruang kelas'])->name('testSessions.testResult');
         // Route::post('testSessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('testSessions.getClassSessions');
         // Route::get('testSessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('testSessions.getSessionSchedule');
         // Route::get('testSessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('testSessions.create');
@@ -336,7 +336,9 @@ Route::middleware('auth')->group(function () {
 
     // Reports
     Route::controller(ReportsController::class)->group(function () {
-        Route::get('reports/graduation_rate/{class_name?}/{year?}', 'graduationRate')->middleware(['permission:list graduation rate'])->name('reports.graduationRate');
+        Route::get('reports/graduation_rate/{report_kywd?}/{year?}', 'graduationRate')->middleware(['permission:list graduation rate'])->name('reports.graduationRate');
+        Route::get('reports/mortality_rate/{report_kywd?}/{year?}', 'mortalityRate')->middleware(['permission:list mortality'])->name('reports.mortalityRate');
+        Route::get('reports/student_graduation_rate/{report_kywd?}/{year?}', 'studentGraduationRate')->middleware(['permission:list student graduation rate'])->name('reports.studentGraduationRate');
         // Route::get('testSessions/questions/{testScheduleId}/{testId}', 'questions')->middleware(['permission:list ruang kelas'])->name('testSessions.questions');
         // Route::post('testSessions/startStudentTest', 'startStudentTest')->middleware(['permission:list ruang kelas'])->name('testSessions.startStudentTest');
         // Route::get('testSessions/getCountdown/{scheduleId}', 'getCountdown')->middleware(['permission:list ruang kelas'])->name('testSessions.getCountdown');

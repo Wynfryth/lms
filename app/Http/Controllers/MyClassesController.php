@@ -49,7 +49,7 @@ class MyClassesController extends Controller
             ];
             $myclasses->whereAny($any_params, 'like', '%' . $myclasses_kywd . '%');
         }
-        $myclasses = $myclasses->paginate(10);
+        $myclasses = $myclasses->paginate(12);
         return view('myclasses.index', compact('myclasses', 'myclasses_kywd'));
     }
 

@@ -23,7 +23,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('reports.graduationRate') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Tingkat Kelulusan Kelas</a>
+                    <a href="{{ route('reports.mortalityRate') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Tingkat Mortalitas</a>
                     </div>
                 </li>
             </ol>
@@ -69,10 +69,10 @@
                                         Peserta
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Lulus
+                                        Gagal
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Tingkat Kelulusan
+                                        Tingkat Kegagalan
                                     </th>
                                 </tr>
                             </thead>
@@ -101,11 +101,11 @@
                                             {{ $result->total_enrollment }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            {{ $result->passed }}
+                                            {{ $result->failed }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             @if ($result->total_enrollment > 0)
-                                            {{ round(($result->passed/$result->total_enrollment)*100) }} %
+                                            {{ round(($result->failed/$result->total_enrollment)*100) }} %
                                             @else
                                             0 %
                                             @endif

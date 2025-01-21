@@ -312,7 +312,7 @@
                             </div>
 
                             <div class="my-1">
-                                <x-input-label for="materi" :value="__('Materi')" />
+                                <x-input-label for="materi" :value="__('Materi (untuk Training Class) / Pre-test (untuk Pre-Class)')" />
                                 <x-select-option id="materi" name="materi[]" style="width:100%" multiple="multiple">
                                     <x-slot name="options">
                                         @forelse ($materials as $material)
