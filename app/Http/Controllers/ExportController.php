@@ -3,20 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Exports\QueryExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\YourModel;
 use Illuminate\Support\Facades\DB;
 
-class ReportsController extends Controller
+class ExportController extends Controller
 {
-    public function graduationRate($report_kywd = null, $year = null)
+    public function exportGraduationRate()
     {
-        $reportYear = $year;
-        if ($year) {
-        } else {
-            $year = date('Y');
-        }
+        // The query for the export
         $graduationRateResult = DB::table('tr_enrollment AS a')
             ->selectRaw('
-                b.id,
                 b.class_title,
                 b.start_eff_date,
                 b.end_eff_date,
@@ -51,54 +49,23 @@ class ReportsController extends Controller
                 'd.id',
                 '=',
                 'b.id'
-            )
-            // ->whereYear('a.enrollment_date', '=', $year)
-            ->groupBy('b.id');
-        if ($report_kywd != null) {
-            $any_params = [
-                'b.class_title',
-            ];
-            $graduationRateResult->whereAny($any_params, 'like', '%' . $report_kywd . '%');
-        }
-        $graduationRateResult = $graduationRateResult->paginate(10);
+            )->groupBy('b.id')
+            ->get();
 
-        return view('reports.graduationRate', compact('graduationRateResult', 'report_kywd'));
+        // Export data as an array
+        $data = $graduationRateResult->map(function ($item) {
+            return (array) $item;
+        })->toArray();
+
+        // Return the export
+        return Excel::download(new QueryExport($data), 'graduation_rate.xlsx');
     }
 
-    public function exportGraduationRate($report_kywd = null, $year = null) {}
-
-    public function studentGraduationRate($report_kywd = null, $year = null)
+    public function exportMortalityRate()
     {
-        $studentsData = DB::table('tr_enrollment AS a')
-            ->select(
-                DB::raw('GROUP_CONCAT(DISTINCT a.emp_nip) AS emp_nip'),
-                DB::raw('GROUP_CONCAT(DISTINCT c.Employee_name) AS Employee_name'),
-                DB::raw('GROUP_CONCAT(DISTINCT c.Organization) AS divisi'),
-                DB::raw('COUNT(a.id) AS all_classes'),
-                DB::raw('SUM(CASE WHEN a.enrollment_status_id = 1 THEN 1 ELSE 0 END) AS registered'),
-                DB::raw('SUM(CASE WHEN a.enrollment_status_id = 2 THEN 1 ELSE 0 END) AS ongoing'),
-                DB::raw('SUM(CASE WHEN a.enrollment_status_id = 3 THEN 1 ELSE 0 END) AS passed'),
-                DB::raw('SUM(CASE WHEN a.enrollment_status_id = 4 THEN 1 ELSE 0 END) AS failed'),
-                DB::raw('SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END) AS cancelled')
-            )
-            ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
-            ->leftJoin('miegacoa_employees.emp_employee AS c', 'c.nip', '=', 'a.emp_nip')
-            // ->whereYear('a.enrollment_date', '=', $year)
-            ->groupBy('a.emp_nip')
-            ->paginate(10);
-        return view('reports.studentGraduationRate', compact('report_kywd', 'studentsData'));
-    }
-
-    public function mortalityRate($report_kywd = null, $year = null)
-    {
-        $reportYear = $year;
-        if ($year) {
-        } else {
-            $year = date('Y');
-        }
+        // The query for the export
         $graduationRateResult = DB::table('tr_enrollment AS a')
             ->selectRaw('
-                b.id,
                 b.class_title,
                 b.start_eff_date,
                 b.end_eff_date,
@@ -133,17 +100,15 @@ class ReportsController extends Controller
                 'd.id',
                 '=',
                 'b.id'
-            )
-            // ->whereYear('a.enrollment_date', '=', $year)
-            ->groupBy('b.id');
-        if ($report_kywd != null) {
-            $any_params = [
-                'b.class_title',
-            ];
-            $graduationRateResult->whereAny($any_params, 'like', '%' . $report_kywd . '%');
-        }
-        $graduationRateResult = $graduationRateResult->paginate(10);
+            )->groupBy('b.id')
+            ->get();
 
-        return view('reports.mortalityRate', compact('graduationRateResult', 'report_kywd'));
+        // Export data as an array
+        $data = $graduationRateResult->map(function ($item) {
+            return (array) $item;
+        })->toArray();
+
+        // Return the export
+        return Excel::download(new QueryExport($data), 'mortality_rate.xlsx');
     }
 }

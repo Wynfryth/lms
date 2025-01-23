@@ -407,17 +407,17 @@
                         </a>
                     </li>
                     @endcan
-                    @can('list student graduation rate')
-                    <li>
-                        <a href="{{route('reports.studentGraduationRate')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                            Tingkat Kelulusan Peserta
-                        </a>
-                    </li>
-                    @endcan
                     @can('list mortality')
                     <li>
                         <a href="{{route('reports.mortalityRate')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             Mortalitas
+                        </a>
+                    </li>
+                    @endcan
+                    @can('list student graduation rate')
+                    <li>
+                        <a href="{{route('reports.studentGraduationRate')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Performa Peserta
                         </a>
                     </li>
                     @endcan

@@ -6,6 +6,7 @@ use App\Http\Controllers\ClassroomsController;
 use App\Http\Controllers\ClassSessionsController;
 use App\Http\Controllers\DashboardsController;
 use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\MyClassesController;
@@ -37,10 +38,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -93,13 +90,6 @@ Route::middleware('auth')->group(function () {
     // Jadwal Instruktur / Pelatih
     Route::controller(TrainerSchedulesController::class)->group(function () {
         Route::get('trainerschedules/index/{trainerschedules_kywd?}', 'index')->middleware(['permission:list jadwal pelatih'])->name('trainerschedules');
-        // Route::get('trainers/create', 'create')->middleware(['permission:create pelatih'])->name('trainers.create');
-        // Route::post('trainers/selectpicker', 'trainers_selectpicker')->middleware(['permission:create pelatih|edit pelatih'])->name('trainers.selectpicker');
-        // Route::post('trainers/store', 'store')->middleware(['permission:create pelatih'])->name('trainers.store');
-        // Route::get('trainers/edit/{id}', 'edit')->middleware(['permission:edit pelatih'])->name('trainers.edit');
-        // Route::post('trainers/update/{id}', 'update')->middleware(['permission:edit pelatih'])->name('trainers.update');
-        // Route::post('trainers/delete', 'delete')->middleware(['permission:delete pelatih'])->name('trainers.delete');
-        // Route::post('trainers/recover', 'recover')->middleware(['permission:delete pelatih'])->name('trainers.recover');
     });
     // Classes Category
     Route::controller(ClassCatController::class)->group(function () {
@@ -269,12 +259,6 @@ Route::middleware('auth')->group(function () {
     Route::controller(MyTeachesController::class)->group(function () {
         Route::get('myteaches/index/{myteaches_kywd?}', 'index')->middleware(['permission:list kelas diampu'])->name('myteaches');
         Route::post('myteaches/startClassSession', 'startClassSession')->middleware(['permission:list kelas diampu'])->name('myteaches.startClassSession');
-        // Route::get('myteaches/create', 'create')->middleware(['permission:create kelas diampu'])->name('myteaches.create');
-        // Route::post('myteaches/store', 'store')->middleware(['permission:create kelas diampu'])->name('myteaches.store');
-        // Route::get('myteaches/edit/{id}', 'edit')->middleware(['permission:edit kelas diampu'])->name('myteaches.edit');
-        // Route::post('myteaches/update/{id}', 'update')->middleware(['permission:edit kelas diampu'])->name('myteaches.update');
-        // Route::post('myteaches/delete', 'delete')->middleware(['permission:delete kelas diampu'])->name('myteaches.delete');
-        // Route::post('myteaches/recover', 'recover')->middleware(['permission:delete kelas diampu'])->name('myteaches.recover');
     });
 
     // Jadwalku (Student)
@@ -293,12 +277,6 @@ Route::middleware('auth')->group(function () {
         Route::get('classrooms/index/{class_id}/{role}', 'index')->middleware(['permission:list ruang kelas'])->name('classrooms');
         Route::post('classrooms/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('classrooms.getClassSessions');
         Route::get('classrooms/getSessionSchedule/{sessionId}/{role}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('classrooms.getSessionSchedule');
-        // Route::get('classrooms/create', 'create')->middleware(['permission:create ruang kelas'])->name('classrooms.create');
-        // Route::post('classrooms/store', 'store')->middleware(['permission:create ruang kelas'])->name('classrooms.store');
-        // Route::get('classrooms/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('classrooms.edit');
-        // Route::post('classrooms/update/{id}', 'update')->middleware(['permission:edit ruang kelas'])->name('classrooms.update');
-        // Route::post('classrooms/delete', 'delete')->middleware(['permission:delete ruang kelas'])->name('classrooms.delete');
-        // Route::post('classrooms/recover', 'recover')->middleware(['permission:delete ruang kelas'])->name('classrooms.recover');
     });
 
     // Study Sessions
@@ -308,12 +286,6 @@ Route::middleware('auth')->group(function () {
         Route::get('studySessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('studySessions.getSessionSchedule');
         Route::get('studySessions/studyMaterialPlayback/{scheduleId}/{attachmentId}', 'studyMaterialPlayback')->middleware(['permission:list ruang kelas'])->name('studySessions.studyMaterialPlayback');
         Route::get('studySessions/studyMaterialFile/{scheduleId}/{attachmentId}', 'studyMaterialFile')->middleware(['permission:list ruang kelas'])->name('studySessions.studyMaterialFile');
-        // Route::get('studySessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('studySessions.create');
-        // Route::post('studySessions/store', 'store')->middleware(['permission:create ruang kelas'])->name('studySessions.store');
-        // Route::get('studySessions/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('studySessions.edit');
-        // Route::post('studySessions/update/{id}', 'update')->middleware(['permission:edit ruang kelas'])->name('studySessions.update');
-        // Route::post('studySessions/delete', 'delete')->middleware(['permission:delete ruang kelas'])->name('studySessions.delete');
-        // Route::post('studySessions/recover', 'recover')->middleware(['permission:delete ruang kelas'])->name('studySessions.recover');
     });
 
     // Test Sessions
@@ -324,34 +296,20 @@ Route::middleware('auth')->group(function () {
         Route::get('testSessions/getCountdown/{scheduleId}', 'getCountdown')->middleware(['permission:list ruang kelas'])->name('testSessions.getCountdown');
         Route::post('testSessions/submitTest', 'submitTest')->middleware(['permission:list ruang kelas'])->name('testSessions.submitTest');
         Route::get('testSessions/testResult/{nip}/{studentTestId}/{role}', 'testResult')->middleware(['permission:list ruang kelas'])->name('testSessions.testResult');
-        // Route::post('testSessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('testSessions.getClassSessions');
-        // Route::get('testSessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('testSessions.getSessionSchedule');
-        // Route::get('testSessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('testSessions.create');
-        // Route::post('testSessions/store', 'store')->middleware(['permission:create ruang kelas'])->name('testSessions.store');
-        // Route::get('testSessions/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('testSessions.edit');
-        // Route::post('testSessions/update/{id}', 'update')->middleware(['permission:edit ruang kelas'])->name('testSessions.update');
-        // Route::post('testSessions/delete', 'delete')->middleware(['permission:delete ruang kelas'])->name('testSessions.delete');
-        // Route::post('testSessions/recover', 'recover')->middleware(['permission:delete ruang kelas'])->name('testSessions.recover');
     });
 
     // Reports
     Route::controller(ReportsController::class)->group(function () {
         Route::get('reports/graduation_rate/{report_kywd?}/{year?}', 'graduationRate')->middleware(['permission:list graduation rate'])->name('reports.graduationRate');
+        Route::get('reports/export_graduation_rate/{report_kywd?}/{year?}', 'exportGraduationRate')->middleware(['permission:list graduation rate'])->name('reports.exportGraduationRate');
         Route::get('reports/mortality_rate/{report_kywd?}/{year?}', 'mortalityRate')->middleware(['permission:list mortality'])->name('reports.mortalityRate');
         Route::get('reports/student_graduation_rate/{report_kywd?}/{year?}', 'studentGraduationRate')->middleware(['permission:list student graduation rate'])->name('reports.studentGraduationRate');
-        // Route::get('testSessions/questions/{testScheduleId}/{testId}', 'questions')->middleware(['permission:list ruang kelas'])->name('testSessions.questions');
-        // Route::post('testSessions/startStudentTest', 'startStudentTest')->middleware(['permission:list ruang kelas'])->name('testSessions.startStudentTest');
-        // Route::get('testSessions/getCountdown/{scheduleId}', 'getCountdown')->middleware(['permission:list ruang kelas'])->name('testSessions.getCountdown');
-        // Route::post('testSessions/submitTest', 'submitTest')->middleware(['permission:list ruang kelas'])->name('testSessions.submitTest');
-        // Route::get('testSessions/testResult/{nip}/{studentTestId}', 'testResult')->middleware(['permission:list ruang kelas'])->name('testSessions.testResult');
-        // Route::post('testSessions/getClassSessions', 'getClassSessions')->middleware(['permission:list ruang kelas'])->name('testSessions.getClassSessions');
-        // Route::get('testSessions/getSessionSchedule/{sessionId}', 'getSessionSchedule')->middleware(['permission:list ruang kelas'])->name('testSessions.getSessionSchedule');
-        // Route::get('testSessions/create', 'create')->middleware(['permission:create ruang kelas'])->name('testSessions.create');
-        // Route::post('testSessions/store', 'store')->middleware(['permission:create ruang kelas'])->name('testSessions.store');
-        // Route::get('testSessions/edit/{id}', 'edit')->middleware(['permission:edit ruang kelas'])->name('testSessions.edit');
-        // Route::post('testSessions/update/{id}', 'update')->middleware(['permission:edit ruang kelas'])->name('testSessions.update');
-        // Route::post('testSessions/delete', 'delete')->middleware(['permission:delete ruang kelas'])->name('testSessions.delete');
-        // Route::post('testSessions/recover', 'recover')->middleware(['permission:delete ruang kelas'])->name('testSessions.recover');
+    });
+
+    // Exports
+    Route::controller(ExportController::class)->group(function () {
+        Route::get('/export_graduation_rate', 'exportGraduationRate')->name('exportGraduationRate');
+        Route::get('/export_mortality_rate', 'exportMortalityRate')->name('exportMortalityRate');
     });
 });
 

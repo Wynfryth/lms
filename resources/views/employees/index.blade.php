@@ -30,6 +30,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
+                    <h6 class="text-lg font-semibold font-tight text-center">Master Pegawai</h6>
                     <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between mb-4">
                         <label for="table-search" class="sr-only">Search</label>
                         <div class="relative">

@@ -10,7 +10,7 @@
                 @php
                     $fileFirstFive = substr($file[0]->attachment, 0, 5);
                 @endphp
-                @if ($fileFirstFive == '<ifram')
+                @if ($fileFirstFive == '<ifra')
                     {!! $file[0]->attachment !!}
                 @else
                     <iframe src="{{'//storage//'.($file[0]->attachment)}}" width="100%" height="500px"></iframe>

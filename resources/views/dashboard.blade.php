@@ -130,10 +130,32 @@
                                 </p>
                             </x-slot>
                             <x-slot name="number">
-                                <h2
-                                    class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
-                                    {{$attendedPreClasses->all_classes}}
-                                </h2>
+                                <div class="flex">
+                                    <h2
+                                        class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 flex-1 float-left">
+                                        {{$attendedPreClasses->all_classes}}
+                                    </h2>
+                                    <h6
+                                        class="text-lg text-center font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
+                                        <table>
+                                            <tr>
+                                                <td class="border border-black">
+                                                    TOS: {{$attendedPreClasses->tos}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="border border-black">
+                                                    SOS: {{$attendedPreClasses->sos}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="border border-black">
+                                                    MOS: {{$attendedPreClasses->mos}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </h6>
+                                </div>
                             </x-slot>
                         </x-card-dashboard>
                         <x-card-dashboard class="hover:bg-emerald-700 bg-white hover:text-white group">
@@ -156,7 +178,7 @@
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
-                                        @if ($attendedClasses->all_classes > 0)
+                                        @if ($attendedPreClasses->all_classes > 0)
                                         {{ round($attendedPreClasses->passed/$attendedPreClasses->all_classes*100) }} %
                                         @else
                                         0%
@@ -185,7 +207,7 @@
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
-                                        @if ($attendedClasses->all_classes > 0)
+                                        @if ($attendedPreClasses->all_classes > 0)
                                         {{ round($attendedPreClasses->failed/$attendedPreClasses->all_classes*100) }} %
                                         @else
                                         0%
@@ -211,10 +233,28 @@
                                 </p>
                             </x-slot>
                             <x-slot name="number">
-                                <h2
-                                    class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
-                                    {{$attendedTrainingClasses->all_classes}}
-                                </h2>
+                                <div class="flex">
+                                    <h2
+                                        class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 flex-1 float-left">
+                                        {{$attendedTrainingClasses->all_classes}}
+                                    </h2>
+                                    <h6
+                                        class="text-lg text-center font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
+                                        <table>
+                                            <tr>
+                                                <td class="border border-black">
+                                                    TOS: {{$attendedTrainingClasses->tos}}
+                                                </td>
+                                                <td class="border border-black">
+                                                    SOS: {{$attendedTrainingClasses->sos}}
+                                                </td>
+                                                <td class="border border-black">
+                                                    MOS: {{$attendedTrainingClasses->mos}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </h6>
+                                </div>
                             </x-slot>
                         </x-card-dashboard>
                         <x-card-dashboard class="hover:bg-emerald-700 bg-white hover:text-white group">
@@ -400,7 +440,11 @@
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
+                                        @if ($attendedClasses->all_classes > 0)
                                         {{ round($attendedClasses->passed/$attendedClasses->all_classes*100) }} %
+                                        @else
+                                            0%
+                                        @endif
                                     </h2>
                                 </div>
                             </x-slot>
@@ -425,7 +469,11 @@
                                     </h2>
                                     <h2
                                         class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
+                                        @if ($attendedClasses->all_classes > 0)
                                         {{ round($attendedClasses->failed/$attendedClasses->all_classes*100) }} %
+                                        @else
+                                            0%
+                                        @endif
                                     </h2>
                                 </div>
                             </x-slot>
