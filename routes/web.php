@@ -205,6 +205,7 @@ Route::middleware('auth')->group(function () {
     // File Upload (Excel)
     Route::controller(FileUploadController::class)->group(function () {
         Route::post('fileUpload/uploadEnrollments', 'uploadEnrollments')->name('fileUpload.uploadEnrollments');
+        Route::post('fileUpload/uploadQuestions', 'uploadQuestions')->name('fileUpload.uploadQuestions');
     });
     // Users
     Route::controller(UsersController::class)->group(function () {
@@ -308,8 +309,11 @@ Route::middleware('auth')->group(function () {
 
     // Exports
     Route::controller(ExportController::class)->group(function () {
-        Route::get('/export_graduation_rate', 'exportGraduationRate')->name('exportGraduationRate');
-        Route::get('/export_mortality_rate', 'exportMortalityRate')->name('exportMortalityRate');
+        Route::get('/export/graduation_rate', 'graduationRate')->name('export.graduationRate');
+        Route::get('/export/mortality_rate', 'mortalityRate')->name('export.mortalityRate');
+        Route::get('/export/student_performance', 'studentPerformance')->name('export.studentPerformance');
+        Route::get('/export/tests/{classId}', 'tests')->name('export.tests');
+        // Route::get('/export_mortality_rate', 'exportMortalityRate')->name('exportMortalityRate');
     });
 });
 

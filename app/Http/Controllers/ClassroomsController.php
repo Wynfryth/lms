@@ -13,7 +13,7 @@ class ClassroomsController extends Controller
         switch ($role) {
             case "Student":
                 $class = DB::table('t_class_header as a')
-                    ->select('a.id AS classId', 'a.class_title', 'b.id AS sessionId', 'b.session_name', 'f.Employee_name as trainer_name', 'd.location_type', 'e.tc_name')
+                    ->select('a.id AS classId', 'a.class_title', 'b.id AS sessionId', 'b.session_name', 'f.Employee_name as trainer_name', 'd.location_type', 'e.tc_name', 'a.is_released')
                     ->leftJoin('t_class_session as b', 'b.class_id', '=', 'a.id')
                     ->leftJoin('tm_trainer_data as c', 'c.id', '=', 'b.trainer_id')
                     ->leftJoin('tm_location_type as d', 'd.id', '=', 'b.loc_type_id')
@@ -25,7 +25,7 @@ class ClassroomsController extends Controller
                 break;
             case "Instructor":
                 $class = DB::table('t_class_header as a')
-                    ->select('a.id AS classId', 'a.class_title', 'b.id AS sessionId', 'b.session_name', 'f.Employee_name as trainer_name', 'd.location_type', 'e.tc_name')
+                    ->select('a.id AS classId', 'a.class_title', 'b.id AS sessionId', 'b.session_name', 'f.Employee_name as trainer_name', 'd.location_type', 'e.tc_name', 'a.is_released')
                     ->leftJoin('t_class_session as b', 'b.class_id', '=', 'a.id')
                     ->leftJoin('tm_trainer_data as c', 'c.id', '=', 'b.trainer_id')
                     ->leftJoin('tm_location_type as d', 'd.id', '=', 'b.loc_type_id')

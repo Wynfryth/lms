@@ -8,10 +8,12 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class QueryExport implements FromArray, WithHeadings
 {
     protected $data;
+    protected $headings;
 
-    public function __construct($data)
+    public function __construct(array $data, array $headings)
     {
         $this->data = $data;
+        $this->headings = $headings;
     }
 
     public function array(): array
@@ -21,18 +23,6 @@ class QueryExport implements FromArray, WithHeadings
 
     public function headings(): array
     {
-        return [
-            'Kelas',
-            'Mulai',
-            'Sampai',
-            'Sesi',
-            'Materi',
-            'Peserta',
-            'Terdaftar',
-            'Sedang Mengikuti',
-            'Lulus',
-            'Gagal',
-            'Dibatalkan',
-        ];
+        return $this->headings;
     }
 }

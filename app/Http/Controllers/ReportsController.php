@@ -65,8 +65,6 @@ class ReportsController extends Controller
         return view('reports.graduationRate', compact('graduationRateResult', 'report_kywd'));
     }
 
-    public function exportGraduationRate($report_kywd = null, $year = null) {}
-
     public function studentGraduationRate($report_kywd = null, $year = null)
     {
         $studentsData = DB::table('tr_enrollment AS a')

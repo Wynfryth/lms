@@ -84,6 +84,13 @@ class TestsController extends Controller
         ];
         $insert_action = DB::table('tm_test')
             ->insertGetId($insert_data);
+
+        $testCode = "T" . sprintf("%03d", $insert_action);
+        $update_code = DB::table('tm_test AS a')
+            ->where('a.id', $insert_action)
+            ->update([
+                'a.test_code' => $testCode
+            ]);
         // menautkan ke study material
         if ($request->kategori_tes != 1) {
             $insert_test_in_material_data = [
