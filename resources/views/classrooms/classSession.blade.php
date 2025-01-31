@@ -77,11 +77,15 @@
                                 break;
                             }
                         @endphp
-                        @if ($schedule->schedule_status == 'OPEN')
-                            <a class="hover:underline" href="{{$hrefLink}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
+                        @if ($schedule->test_is_released === 0)
+                            <span>{{ $schedule->study_material_title ?? $schedule->test_name }} </span>&nbsp;<span class="text-red-500">(Belum rilis)</span>
                         @else
-                            <a class="hover:underline" href="{{$hrefLink}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
-                            {{-- {{ $schedule->study_material_title ?? $schedule->test_name }} --}}
+                            @if ($schedule->schedule_status == 'OPEN')
+                                <a class="hover:underline" href="{{$hrefLink}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
+                            @else
+                                <a class="hover:underline" href="{{$hrefLink}}">{{ $schedule->study_material_title ?? $schedule->test_name }}</a>
+                                {{-- {{ $schedule->study_material_title ?? $schedule->test_name }} --}}
+                            @endif
                         @endif
                     </td>
                     <td class="px-6 py-4 text-center">

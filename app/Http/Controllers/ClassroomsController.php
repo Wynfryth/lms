@@ -76,6 +76,7 @@ class ClassroomsController extends Controller
                         'd.id AS test_id',
                         'd.test_name',
                         'd.pass_point',
+                        'd.is_released AS test_is_released',
                         'h.type',
                         'i.id AS emp_test_id',
                         'j.result_point'
@@ -144,6 +145,7 @@ class ClassroomsController extends Controller
                         'd.id AS test_id',
                         'd.test_name',
                         'd.pass_point',
+                        'd.is_released AS test_is_released',
                         'h.type',
                     )
                     ->selectRaw(DB::raw(

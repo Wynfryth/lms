@@ -193,6 +193,7 @@ $(document).off('click', '#lockAnswer').on('click', '#lockAnswer', function(){
         $(this).prev('#question_section').find('input[type="radio"]:checked').next('label').addClass('bg-green-400 text-white');
         testComp.find(function(item){ if(questionId in item){ item[questionId] = selectedAnswer } });
         questionButtonsColor();
+        $('#nextQuestion').trigger('click');
     }else{
         Swal.fire({
             icon: "warning",
@@ -218,7 +219,7 @@ $(document).off('click', '#nextQuestion').on('click', '#nextQuestion', function(
 });
 
 function questionButtonsColor(){
-    $('.questionList').removeClass('active bg-blue-600 hover:bg-blue-500 text-white');
+    $('.questionList').removeClass('bg-blue-600 hover:bg-blue-500 text-white');
     var answeredQuestions = 0;
     var unansweredQuestions = 0;
     $.each(testComp, function (index, item) {

@@ -115,8 +115,7 @@
                         <div id="mortalityGraph"></div>
                     </div>
                     <h5 class="ml-2 font-bold tracking-tight text-gray-600">Pre-Class</h5>
-                    <div
-                        class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4 bg-sky-100 p-3 border-solid border-1 rounded-md border-sky-500">
+                    <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4 bg-sky-100 p-3 border-solid border-1 rounded-md border-sky-500">
                         <x-card-dashboard class="hover:bg-blue-700 bg-white hover:text-blue-600 group">
                             <x-slot name="header">
                                 <h5
@@ -135,8 +134,7 @@
                                         class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 flex-1 float-left">
                                         {{$attendedPreClasses->all_classes}}
                                     </h2>
-                                    <h6
-                                        class="text-lg text-center font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
+                                    <h6 class="text-lg text-center font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
                                         <table>
                                             <tr>
                                                 <td class="border border-black">
@@ -400,6 +398,90 @@
                     </div>
                     @endrole
                     @role('Student')
+                    <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4">
+                        <x-card-dashboard class="hover:bg-blue-700 bg-white hover:text-blue-600 hover:delay-75 group">
+                            <x-slot name="header">
+                                <h5
+                                    class="text-2xl font-bold tracking-tight dark:text-white text-dark group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
+                                    Kelas</h5>
+                            </x-slot>
+                            <x-slot name="detail">
+                                <p
+                                    class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
+                                    Jumlah Kelas yang Diikuti
+                                </p>
+                            </x-slot>
+                            <x-slot name="number">
+                                <h2
+                                    class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
+                                    {{$attendedClasses->all_classes}}
+                                </h2>
+                            </x-slot>
+                        </x-card-dashboard>
+                        <x-card-dashboard class="hover:bg-emerald-700 bg-white hover:text-white group">
+                            <x-slot name="header">
+                                <h5
+                                    class="text-2xl font-bold tracking-tight dark:text-dark text-dark group-hover:text-white group-hover:bg-emerald-700">
+                                    Lulus</h5>
+                            </x-slot>
+                            <x-slot name="detail">
+                                <p
+                                    class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-emerald-700">
+                                    Jumlah Kelas yang Telah Lulus
+                                </p>
+                            </x-slot>
+                            <x-slot name="number">
+                                <div class="flex">
+                                    <h2
+                                        class="text-2xl font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700 flex-1 float-left">
+                                        {{$attendedClasses->passed}}
+                                    </h2>
+                                    <h2
+                                        class="text-3xl text-center font-bold tracking-tight text-emerald-600 dark:text-white group-hover:text-white group-hover:bg-emerald-700">
+                                        @if ($attendedClasses->all_classes > 0)
+                                        {{ round($attendedClasses->passed/$attendedClasses->all_classes*100) }} %
+                                        @else
+                                            0%
+                                        @endif
+                                    </h2>
+                                </div>
+                            </x-slot>
+                        </x-card-dashboard>
+                        <x-card-dashboard class="bg-white hover:bg-rose-700 hover:text-white group">
+                            <x-slot name="header">
+                                <h5
+                                    class="text-2xl font-bold tracking-tight dark:text-white text-dark group-hover:text-white group-hover:bg-rose-700">
+                                    Gagal</h5>
+                            </x-slot>
+                            <x-slot name="detail">
+                                <p
+                                    class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-rose-700">
+                                    Jumlah Kelas yang Gagal
+                                </p>
+                            </x-slot>
+                            <x-slot name="number">
+                                <div class="flex">
+                                    <h2
+                                        class="text-2xl font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700 flex-1 float-left">
+                                        {{$attendedClasses->failed}}
+                                    </h2>
+                                    <h2
+                                        class="text-3xl text-center font-bold tracking-tight text-rose-600 dark:text-white group-hover:text-white group-hover:bg-rose-700">
+                                        @if ($attendedClasses->all_classes > 0)
+                                        {{ round($attendedClasses->failed/$attendedClasses->all_classes*100) }} %
+                                        @else
+                                            0%
+                                        @endif
+                                    </h2>
+                                </div>
+                            </x-slot>
+                        </x-card-dashboard>
+                    </div>
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <div id="passRateGraph"></div>
+                    </div>
+                    @endrole
+                    @role('Instructor')
                     <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4">
                         <x-card-dashboard class="hover:bg-blue-700 bg-white hover:text-blue-600 hover:delay-75 group">
                             <x-slot name="header">
