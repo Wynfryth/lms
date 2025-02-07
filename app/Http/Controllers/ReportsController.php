@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReportsController extends Controller
 {
-    public function graduationRate($report_kywd = null, $year = null)
+    public function classPerformance($report_kywd = null, $year = null)
     {
         $reportYear = $year;
         if ($year) {
@@ -20,7 +20,9 @@ class ReportsController extends Controller
                 b.class_title,
                 b.start_eff_date,
                 b.end_eff_date,
+                b.is_released,
                 c.total_session,
+                e.class_category,
                 IF(d.total_material IS NOT NULL, d.total_material, 0) AS total_material,
                 COUNT(a.id) AS total_enrollment,
                 SUM(CASE WHEN a.enrollment_status_id = 1 THEN 1 ELSE 0 END) AS registered,
@@ -52,6 +54,7 @@ class ReportsController extends Controller
                 '=',
                 'b.id'
             )
+            ->leftJoin('tm_class_category AS e', 'e.id', '=', 'b.class_category_id')
             // ->whereYear('a.enrollment_date', '=', $year)
             ->groupBy('b.id');
         if ($report_kywd != null) {
@@ -143,5 +146,15 @@ class ReportsController extends Controller
         $graduationRateResult = $graduationRateResult->paginate(10);
 
         return view('reports.mortalityRate', compact('graduationRateResult', 'report_kywd'));
+    }
+
+    public function classPerformanceDetail($class_id)
+    {
+        $classDetail = DB::table('tr_enrollment AS a')
+            ->leftJoin('miegacoa_employees.emp_employee AS b', 'b.nip', '=', 'a.emp_nip')
+            ->leftJoin('tm_enrollment_status AS c', 'c.id', '=', 'a.enrollment_status_id')
+            ->where('a.class_id', $class_id)
+            ->get();
+        return response()->json($classDetail);
     }
 }

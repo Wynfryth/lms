@@ -292,6 +292,7 @@ class TestSessionsController extends Controller
                         DB::table('tr_enrollment AS a')
                             ->where('a.id', $tests->enrollment_id)
                             ->update([
+                                'a.class_score' => $accumulatedFinalScore,
                                 'a.enrollment_status_id' => 3
                             ]);
                     } else {
@@ -299,6 +300,7 @@ class TestSessionsController extends Controller
                         DB::table('tr_enrollment AS a')
                             ->where('a.id', $tests->enrollment_id)
                             ->update([
+                                'a.class_score' => $accumulatedFinalScore,
                                 'a.enrollment_status_id' => 4
                             ]);
                     }

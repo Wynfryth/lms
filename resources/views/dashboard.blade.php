@@ -236,16 +236,19 @@
                                         class="text-2xl text-left font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700 flex-1 float-left">
                                         {{$attendedTrainingClasses->all_classes}}
                                     </h2>
-                                    <h6
-                                        class="text-lg text-center font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
+                                    <h6 class="text-lg text-center font-bold tracking-tight text-blue-600 dark:text-white group-hover:text-white group-hover:bg-blue-700">
                                         <table>
                                             <tr>
                                                 <td class="border border-black">
                                                     TOS: {{$attendedTrainingClasses->tos}}
                                                 </td>
+                                            </tr>
+                                            <tr>
                                                 <td class="border border-black">
                                                     SOS: {{$attendedTrainingClasses->sos}}
                                                 </td>
+                                            </tr>
+                                            <tr>
                                                 <td class="border border-black">
                                                     MOS: {{$attendedTrainingClasses->mos}}
                                                 </td>
@@ -487,12 +490,12 @@
                             <x-slot name="header">
                                 <h5
                                     class="text-2xl font-bold tracking-tight dark:text-white text-dark group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
-                                    Kelas</h5>
+                                    Peserta</h5>
                             </x-slot>
                             <x-slot name="detail">
                                 <p
                                     class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-blue-700 group-hover:delay-75">
-                                    Jumlah Kelas yang Diikuti
+                                    Jumlah Peserta yang Diampu
                                 </p>
                             </x-slot>
                             <x-slot name="number">
@@ -511,7 +514,7 @@
                             <x-slot name="detail">
                                 <p
                                     class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-emerald-700">
-                                    Jumlah Kelas yang Telah Lulus
+                                    Jumlah Peserta yang Telah Lulus
                                 </p>
                             </x-slot>
                             <x-slot name="number">
@@ -540,7 +543,7 @@
                             <x-slot name="detail">
                                 <p
                                     class="font-normal dark:text-gray-400 mb-1 text-dark group-hover:text-white group-hover:bg-rose-700">
-                                    Jumlah Kelas yang Gagal
+                                    Jumlah Peserta yang Gagal
                                 </p>
                             </x-slot>
                             <x-slot name="number">

@@ -301,15 +301,18 @@ Route::middleware('auth')->group(function () {
 
     // Reports
     Route::controller(ReportsController::class)->group(function () {
-        Route::get('reports/graduation_rate/{report_kywd?}/{year?}', 'graduationRate')->middleware(['permission:list graduation rate'])->name('reports.graduationRate');
-        Route::get('reports/export_graduation_rate/{report_kywd?}/{year?}', 'exportGraduationRate')->middleware(['permission:list graduation rate'])->name('reports.exportGraduationRate');
+        // Route::get('reports/graduation_rate/{report_kywd?}/{year?}', 'graduationRate')->middleware(['permission:list graduation rate'])->name('reports.graduationRate');
+        Route::get('reports/class_performance/{report_kywd?}/{year?}', 'classPerformance')->middleware(['permission:list performa kelas'])->name('reports.classPerformance');
+        Route::get('reports/export_class_performance/{report_kywd?}/{year?}', 'exportClassPerformance')->middleware(['permission:list performa kelas'])->name('reports.exportClassPerforance');
         Route::get('reports/mortality_rate/{report_kywd?}/{year?}', 'mortalityRate')->middleware(['permission:list mortality'])->name('reports.mortalityRate');
         Route::get('reports/student_graduation_rate/{report_kywd?}/{year?}', 'studentGraduationRate')->middleware(['permission:list student graduation rate'])->name('reports.studentGraduationRate');
+        Route::get('reports/class_performance_detail/{class_id}', 'classPerformanceDetail')->middleware(['permission:list performa kelas'])->name('reports.class_performance_detail');
     });
 
     // Exports
     Route::controller(ExportController::class)->group(function () {
-        Route::get('/export/graduation_rate', 'graduationRate')->name('export.graduationRate');
+        Route::get('/export/class_performance', 'classPerformance')->name('export.classPerformance');
+        Route::get('/export/class_performance_detail/{class_id}', 'classPerformanceDetail')->name('export.classPerformanceDetail');
         Route::get('/export/mortality_rate', 'mortalityRate')->name('export.mortalityRate');
         Route::get('/export/student_performance', 'studentPerformance')->name('export.studentPerformance');
         Route::get('/export/tests/{classId}', 'tests')->name('export.tests');

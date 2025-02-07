@@ -380,7 +380,7 @@
     $('body').off('keypress', '[name="report_kywd"]').on('keypress', '[name="report_kywd"]', function(e){
         if(e.which == 13) {
             var report_kywd = $(this).val();
-            var url = "{{ route('reports.graduationRate', ['report_kywd' => ':report_kywd']) }}";
+            var url = "{{ route('reports.studentGraduationRate', ['report_kywd' => ':report_kywd']) }}";
             url = url.replace(':report_kywd', report_kywd);
             window.location.href = url;
         }

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ExportController extends Controller
 {
-    public function graduationRate()
+    public function classPerformance()
     {
         // The query for the export
         $graduationRateResult = DB::table('tr_enrollment AS a')
@@ -67,6 +67,45 @@ class ExportController extends Controller
 
         // Return the export
         return Excel::download(new QueryExport($data, $headings), 'graduationRate_export.xlsx');
+    }
+
+    public function classPerformanceDetail($class_id)
+    {
+        $classDetail = DB::table('tr_enrollment AS a')
+            ->select(
+                'd.class_title',
+                'e.class_category',
+                'd.start_eff_date',
+                'd.end_eff_date',
+                'b.Employee_name',
+                'f.enrollment_status',
+                'a.class_score'
+            )
+            ->leftJoin('miegacoa_employees.emp_employee AS b', 'b.nip', '=', 'a.emp_nip')
+            ->leftJoin('tm_enrollment_status AS c', 'c.id', '=', 'a.enrollment_status_id')
+            ->leftJoin('t_class_header AS d', 'd.id', '=', 'a.class_id')
+            ->leftJoin('tm_class_category AS e', 'e.id', '=', 'd.class_category_id')
+            ->leftJoin('tm_enrollment_status AS f', 'f.id', '=', 'a.enrollment_status_id')
+            ->where('a.class_id', $class_id)
+            ->get();
+
+        // Export data as an array
+        $data = $classDetail->map(function ($item) {
+            return (array) $item;
+        })->toArray();
+
+        $headings = [
+            'Kelas',
+            'Kategori Kelas',
+            'Mulai',
+            'Sampai',
+            'Nama',
+            'Status Kepesertaan',
+            'Nilai Kelas',
+        ];
+
+        // Return the export
+        return Excel::download(new QueryExport($data, $headings), 'Performa Kelas - ' . $classDetail[0]->class_title . ' (' . date('d.m.Y', strtotime($classDetail[0]->start_eff_date)) . '-' . date('d.m.Y', strtotime($classDetail[0]->end_eff_date)) . ').xlsx');
     }
 
     public function mortalityRate()

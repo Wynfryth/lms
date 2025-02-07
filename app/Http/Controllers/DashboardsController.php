@@ -190,7 +190,7 @@ class DashboardsController extends Controller
 
                 /* all attended classes in that year */
                 $whereParams = [
-                    ['a.emp_nip', '=', $nip],
+                    ['d.nip', '=', $nip],
                     ['a.enrollment_status_id', '!=', 5],
                 ];
                 $attendedClasses = DB::table('tr_enrollment AS a')
@@ -200,13 +200,16 @@ class DashboardsController extends Controller
                             COALESCE(SUM(CASE WHEN a.enrollment_status_id = 3 THEN 1 ELSE 0 END), 0) AS passed,
                             COALESCE(SUM(CASE WHEN a.enrollment_status_id = 4 THEN 1 ELSE 0 END), 0) AS failed,
                             COALESCE(SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END), 0) AS cancelled')
+                    ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+                    ->leftJoin('t_class_session AS c', 'c.class_id', '=', 'b.id')
+                    ->leftJoin('tm_trainer_data AS d', 'd.id', '=', 'c.trainer_id')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
 
                 /* all attended pre-classes in that year */
                 $whereParams = [
-                    ['a.emp_nip', '=', $nip],
+                    ['f.nip', '=', $nip],
                     ['d.id', '=', 1],
                 ];
                 $attendedPreClasses = DB::table('tr_enrollment AS a')
@@ -221,13 +224,15 @@ class DashboardsController extends Controller
                     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                     ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
                     ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->leftJoin('t_class_session AS e', 'e.class_id', '=', 'b.id')
+                    ->leftJoin('tm_trainer_data AS f', 'f.id', '=', 'e.trainer_id')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
 
                 /* all attended treining-classes in that year */
                 $whereParams = [
-                    ['a.emp_nip', '=', $nip],
+                    ['f.nip', '=', $nip],
                     ['d.id', '=', 2],
                 ];
                 $attendedTrainingClasses = DB::table('tr_enrollment AS a')
@@ -241,6 +246,8 @@ class DashboardsController extends Controller
                     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                     ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
                     ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->leftJoin('t_class_session AS e', 'e.class_id', '=', 'b.id')
+                    ->leftJoin('tm_trainer_data AS f', 'f.id', '=', 'e.trainer_id')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
@@ -251,9 +258,12 @@ class DashboardsController extends Controller
                                                         SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12) months'))
                     ->leftJoin('tr_enrollment AS a', function ($join) use ($year, $nip) {
                         $join->on(DB::raw('MONTH(a.enrollment_date)'), '=', 'months.month')
-                            ->whereYear('a.enrollment_date', '=', $year)
-                            ->where('a.emp_nip', '=', $nip);
+                            ->whereYear('a.enrollment_date', '=', $year);
+                        // ->where('a.emp_nip', '=', $nip);
                     })
+                    ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+                    ->leftJoin('t_class_session AS c', 'c.class_id', '=', 'b.id')
+                    ->leftJoin('tm_trainer_data AS d', 'd.id', '=', 'c.trainer_id')
                     ->select(
                         'a.emp_nip',
                         'months.month',
@@ -264,6 +274,9 @@ class DashboardsController extends Controller
                         DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 4 THEN 1 ELSE 0 END), 0) AS failed'),
                         DB::raw('COALESCE(SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END), 0) AS cancelled')
                     )
+                    ->where([
+                        ['d.nip', '=', $nip],
+                    ])
                     ->groupBy('a.emp_nip', 'months.month')
                     ->orderBy('months.month')
                     ->get();

@@ -400,20 +400,20 @@
                     </svg>
                 </button>
                 <ul id="dropdown-report" class="hidden py-2 space-y-2">
-                    @can('list graduation rate')
+                    @can('list performa kelas')
                     <li>
-                        <a href="{{route('reports.graduationRate')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                            Tingkat Kelulusan Kelas
+                        <a href="{{route('reports.classPerformance')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            Performa Kelas
                         </a>
                     </li>
                     @endcan
-                    @can('list mortality')
+                    {{-- @can('list mortality')
                     <li>
                         <a href="{{route('reports.mortalityRate')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                             Mortalitas
                         </a>
                     </li>
-                    @endcan
+                    @endcan --}}
                     @can('list student graduation rate')
                     <li>
                         <a href="{{route('reports.studentGraduationRate')}}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
