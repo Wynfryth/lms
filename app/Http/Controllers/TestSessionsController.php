@@ -357,7 +357,7 @@ class TestSessionsController extends Controller
                     ->on('g.question_id', '=', 'e.id')
                     ->on('g.answer_id', '=', 'f.id');
             })
-            ->leftJoin('miegacoa_employees.emp_employee as h', 'h.nip', '=', 'a.emp_nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee as h', 'h.nip', '=', 'a.emp_nip')
             ->leftJoin('t_class_session AS i', 'i.id', '=', 'b.class_session_id')
             ->where('a.emp_nip', '=', $nip)
             ->where('a.id', '=', $studentTestId)

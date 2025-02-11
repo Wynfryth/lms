@@ -20,10 +20,10 @@ class ClassSessionsController extends Controller
             ->leftJoin('tm_trainer_data AS c', 'c.id', '=', 'a.trainer_id')
             ->leftJoin('tm_location_type AS d', 'd.id', '=', 'a.loc_type_id')
             ->leftJoin('tm_training_center AS e', 'e.id', '=', 'a.tc_id')
-            ->leftJoin('miegacoa_employees.emp_employee AS f', 'f.nip', '=', 'c.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS f', 'f.nip', '=', 'c.nip')
             ->leftJoin('tm_class_category AS g', 'g.id', '=', 'b.class_category_id')
             ->leftJoin('tr_enrollment AS h', 'h.class_session_id', '=', 'a.id')
-            ->leftJoin('miegacoa_employees.emp_employee AS i', 'i.nip', '=', 'h.emp_nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS i', 'i.nip', '=', 'h.emp_nip')
             ->leftJoin('tm_enrollment_status AS j', 'j.id', '=', 'h.enrollment_status_id')
             ->select('a.id', 'a.session_name', 'a.desc', 'b.class_title', 'g.class_category', 'f.Employee_name', 'd.location_type', 'e.tc_name', 'a.start_effective_date', 'a.end_effective_date', 'a.is_active')
             ->selectRaw(DB::raw('COUNT(h.id) AS jumlah_peserta, GROUP_CONCAT(i.Employee_name) AS participants, GROUP_CONCAT(j.enrollment_status) AS status_kepesertaan'))
@@ -105,7 +105,7 @@ class ClassSessionsController extends Controller
                     ->where('b.material_type', '=', 2);
             })
             ->leftJoin('tm_trainer_data AS e', 'e.id', '=', 'a.trainer_id')
-            ->leftJoin('miegacoa_employees.emp_employee AS f', 'f.nip', '=', 'e.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS f', 'f.nip', '=', 'e.nip')
             ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
             ->where('a.class_id', $class_id)
             ->orderBy('a.session_order', 'asc')
@@ -113,7 +113,7 @@ class ClassSessionsController extends Controller
             ->get();
         $instructor = DB::table('tm_trainer_data AS a')
             ->select('a.id', 'b.Employee_name')
-            ->leftJoin('miegacoa_employees.emp_employee AS b', 'b.nip', '=', 'a.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS b', 'b.nip', '=', 'a.nip')
             ->where('a.is_active', 1)
             ->get();
         $training_center = DB::table('tm_training_center AS a')
@@ -152,7 +152,7 @@ class ClassSessionsController extends Controller
     public function participant_selectpicker(Request $request)
     {
         $keyword = $request->term['term'];
-        $participants = DB::table('miegacoa_employees.emp_employee AS a')
+        $participants = DB::table(config('custom.employee_db') . '.emp_employee AS a')
             ->select('a.nip', 'a.Employee_name', 'a.Organization')
             ->where('a.Employee_name', 'like', '%' . $keyword . '%')
             ->get();
@@ -381,7 +381,7 @@ class ClassSessionsController extends Controller
             ->select('a.*')
             ->selectRaw(DB::raw('GROUP_CONCAT(b.emp_nip) AS nip_peserta, GROUP_CONCAT(c.Employee_name) AS peserta, GROUP_CONCAT(c.Organization) AS divisi, GROUP_CONCAT(d.enrollment_status) AS status_kepesertaan'))
             ->leftJoin('tr_enrollment AS b', 'b.class_session_id', '=', 'a.id')
-            ->leftJoin('miegacoa_employees.emp_employee AS c', 'c.nip', '=', 'b.emp_nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS c', 'c.nip', '=', 'b.emp_nip')
             ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'b.enrollment_status_id')
             ->where('a.id', $id)
             ->first();
@@ -390,7 +390,7 @@ class ClassSessionsController extends Controller
             ->get();
         $instructor = DB::table('tm_trainer_data AS a')
             ->select('a.id', 'b.Employee_name')
-            ->leftJoin('miegacoa_employees.emp_employee AS b', 'b.nip', '=', 'a.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS b', 'b.nip', '=', 'a.nip')
             ->where('a.is_active', 1)
             ->get();
         $training_center = DB::table('tm_training_center AS a')

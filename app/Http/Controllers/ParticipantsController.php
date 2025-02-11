@@ -23,7 +23,7 @@ class ParticipantsController extends Controller
             ->selectRaw(DB::raw('GROUP_CONCAT(a.class_id) AS id_kelas, GROUP_CONCAT(b.class_title) AS nama_kelas, COUNT(emp_nip) AS jumlah_kelas, GROUP_CONCAT(d.enrollment_status) AS status_peserta'))
             ->selectRaw(DB::raw($sum_when))
             ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
-            ->leftJoin('miegacoa_employees.emp_employee AS c', 'c.nip', '=', 'a.emp_nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS c', 'c.nip', '=', 'a.emp_nip')
             ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'a.enrollment_status_id')
             ->orderBy('a.emp_nip', 'asc')
             ->groupBy('a.emp_nip');
@@ -107,7 +107,7 @@ class ParticipantsController extends Controller
             )
             ->selectRaw('GROUP_CONCAT(d.class_title) AS cancelledClasses')
             ->leftJoin('tm_enrollment_status AS b', 'a.enrollment_status_id', '=', 'b.id')
-            ->leftJoin('miegacoa_employees.emp_employee AS c', 'a.emp_nip', '=', 'c.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS c', 'a.emp_nip', '=', 'c.nip')
             ->leftJoin('t_class_header AS d', 'd.id', '=', 'a.class_id')
             ->where('b.enrollment_status', 'CANCELLED')
             ->orderBy('a.emp_nip', 'asc')

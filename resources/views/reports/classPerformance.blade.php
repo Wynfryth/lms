@@ -47,6 +47,31 @@
                             Export to Excel
                         </x-add-button>
                     </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <x-select-option id="kategori_kelas" name="kategori_kelas">
+                                <x-slot name="options">
+                                    <option class="disabled" value="null" selected disabled>
+                                        Pilih Kategori ...
+                                    </option>
+                                    @forelse ($classCategory as $index => $item)
+                                        <option value="{{ $item->id }}" data-category-type="{{ $item->class_category }}" {{ $class_category == $item->id ? 'selected' : '' }}>
+                                            {{ $item->class_category }}
+                                        </option>
+                                    @empty
+                                        {{-- do nothing --}}
+                                    @endforelse
+                                </x-slot>
+                            </x-select-option>
+                        </div>
+                        <div>
+                            <x-text-input id="start_period" datepicker datepicker-autohide datepicker-orientation="bottom right" datepicker-format="dd-mm-yyyy" name="start_period" type="text" class="mt-1 block w-full datepicker" placeholder="Dari..." value="{{ $startPeriod }}" />
+                            <x-text-input id="end_period" datepicker datepicker-autohide datepicker-orientation="bottom right" datepicker-format="dd-mm-yyyy" name="end_period" type="text" class="mt-1 block w-full datepicker" placeholder="Sampai..." value="{{ $endPeriod }}" />
+                        </div>
+                        <div class="text-center">
+                            <button type="button" id="report_filter" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full mt-1">Filter</button>
+                        </div>
+                    </div>
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table id="detail_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -470,29 +495,53 @@
         });
     })
 
-    // $(document).off('click', '#export_class_report').on('click', '#export_class_report', function () {
-    //     var class_id = $(this).data('class');
-    //     var url = "{{route('export.classPerformanceDetail', ['class_id' => ':class_id'])}}";
-    //     url = url.replace(':class_id', class_id);
-    //     $.ajax({
-    //         type: "GET",
-    //         url: url,
-    //         data: {
-    //             _token: "{{csrf_token()}}"
-    //         },
-    //         // dataType: "dataType",
-    //         success: function (response) {
+    $(document).off('click', '#report_filter').on('click', '#report_filter', function(){
+        var report_kywd = $('[name="report_kywd"]').val();
+        var classCategory = $('#kategori_kelas').val();
+        var startPeriod = $('#start_period').val();
+        var endPeriod = $('#end_period').val();
 
-    //         }
-    //     });
-    // });
+        filterReport(report_kywd, classCategory, startPeriod, endPeriod);
+    })
 
     $('body').off('keypress', '[name="report_kywd"]').on('keypress', '[name="report_kywd"]', function(e){
         if(e.which == 13) {
-            var report_kywd = $(this).val();
-            var url = "{{ route('reports.classPerformance', ['report_kywd' => ':report_kywd']) }}";
-            url = url.replace(':report_kywd', report_kywd);
-            window.location.href = url;
+            var report_kywd = $('[name="report_kywd"]').val();
+            var classCategory = $('#kategori_kelas').val();
+            var startPeriod = $('#start_period').val();
+            var endPeriod = $('#end_period').val();
+
+            filterReport(report_kywd, classCategory, startPeriod, endPeriod);
         }
     })
+
+    function filterReport(report_kywd, classCategory, startPeriod, endPeriod){
+        if(report_kywd == ''){
+            report_kywd = 'nokeyword';
+        }
+        if(classCategory == null){
+            classCategory = 'nocat';
+        }
+        if(startPeriod == ''){
+            startPeriod = 'nostart';
+        }
+        if(endPeriod == ''){
+            endPeriod = 'noend';
+        }
+        if((startPeriod == 'nostart' && endPeriod != 'noend') ||(startPeriod != 'nostart' && endPeriod == 'noend')){
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Waktu mulai dan sampai harus lengkap.',
+                allowOutsideClick: false
+            });
+        }else{
+            var url = "{{ route('reports.classPerformance', ['report_kywd' => ':report_kywd', 'class_category' => ':class_category', 'startPeriod' => ':startPeriod', 'endPeriod' => ':endPeriod']) }}";
+            url = url.replace(':report_kywd', report_kywd);
+            url = url.replace(':class_category', classCategory);
+            url = url.replace(':startPeriod', startPeriod);
+            url = url.replace(':endPeriod', endPeriod);
+            window.location.href = url;
+        }
+    }
 </script>

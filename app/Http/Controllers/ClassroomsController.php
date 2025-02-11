@@ -18,7 +18,7 @@ class ClassroomsController extends Controller
                     ->leftJoin('tm_trainer_data as c', 'c.id', '=', 'b.trainer_id')
                     ->leftJoin('tm_location_type as d', 'd.id', '=', 'b.loc_type_id')
                     ->leftJoin('tm_training_center as e', 'e.id', '=', 'b.tc_id')
-                    ->leftJoin('miegacoa_employees.emp_employee as f', 'f.nip', '=', 'c.nip')
+                    ->leftJoin(config('custom.employee_db') . '.emp_employee as f', 'f.nip', '=', 'c.nip')
                     ->where('a.id', $class_id)
                     ->orderBy('b.session_order', 'asc')
                     ->get();
@@ -30,7 +30,7 @@ class ClassroomsController extends Controller
                     ->leftJoin('tm_trainer_data as c', 'c.id', '=', 'b.trainer_id')
                     ->leftJoin('tm_location_type as d', 'd.id', '=', 'b.loc_type_id')
                     ->leftJoin('tm_training_center as e', 'e.id', '=', 'b.tc_id')
-                    ->leftJoin('miegacoa_employees.emp_employee as f', 'f.nip', '=', 'c.nip')
+                    ->leftJoin(config('custom.employee_db') . '.emp_employee as f', 'f.nip', '=', 'c.nip')
                     ->where(
                         [
                             'a.id' => $class_id,
@@ -98,7 +98,7 @@ class ClassroomsController extends Controller
                             ->where('b.material_type', '=', 2);
                     })
                     ->leftJoin('tm_trainer_data AS e', 'e.id', '=', 'a.trainer_id')
-                    ->leftJoin('miegacoa_employees.emp_employee AS f', 'f.nip', '=', 'e.nip')
+                    ->leftJoin(config('custom.employee_db') . '.emp_employee AS f', 'f.nip', '=', 'e.nip')
                     ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
                     ->leftJoin('class_material_types AS h', 'h.id', '=', 'b.material_type')
                     ->leftJoin('tr_emp_test AS i', function ($join) {
@@ -165,7 +165,7 @@ class ClassroomsController extends Controller
                             ->where('b.material_type', '=', 2);
                     })
                     ->leftJoin('tm_trainer_data AS e', 'e.id', '=', 'a.trainer_id')
-                    ->leftJoin('miegacoa_employees.emp_employee AS f', 'f.nip', '=', 'e.nip')
+                    ->leftJoin(config('custom.employee_db') . '.emp_employee AS f', 'f.nip', '=', 'e.nip')
                     ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
                     ->leftJoin('class_material_types AS h', 'h.id', '=', 'b.material_type')
                     // ->leftJoin('tr_emp_test AS i', function ($join) {

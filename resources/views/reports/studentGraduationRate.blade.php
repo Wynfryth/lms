@@ -43,6 +43,22 @@
                             </div>
                             <input type="text" name="report_kywd" id="table-search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Cari data" value="{{ $report_kywd }}">
                         </div>
+                        <div>
+                            <x-select-option id="branch" name="branch">
+                                <x-slot name="options">
+                                    <option class="disabled" value="null" selected>
+                                        Semua cabang
+                                    </option>
+                                    @forelse ($branches as $index => $item)
+                                        <option value="{{ $item->branch }}" {{ $branches_selected == $item->branch ? 'selected' : '' }}>
+                                            {{ $item->branch }}
+                                        </option>
+                                    @empty
+                                        {{-- do nothing --}}
+                                    @endforelse
+                                </x-slot>
+                            </x-select-option>
+                        </div>
                         <x-add-button href="{{route('export.studentPerformance')}}">
                             Export to Excel
                         </x-add-button>
@@ -62,6 +78,9 @@
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Divisi
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Cabang
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Kelas
@@ -94,6 +113,9 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             {{ $student->divisi }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $student->cabang }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             {{ $student->all_classes }}
@@ -380,9 +402,29 @@
     $('body').off('keypress', '[name="report_kywd"]').on('keypress', '[name="report_kywd"]', function(e){
         if(e.which == 13) {
             var report_kywd = $(this).val();
-            var url = "{{ route('reports.studentGraduationRate', ['report_kywd' => ':report_kywd']) }}";
-            url = url.replace(':report_kywd', report_kywd);
-            window.location.href = url;
+            var branch = $('[name="branch"]').val();
+            filterReport(report_kywd, branch);
         }
     })
+
+    $(document).off('change', '[name="branch"]').on('change', '[name="branch"]', function(){
+        var report_kywd = $('[name="report_kywd"]').val();
+        var branch = $(this).val();
+
+        filterReport(report_kywd, branch);
+    })
+
+    function filterReport(report_kywd, branch){
+        if(report_kywd == ''){
+            report_kywd = 'nokeyword';
+        }
+        if(branch == null){
+            branch = 'nobranch';
+        }
+
+        var url = "{{ route('reports.studentGraduationRate', ['report_kywd' => ':report_kywd', 'branch_selected' => ':branch']) }}";
+        url = url.replace(':report_kywd', report_kywd);
+        url = url.replace(':branch', branch);
+        window.location.href = url;
+    }
 </script>

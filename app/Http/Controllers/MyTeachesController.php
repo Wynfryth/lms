@@ -15,7 +15,7 @@ class MyTeachesController extends Controller
             ->select('b.id AS class_id', 'b.class_title', 'b.class_desc', 'b.start_eff_date', 'b.end_eff_date', 'b.is_released', DB::raw('COUNT(a.id) AS total_session'), 'e.total_enrollment')
             ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
             ->leftJoin('tm_trainer_data AS c', 'c.id', '=', 'a.trainer_id')
-            ->leftJoin('miegacoa_employees.emp_employee AS d', 'd.nip', '=', 'c.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS d', 'd.nip', '=', 'c.nip')
             ->leftJoinSub(
                 DB::table('t_class_header AS a')
                     ->select('a.id AS class_id', DB::raw('COUNT(b.id) AS total_enrollment'))
@@ -36,7 +36,7 @@ class MyTeachesController extends Controller
         //     ->leftJoin('tm_trainer_data AS b', 'b.id', '=', 'a.trainer_id')
         //     ->leftJoin('t_class_header AS c', 'c.id', '=', 'a.class_id')
         //     ->leftJoin('tr_enrollment AS d', 'd.class_id', '=', 'c.id')
-        //     ->leftJoin('miegacoa_employees.emp_employee AS e', 'e.nip', '=', 'd.emp_nip')
+        //     ->leftJoin(config('custom.employee_db') . '.emp_employee AS e', 'e.nip', '=', 'd.emp_nip')
         //     ->leftJoin('tm_enrollment_status AS k', 'k.id', '=', 'd.enrollment_status_id')
         //     ->where('b.nip', $nip)
         //     ->groupBy('a.id')

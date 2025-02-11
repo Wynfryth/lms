@@ -9,7 +9,7 @@ class EmployeesController extends Controller
 {
     public function index($employees_kywd = null)
     {
-        $employees = DB::table('miegacoa_employees.emp_employee AS a')
+        $employees = DB::table(config('custom.employee_db') . '.emp_employee AS a')
             ->select('a.nip', 'a.Employee_name', 'a.Organization', 'a.Position_Nama', 'a.Branch_Name')
             ->orderByDesc('a.Join_Date')
             ->orderBy('a.Employee_name', 'asc');

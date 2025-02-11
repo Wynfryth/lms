@@ -302,10 +302,10 @@ Route::middleware('auth')->group(function () {
     // Reports
     Route::controller(ReportsController::class)->group(function () {
         // Route::get('reports/graduation_rate/{report_kywd?}/{year?}', 'graduationRate')->middleware(['permission:list graduation rate'])->name('reports.graduationRate');
-        Route::get('reports/class_performance/{report_kywd?}/{year?}', 'classPerformance')->middleware(['permission:list performa kelas'])->name('reports.classPerformance');
+        Route::get('reports/class_performance/{report_kywd?}/{class_category?}/{startPeriod?}/{endPeriod?}', 'classPerformance')->middleware(['permission:list performa kelas'])->name('reports.classPerformance');
         Route::get('reports/export_class_performance/{report_kywd?}/{year?}', 'exportClassPerformance')->middleware(['permission:list performa kelas'])->name('reports.exportClassPerforance');
         Route::get('reports/mortality_rate/{report_kywd?}/{year?}', 'mortalityRate')->middleware(['permission:list mortality'])->name('reports.mortalityRate');
-        Route::get('reports/student_graduation_rate/{report_kywd?}/{year?}', 'studentGraduationRate')->middleware(['permission:list student graduation rate'])->name('reports.studentGraduationRate');
+        Route::get('reports/student_graduation_rate/{report_kywd?}/{branch_selected?}', 'studentGraduationRate')->middleware(['permission:list student graduation rate'])->name('reports.studentGraduationRate');
         Route::get('reports/class_performance_detail/{class_id}', 'classPerformanceDetail')->middleware(['permission:list performa kelas'])->name('reports.class_performance_detail');
     });
 

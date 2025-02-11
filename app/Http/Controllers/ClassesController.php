@@ -97,7 +97,7 @@ class ClassesController extends Controller
     {
         $trainers = DB::table('tm_trainer_data AS a')
             ->select('a.id', 'a.nip', 'b.Employee_name')
-            ->leftJoin('miegacoa_employees.emp_employee AS b', 'b.nip', '=', 'a.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS b', 'b.nip', '=', 'a.nip')
             ->where('a.is_active', 1)
             ->get();
         return $trainers;
@@ -273,7 +273,7 @@ class ClassesController extends Controller
             ->first();
         $students = DB::table('tr_enrollment AS a')
             ->select('a.id', 'a.emp_nip', 'b.Employee_name AS student_name', 'b.Organization', 'c.enrollment_status')
-            ->leftJoin('miegacoa_employees.emp_employee AS b', 'b.nip', '=', 'a.emp_nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS b', 'b.nip', '=', 'a.emp_nip')
             ->leftJoin('tm_enrollment_status AS c', 'c.id', '=', 'a.enrollment_status_id')
             ->where('a.class_id', $id)
             ->get();
@@ -515,7 +515,7 @@ class ClassesController extends Controller
 
     public function getStudentByNip($nip, $index)
     {
-        $studentData = DB::table('miegacoa_employees.emp_employee AS a')
+        $studentData = DB::table(config('custom.employee_db') . '.emp_employee AS a')
             ->where('a.nip', $nip)
             ->first();
         return response()->json(['studentData' => $studentData, 'index' => $index]);

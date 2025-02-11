@@ -17,7 +17,7 @@ class TrainersController extends Controller
         $trainers = DB::table('tm_trainer_data AS a')
             ->select('a.id', 'b.id AS employee_id', 'b.nip', 'b.Employee_name', 'b.Organization', 'a.is_active')
             ->selectRaw(DB::raw('GROUP_CONCAT(c.session_name) AS sesi_kelas'))
-            ->leftJoin('miegacoa_employees.emp_employee AS b', 'b.nip', '=', 'a.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS b', 'b.nip', '=', 'a.nip')
             ->leftJoin('t_class_session As c', 'c.trainer_id', '=', 'a.id')
             // ->where('a.is_active', 1)
             ->orderBy('a.id', 'desc')
@@ -42,7 +42,7 @@ class TrainersController extends Controller
     public function trainers_selectpicker(Request $request)
     {
         $keyword = $request->term['term'];
-        $trainers = DB::table('miegacoa_employees.emp_employee AS a')
+        $trainers = DB::table(config('custom.employee_db') . '.emp_employee AS a')
             ->select('a.nip', 'a.Employee_name', 'a.Organization')
             ->where('a.Employee_name', 'like', '%' . $keyword . '%')
             ->get();
@@ -103,7 +103,7 @@ class TrainersController extends Controller
     {
         $item = DB::table('tm_trainer_data AS a')
             ->select('a.id', 'b.id AS employee_id', 'b.nip', 'b.Employee_name', 'b.Organization', 'a.is_active')
-            ->leftJoin('miegacoa_employees.emp_employee As b', 'b.nip', '=', 'a.nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee As b', 'b.nip', '=', 'a.nip')
             ->where('a.id', $id)
             ->first();
         return view('trainers.edit', compact('item'));

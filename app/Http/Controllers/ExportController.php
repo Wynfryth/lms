@@ -81,7 +81,7 @@ class ExportController extends Controller
                 'f.enrollment_status',
                 'a.class_score'
             )
-            ->leftJoin('miegacoa_employees.emp_employee AS b', 'b.nip', '=', 'a.emp_nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS b', 'b.nip', '=', 'a.emp_nip')
             ->leftJoin('tm_enrollment_status AS c', 'c.id', '=', 'a.enrollment_status_id')
             ->leftJoin('t_class_header AS d', 'd.id', '=', 'a.class_id')
             ->leftJoin('tm_class_category AS e', 'e.id', '=', 'd.class_category_id')
@@ -184,7 +184,7 @@ class ExportController extends Controller
                 DB::raw('SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END) AS cancelled')
             )
             ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
-            ->leftJoin('miegacoa_employees.emp_employee AS c', 'c.nip', '=', 'a.emp_nip')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS c', 'c.nip', '=', 'a.emp_nip')
             // ->whereYear('a.enrollment_date', '=', $year)
             ->groupBy('a.emp_nip')
             ->get();

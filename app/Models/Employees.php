@@ -10,5 +10,11 @@ class Employees extends Model
     use HasFactory;
 
     protected $connection = 'employees';
-    protected $table = 'miegacoa_employees.emp_employee';
+    protected $table;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('custom.employee_db') . '.emp_employee';
+    }
 }
