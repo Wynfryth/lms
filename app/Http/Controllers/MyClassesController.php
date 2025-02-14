@@ -105,4 +105,19 @@ class MyClassesController extends Controller
         $result = $query->get();
         return $result;
     }
+
+    public function certificate($class_id, $nip)
+    {
+        $certificateData = DB::table('tr_enrollment AS a')
+            ->select('c.Employee_name', 'b.class_title', 'd.enrollment_status')
+            ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS c', 'c.nip', '=', 'a.emp_nip')
+            ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'a.enrollment_status_id')
+            ->where([
+                ['a.class_id', '=', $class_id],
+                ['a.emp_nip', '=', $nip],
+            ])
+            ->first();
+        return view('myclasses.certificate', compact('certificateData'));
+    }
 }

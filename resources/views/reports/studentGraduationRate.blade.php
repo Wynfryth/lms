@@ -237,6 +237,10 @@
                 }
             }
         });
+        $('[name="branch"]').select2({
+            placeholder: "Semua Cabang",
+            allowClear: true
+        });
     });
     $(document).off('click', '.delete').on('click', '.delete', function() {
         // console.log($(this).data('id'))
@@ -418,7 +422,7 @@
         if(report_kywd == ''){
             report_kywd = 'nokeyword';
         }
-        if(branch == null){
+        if(branch == 'null' || branch == null){
             branch = 'nobranch';
         }
 

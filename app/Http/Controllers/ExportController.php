@@ -21,6 +21,8 @@ class ExportController extends Controller
                 c.total_session,
                 IF(d.total_material IS NOT NULL, d.total_material, 0) AS total_material,
                 COUNT(a.id) AS total_enrollment,
+                SUM(CASE WHEN a.enrollment_status_id = 4 THEN 1 ELSE 0 END) AS failed,
+                ROUND((SUM(CASE WHEN a.enrollment_status_id = 4 THEN 1 ELSE 0 END) / COUNT(a.id)) * 100, 2) AS failed_percentage,
                 SUM(CASE WHEN a.enrollment_status_id = 3 THEN 1 ELSE 0 END) AS passed,
                 ROUND((SUM(CASE WHEN a.enrollment_status_id = 3 THEN 1 ELSE 0 END) / COUNT(a.id)) * 100, 2) AS pass_percentage
             ')
@@ -61,6 +63,8 @@ class ExportController extends Controller
             'Jumlah Sesi',
             'Jumlah Materi',
             'Jumlah Peserta',
+            'Gagal',
+            'Persentase Kegagalan (%)',
             'Lulus',
             'Persentase Kelulusan (%)',
         ];

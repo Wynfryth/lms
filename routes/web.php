@@ -243,6 +243,7 @@ Route::middleware('auth')->group(function () {
         Route::post('myclasses/delete', 'delete')->middleware(['permission:delete kelasku'])->name('myclasses.delete');
         Route::post('myclasses/recover', 'recover')->middleware(['permission:delete kelasku'])->name('myclasses.recover');
         Route::get('myclasses/passStatusCheck/{class_sessions}', 'passStatusCheck')->middleware(['permission:list kelasku'])->name('myclasses.passStatusCheck');
+        Route::get('myclasses/certificate/{class_id}/{nip}', 'certificate')->middleware(['permission:list kelasku'])->name('myclasses.certificate');
     });
 
     // Jadwalku (Student)

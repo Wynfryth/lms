@@ -64,7 +64,6 @@ return [
             ]) : [],
         ],
 
-
         'employees' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),

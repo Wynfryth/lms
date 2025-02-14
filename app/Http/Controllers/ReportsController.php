@@ -115,7 +115,7 @@ class ReportsController extends Controller
         } else {
             $report_kywd = '';
         }
-        if ($branches_selected != 'nocat' && $branches_selected != null) {
+        if ($branches_selected != 'nobranch' && $branches_selected != null) {
             $whereParams = [
                 'c.Branch_Name' => $branches_selected,
             ];
@@ -128,6 +128,9 @@ class ReportsController extends Controller
         $branches = DB::table(config('custom.employee_db') . '.emp_employee AS a')
             ->select('a.Branch_Name AS branch')
             ->distinct()
+            ->where([
+                ['a.Branch_Name', '!=', '']
+            ])
             ->get();
 
         return view('reports.studentGraduationRate', compact('report_kywd', 'studentsData', 'branches', 'branches_selected'));
