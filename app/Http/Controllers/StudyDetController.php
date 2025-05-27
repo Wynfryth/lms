@@ -101,9 +101,38 @@ class StudyDetController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, StudyDet $studyDet)
+    public function update(Request $request, $id)
     {
-        //
+        $update_detail_data = [
+            'name' => $request->nama_pembelajaran
+        ];
+        $update_affected = DB::table('tm_study_material_detail AS a')
+            ->where('a.id', $id)
+            ->update($update_detail_data);
+
+        // harus delete semua attachment yang memiliki id detail tersebut dulu baru insert yang baru (itu cara yang paling efektif)
+        $delete_attachment = DB::table('tm_study_material_attachments AS a')
+            ->where('a.study_material_detail_id', $id)
+            ->delete();
+        $attachments_array = json_decode($request->attachments, true); // `true` converts it to associative array
+        foreach ($attachments_array as $item) {
+            $nama_file = $item['nama_file'];
+            $durasi = $item['durasi'];
+            $file_pembelajaran = $item['file_pembelajaran'];
+
+            $insert_attachments_data = [
+                'filename' => $nama_file,
+                'estimated_time' => $durasi,
+                'attachment' => $file_pembelajaran,
+                'study_material_detail_id' => $id,
+                'is_active' => 1,
+                'created_by' => Auth::id(),
+                'created_date' => Carbon::now()
+            ];
+            $insert_attachments = DB::table('tm_study_material_attachments')
+                ->insertGetId($insert_attachments_data);
+        }
+        return $insert_attachments;
     }
 
     /**

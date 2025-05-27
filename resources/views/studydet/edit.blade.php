@@ -161,7 +161,7 @@
 
         data.push({
             name: "header_id",
-            value: "{{ $detail_id; }}"
+            value: "{{ $details->header_id; }}"
         })
 
         if(no_data_row == 0){ // berarti ada isinya
@@ -234,7 +234,7 @@
                 function (data, textStatus, jqXHR) {
                     // console.log(data);
                     if(data != 0){
-                        window.location = "{{ route('studies.edit', $detail_id) }}";
+                        window.location = "{{ route('studies.edit', $details->header_id) }}";
                     }
                 },
                 "JSON"

@@ -59,46 +59,190 @@
                     </li>
                 </ol> --}}
 
-                <form method="POST" action="{{ route('classes.store') }}" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('classes.store') }}" class="mt-1 space-y-1">
                     @csrf
                     {{-- @method('put') --}}
+                    <div class="border-b border-gray-200 dark:border-gray-700">
+                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab" data-tabs-toggle="#default-styled-tab-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500" data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300" role="tablist">
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="detail-styled-tab" data-tabs-target="#styled-detail" type="button" role="tab" aria-controls="detail" aria-selected="false">Detail</button>
+                            </li>
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="aktifitas-styled-tab" data-tabs-target="#styled-aktifitas" type="button" role="tab" aria-controls="aktifitas" aria-selected="false">Aktifitas</button>
+                            </li>
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="peserta-styled-tab" data-tabs-target="#styled-peserta" type="button" role="tab" aria-controls="peserta" aria-selected="false">Peserta</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="default-styled-tab-content">
+                        <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-detail" role="tabpanel" aria-labelledby="detail-tab">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="my-1">
+                                    <x-input-label for="nama_kelas" :value="__('Nama')" />
+                                    <x-text-input id="nama_kelas" name="nama_kelas" type="text" class="mt-1 block w-full" value="{{ old('nama_kelas') }}"/>
+                                    @error('nama_kelas')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="my-1">
+                                    <x-input-label for="jenis_kelas" :value="__('Jenis')"></x-input-label>
+                                    <x-select-option id="jenis_kelas" name="jenis_kelas">
+                                        <x-slot name="options">
+                                            <option class="disabled" value="null" selected disabled>
+                                                Pilih Jenis Kelas ...
+                                            </option>
+                                            <option value="Training Class">
+                                                Training Class
+                                            </option>
+                                            <option value="Pre Class">
+                                                Pre Class
+                                            </option>
+                                        </x-slot>
+                                    </x-select-option>
+                                    @error('jenis_kelas')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="my-1">
-                            <x-input-label for="nama_kelas" :value="__('Nama')" />
-                            <x-text-input id="nama_kelas" name="nama_kelas" type="text" class="mt-1 block w-full" value="{{ old('nama_kelas') }}"/>
-                            @error('nama_kelas')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="my-1">
-                            <x-input-label for="kategori_kelas" :value="__('Kategori')"></x-input-label>
-                            <x-select-option id="kategori_kelas" name="kategori_kelas">
-                                <x-slot name="options">
-                                    <option class="disabled" value="null" selected disabled>
-                                        Pilih Kategori ...
-                                    </option>
-                                    @forelse ($kategori as $index => $item)
-                                        <option value="{{ $item->id }}" data-category-type="{{ $item->category_type }}" {{ old('kategori_kelas') == $item->id ? 'selected' : '' }}>
-                                            {{ $item->class_category }}
+                            <div class="my-1">
+                                <x-input-label for="kategori_kelas" :value="__('Kategori')"></x-input-label>
+                                <x-select-option id="kategori_kelas" name="kategori_kelas">
+                                    <x-slot name="options">
+                                        <option class="disabled" value="null" selected disabled>
+                                            Pilih Kategori ...
                                         </option>
-                                    @empty
-                                        {{-- do nothing --}}
-                                    @endforelse
-                                </x-slot>
-                            </x-select-option>
-                            @error('kategori_kelas')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
+                                        @forelse ($kategori as $index => $item)
+                                            <option value="{{ $item->id }}" {{ old('kategori_kelas') == $item->id ? 'selected' : '' }}>
+                                                {{ $item->class_category }}
+                                            </option>
+                                        @empty
+                                            {{-- do nothing --}}
+                                        @endforelse
+                                    </x-slot>
+                                </x-select-option>
+                                @error('kategori_kelas')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <x-input-label for="deskripsi_kelas" :value="__('Deskripsi')" />
+                                <x-textarea-input id="deskripsi_kelas" name="deskripsi_kelas" class="mt-1 block w-full">{{ old('deskripsi_kelas') }}</x-textarea-input>
+                            </div>
+                        </div>
+                        <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-aktifitas" role="tabpanel" aria-labelledby="aktifitas-tab">
+                            <div id="div_class_session_table" class="my-1">
+                                <div class="my-4">
+                                    <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
+                                        <div>
+                                            <div>
+                                                <x-input-label for="class_start" :value="__('Rencana waktu mulai')"></x-input-label>
+                                                <x-text-input id="class_start" datepicker datepicker-autohide datepicker-orientation="top right" datepicker-format="dd-mm-yyyy" name="class_start" type="text" class="mt-1 block w-full class_period datepicker" value="{{ old('class_start') }}" />
+                                                @error('class_start')
+                                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <x-input-label for="time_class_start" :value="__('Jam')" />
+                                            <x-text-input id="time_class_start" name="time_class_start" type="text" class="mt-1 block w-full timepicker" value="{{ old('time_class_start') }}"/>
+                                            @error('time_class_start')
+                                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="my-4 ">
+                                    @can('create aktifitas kelas')
+                                    <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_class_session">
+                                        + Aktifitas
+                                    </button>
+                                    @endcan
+                                </div>
+                                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                                    <table id="class_session_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                                    #
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Jenis
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Aktifitas
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Instruktur
+                                                </th>
+                                                @canany(['edit master kelas','delete master kelas'])
+                                                <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                                    Aksi
+                                                </th>
+                                                @endcanany
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="row_no_data">
+                                                <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-peserta" role="tabpanel" aria-labelledby="peserta-tab">
+                            <div class="my-1">
+                                <div class="my-4 ">
+                                    @can('register peserta kelas')
+                                    <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_participant">
+                                        + Peserta
+                                    </button>
+                                    <button type="button" class="bg-green-500 hover:bg-green-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-green-500 hover:border-transparent rounded float-right" id="import_participants" data-modal-target="uploadParticipants-modal" data-modal-toggle="uploadParticipants-modal">
+                                        + Import Peserta
+                                    </button>
+                                    @endcan
+                                </div>
+                                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                                    <table id="participant_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                                    #
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Nama Peserta
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    NIP
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Divisi
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Status
+                                                </th>
+                                                @canany(['edit sesi kelas','delete sesi kelas'])
+                                                <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                                    Aksi
+                                                </th>
+                                                @endcanany
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="row_no_data">
+                                                <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <x-input-label for="deskripsi_kelas" :value="__('Deskripsi')" />
-                        <x-textarea-input id="deskripsi_kelas" name="deskripsi_kelas" class="mt-1 block w-full">{{ old('deskripsi_kelas') }}</x-textarea-input>
-                    </div>
-
-                    <div>
+                    {{-- <div>
                         <h6 class="font-semibold">Periode Kelas:</h6>
                         <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
                             <div>
@@ -120,97 +264,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="my-1">
-                        <div class="my-4 ">
-                            @can('create sesi kelas')
-                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_participant">
-                                + Peserta
-                            </button>
-                            <button type="button" class="bg-green-500 hover:bg-green-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-green-500 hover:border-transparent rounded float-right" id="import_participants" data-modal-target="uploadParticipants-modal" data-modal-toggle="uploadParticipants-modal">
-                                + Import Peserta
-                            </button>
-                                @if($errors->any())
-                                    <div class="alert alert-danger">
-                                        @foreach($errors->all() as $error)
-                                            <p>{{ $error }}</p>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            @endcan
-                        </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table id="participant_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            #
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Nama Peserta
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            NIP
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Divisi
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Status
-                                        </th>
-                                        @canany(['edit sesi kelas','delete sesi kelas'])
-                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            Aksi
-                                        </th>
-                                        @endcanany
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="row_no_data">
-                                        <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {{-- <div id="div_class_session_table" class="my-1">
-                        <div class="my-4 ">
-                            @can('create master kelas')
-                            <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_class_session">
-                                + Sesi Kelas
-                            </button>
-                            @endcan
-                        </div>
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                            <table id="class_session_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            Sesi
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Materi Pembelajaran (+ Pre & Post Tes)
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center">
-                                            Instruktur
-                                        </th>
-                                        @canany(['edit master kelas','delete master kelas'])
-                                        <th scope="col" class="px-6 py-3 text-center" width="10%">
-                                            Aksi
-                                        </th>
-                                        @endcanany
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="row_no_data">
-                                        <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </div> --}}
+
+
+
+
 
                     <div class="flex items-center gap-4">
                         <x-primary-button>{{ __('Save') }}</x-primary-button>
@@ -269,6 +327,11 @@
                 $('#add_participant').trigger('click');
             }
         }
+
+        $(document).find('.timepicker').timepicker({
+            timeFormat: 'H:mm',
+            interval: 15,
+        });
     });
     $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){
         var nip = $(this).val();

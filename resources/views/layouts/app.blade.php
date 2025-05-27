@@ -51,6 +51,23 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+
+        /* Set the height of the select2 input box */
+        .select2-container .select2-selection--single {
+        height: 42px !important;
+        display: flex;
+        align-items: center;
+        }
+
+        /* Align the text inside vertically */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 42px !important;
+        }
+
+        /* Adjust the dropdown arrow to align properly */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 42px !important;
+        }
     </style>
     <head>
         <meta charset="utf-8">
@@ -294,14 +311,17 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
             var row_html =  '<tr>'+
                                 '<td class="row_index text-center"></td>'+
                                 '<td class="p-2">'+
-                                    '<label for="materials[]" class="mb-4 text-black">Materi</label>'+
-                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="materials[]" type="text" multiple="multiple"></select>'+
-                                    '<label for="trainer[]" class="mb-4 text-black">Trainer</label>'+
+                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full">'+
+                                        '<option>Tes</option>'+
+                                        '<option>Materi</option>'+
+                                    '</select>'+
+                                '</td>'+
+                                '<td class="p-2">'+
+                                    '<select style="width: 100%; height: 100    px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="materials[]" type="text"></select>'+
+                                '</td>'+
+                                '<td class="p-2 text-center">'+
                                     '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="trainer[]" type="text"></select>'+
                                 '</td>'+
-                                // '<td class="p-2 text-center">'+
-
-                                // '</td>'+
                                 '<td class="text-center">'+
                                     '<button type="button" class="font-medium text-red-400 dark:text-red-200 hover:underline remove_row">Hapus</button>'+
                                 '</td>'+

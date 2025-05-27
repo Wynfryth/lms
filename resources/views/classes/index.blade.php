@@ -22,7 +22,7 @@
                     <svg class="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Master Kelas</a>
+                    <a href="{{ route('classes') }}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Daftar Kelas</a>
                     </div>
                 </li>
             </ol>
@@ -33,7 +33,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-3">
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
-                    <h6 class="text-lg font-semibold leading-tight text-center">Master Kelas</h6>
+                        <h6 class="text-lg font-semibold leading-tight text-center">Daftar Kelas</h6>
                     <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between mb-4">
                         @can('create master kelas')
                         <x-add-button href="{{route('classes.create')}}">
@@ -57,6 +57,9 @@
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Judul
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Jenis
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Mulai
@@ -87,6 +90,9 @@
                                         </th>
                                         <td class="px-6 py-4">
                                             {{ $value->class_title }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $value->category_type }}
                                         </td>
                                         <td class="px-6 py-4">
                                             {{ date('d/m/Y', strtotime($value->start_eff_date)) }}
@@ -157,6 +163,15 @@
                                                             <td>:</td>
                                                             <td>
                                                                 {{ $value->class_desc }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                Trainer
+                                                            </td>
+                                                            <td>:</td>
+                                                            <td>
+                                                                {{ $value->trainers }}
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -383,54 +398,66 @@
     });
     $(document).off('click', '.release').on('click', '.release', function(){
         var classId = $(this).data('id');
-        Swal.fire({
-            icon: "question",
-            title: "Rilis?",
-            text: "Rilis kelas? Kelas yang dirilis tidak dapat diedit lagi",
-            showDenyButton: true,
-            denyButtonText: "Tidak",
-            confirmButtonText: "Ya, Rilis",
-            allowOutsideClick: false
-        })
-        .then((feedback)=>{
-            if(feedback.isConfirmed){
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('classes.release') }}",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        classId: classId
-                    },
-                    dataType: "JSON",
-                    success: function (response) {
-                        // console.log(response);
-                        if(response > 0){
-                            Swal.fire({
-                                icon: "success",
-                                title: "Berhasil!",
-                                text: "Berhasil merilis kelas.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK",
-                                allowOutsideClick: false
-                            })
-                            .then((feedback)=>{
-                                if(feedback.isConfirmed){
-                                    window.location = "{{ route('classes') }}";
-                                }
-                            })
-                        }else{
-                            Swal.fire({
-                                icon: "error",
-                                title: "Gagal!",
-                                text: "Gagal merilis data. Silahkan coba beberapa saat lagi.",
-                                showConfirmButton: true,
-                                confirmButtonText: "OK",
-                                allowOutsideClick: false
-                            })
+        var class_type = $(this).closest('tr').find('td:eq(1)').html().trim();
+        var jumlah_materi = $(this).closest('tr').find('td:eq(4)').html().trim();
+        if(class_type == 'Training Class' && jumlah_materi == 0){
+            Swal.fire({
+                icon: "warning",
+                title: "Peringatan!",
+                text: "Belum dapat rilis kelas karena tidak ada materi. Isi materi terlebih dahulu di menu Sesi.",
+                confirmButtonText: "OK",
+                allowOutsideClick: false
+            })
+        }else{
+            Swal.fire({
+                icon: "question",
+                title: "Rilis?",
+                text: "Rilis kelas? Kelas yang dirilis tidak dapat diedit lagi",
+                showDenyButton: true,
+                denyButtonText: "Tidak",
+                confirmButtonText: "Ya, Rilis",
+                allowOutsideClick: false
+            })
+            .then((feedback)=>{
+                if(feedback.isConfirmed){
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('classes.release') }}",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            classId: classId
+                        },
+                        dataType: "JSON",
+                        success: function (response) {
+                            // console.log(response);
+                            if(response > 0){
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Berhasil!",
+                                    text: "Berhasil merilis kelas.",
+                                    showConfirmButton: true,
+                                    confirmButtonText: "OK",
+                                    allowOutsideClick: false
+                                })
+                                .then((feedback)=>{
+                                    if(feedback.isConfirmed){
+                                        window.location = "{{ route('classes') }}";
+                                    }
+                                })
+                            }else{
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Gagal!",
+                                    text: "Gagal merilis data. Silahkan coba beberapa saat lagi.",
+                                    showConfirmButton: true,
+                                    confirmButtonText: "OK",
+                                    allowOutsideClick: false
+                                })
+                            }
                         }
-                    }
-                });
-            }
-        })
+                    });
+                }
+            })
+        }
     })
 </script>

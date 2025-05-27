@@ -36,11 +36,11 @@
                 <div class="p-6 overflow-x-auto text-gray-900 dark:text-gray-100">
                     <h6 class="text-lg font-semibold leading-tight text-center">Kategori Kelas</h6>
                     <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between mb-4">
-                        @can('create kategori kelas')
+                        {{-- @can('create kategori kelas')
                         <x-add-button href="{{route('classcat.create')}}">
                             + Tambah
                         </x-add-button>
-                        @endcan
+                        @endcan --}}
                         <label for="table-search" class="sr-only">Search</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">

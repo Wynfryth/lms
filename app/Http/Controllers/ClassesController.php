@@ -20,8 +20,8 @@ class ClassesController extends Controller
     public function index($classes_kywd = null)
     {
         $classes = DB::table('t_class_header AS a')
-            ->select('a.id', 'a.class_title', 'a.start_eff_date', 'a.end_eff_date', 'a.class_desc', 'b.class_category', 'a.is_active', 'a.is_released')
-            ->selectRaw(DB::raw('GROUP_CONCAT(d.study_material_title) AS studies, GROUP_CONCAT(d.id) AS id_studies, COUNT(d.study_material_title) AS jumlah_materi, GROUP_CONCAT(e.test_name) AS tests, GROUP_CONCAT(e.id) AS id_tests, COUNT(e.test_name) AS jumlah_tes, COUNT(g.material_id) AS sum_materi'))
+            ->select('a.id', 'a.class_title', 'a.start_eff_date', 'a.end_eff_date', 'a.class_desc', 'b.class_category', 'h.category_type', 'a.is_active', 'a.is_released')
+            ->selectRaw(DB::raw('GROUP_CONCAT(d.study_material_title) AS studies, GROUP_CONCAT(d.id) AS id_studies, COUNT(d.study_material_title) AS jumlah_materi, GROUP_CONCAT(e.test_name) AS tests, GROUP_CONCAT(e.id) AS id_tests, GROUP_CONCAT(DISTINCT j.Employee_name) AS trainers, COUNT(e.test_name) AS jumlah_tes, COUNT(g.material_id) AS sum_materi'))
             ->leftJoin('tm_class_category AS b', 'a.class_category_id', '=', 'b.id')
             ->leftJoin('class_has_materials AS c', 'c.id_class_header', '=', 'a.id')
             ->leftJoin('tm_study_material_header AS d', 'd.id', '=', 'c.id_material')
@@ -31,6 +31,9 @@ class ClassesController extends Controller
                 $join->on('g.class_session_id', '=', 'f.id')
                     ->where('g.material_type', '=', 1);
             })
+            ->leftJoin('tm_class_category_type AS h', 'h.id', '=', 'b.class_category_type_id')
+            ->leftJoin('tm_trainer_data AS i', 'i.id', '=', 'f.trainer_id')
+            ->leftJoin(config('custom.employee_db') . '.emp_employee AS j', 'j.nip', '=', 'i.nip')
             ->groupBy('a.id')
             ->orderByDesc('a.id');
         if ($classes_kywd != null) {
@@ -51,8 +54,8 @@ class ClassesController extends Controller
     public function create()
     {
         $kategori = DB::table('tm_class_category AS a')
-            ->select('a.id', 'b.category_type', 'a.class_category')
-            ->leftJoin('tm_class_category_type AS b', 'b.id', '=', 'a.class_category_type_id')
+            ->select('a.id', 'a.class_category')
+            // ->leftJoin('tm_class_category_type AS b', 'b.id', '=', 'a.class_category_type_id')
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'asc')
             ->get();
@@ -142,13 +145,13 @@ class ClassesController extends Controller
                 'nama_kelas' => 'required',
                 'kategori_kelas' => 'required',
                 'class_start' => 'required',
-                'class_end' => 'required',
+                'time_class_start' => 'required',
             ],
             [
                 'nama_kelas.required' => 'Nama kelas belum terisi.',
                 'kategori_kelas.required' => 'Kategori kelas belum terisi.',
-                'class_start.required' => 'Batas mulai belum terisi.',
-                'class_end.required' => 'Batas sampai belum terisi.',
+                'class_start.required' => 'Perkiraan waktu mulai belum terisi.',
+                'time_class_start.required' => 'Perkiraan jam mulai belum terisi.',
             ]
         );
 
@@ -267,7 +270,7 @@ class ClassesController extends Controller
     public function edit($id)
     {
         $class_type = DB::table('t_class_header AS a')
-            ->leftJoin('tm_class_category AS b', 'b.id', '=', 'a.class_category_id')
+            // ->leftJoin('tm_class_category AS b', 'b.id', '=', 'a.class_category_id')
             ->leftJoin('tm_class_category_type AS c', 'c.id', '=', 'b.class_category_type_id')
             ->where('a.id', $id)
             ->first();
