@@ -62,6 +62,11 @@
                                     <th scope="col" class="px-6 py-3">
                                         Lokasi
                                     </th>
+                                    @canany(['upload pernyataan persetujuan', 'delete pernyataan persetujuan'])
+                                        <th scope="col" class="px-6 py-3">
+                                            Pernyataan Persetujuan
+                                        </th>
+                                    @endcan
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,6 +90,18 @@
                                         <td class="px-6 py-4">
                                             {{ $value->Branch_Name }}
                                         </td>
+                                        @canany(['upload pernyataan persetujuan', 'delete pernyataan persetujuan'])
+                                        <td class="px-6 py-4" width="15%">
+                                            <div class="flex flex-column sm:flex-row flex-wrap space-y-2 sm:space-y-0 items-center justify-between">
+                                                @can('upload pernyataan persetujuan')
+                                                <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline me-2 upload_consent" data-detail="{{$value->nip}}" data-modal-target="consent-modal" data-modal-toggle="consent-modal">Edit</a>
+                                                @endcan
+                                                @can('delete pernyataan persetujuan')
+                                                <button type="button" class="font-medium text-red-600 dark:text-red-500 hover:underline delete" data-id="{{ $value->nip }}">Hapus</button>
+                                                @endcan
+                                            </div>
+                                        </td>
+                                        @endcanany
                                     </tr>
                                 @empty
                                     <tr class="row_no_data">

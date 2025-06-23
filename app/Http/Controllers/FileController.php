@@ -14,4 +14,12 @@ class FileController extends Controller
             return $filePath;
         }
     }
+
+    public function upload_pernyataan_persetujuan(Request $request)
+    {
+        if ($request->hasFile('file_pernyataan_persetujuan')) {
+            $filePath = Storage::disk('public')->put('statement_of_consent', request()->file('file_pernyataan_persetujuan'));
+            return $filePath;
+        }
+    }
 }

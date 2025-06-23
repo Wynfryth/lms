@@ -54,7 +54,7 @@ class DashboardsController extends Controller
                         COALESCE(SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END), 0) AS cancelled')
                     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                     ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
-                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->leftJoin('tm_class_type AS d', 'd.id', '=', 'b.class_type_id')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
@@ -75,7 +75,7 @@ class DashboardsController extends Controller
                         COALESCE(SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END), 0) AS cancelled')
                     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                     ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
-                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->leftJoin('tm_class_type AS d', 'd.id', '=', 'b.class_type_id')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
@@ -137,7 +137,7 @@ class DashboardsController extends Controller
                     ')
                     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                     ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
-                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->leftJoin('tm_class_type AS d', 'd.id', '=', 'b.class_type_id')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
@@ -157,7 +157,7 @@ class DashboardsController extends Controller
                         COALESCE(SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END), 0) AS cancelled')
                     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                     ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
-                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->leftJoin('tm_class_type AS d', 'd.id', '=', 'b.class_type_id')
                     ->where($whereParams)
                     ->whereRaw('YEAR(a.enrollment_date) = ?', [$year])
                     ->first();
@@ -223,7 +223,7 @@ class DashboardsController extends Controller
                         ')
                     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                     ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
-                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->leftJoin('tm_class_type AS d', 'd.id', '=', 'b.class_type_id')
                     ->leftJoin('t_class_session AS e', 'e.class_id', '=', 'b.id')
                     ->leftJoin('tm_trainer_data AS f', 'f.id', '=', 'e.trainer_id')
                     ->where($whereParams)
@@ -245,7 +245,7 @@ class DashboardsController extends Controller
                             COALESCE(SUM(CASE WHEN a.enrollment_status_id = 5 THEN 1 ELSE 0 END), 0) AS cancelled')
                     ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
                     ->leftJoin('tm_class_category AS c', 'c.id', '=', 'b.class_category_id')
-                    ->leftJoin('tm_class_category_type AS d', 'd.id', '=', 'c.class_category_type_id')
+                    ->leftJoin('tm_class_type AS d', 'd.id', '=', 'b.class_type_id')
                     ->leftJoin('t_class_session AS e', 'e.class_id', '=', 'b.id')
                     ->leftJoin('tm_trainer_data AS f', 'f.id', '=', 'e.trainer_id')
                     ->where($whereParams)

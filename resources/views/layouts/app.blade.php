@@ -307,7 +307,7 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
                                 '</td>'+
                             '</tr>';
         break;
-        case 'class_session_table':
+        case 'class_activity_table':
             var row_html =  '<tr>'+
                                 '<td class="row_index text-center"></td>'+
                                 '<td class="p-2">'+
@@ -317,7 +317,7 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
                                     '</select>'+
                                 '</td>'+
                                 '<td class="p-2">'+
-                                    '<select style="width: 100%; height: 100    px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="materials[]" type="text"></select>'+
+                                    '<select style="width: 100%; height: 100px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="materials[]" type="text"></select>'+
                                 '</td>'+
                                 '<td class="p-2 text-center">'+
                                     '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="trainer[]" type="text"></select>'+
@@ -381,7 +381,7 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
         case 'answers_table':
             //
         break;
-        case 'class_session_table':
+        case 'class_activity_table':
             $.ajax({
                 async: false,
                 type: "GET",
@@ -424,6 +424,7 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
                     });
                 }
             });
+
             // table.find('tbody tr:last').find('select[name="materials[]"]').select2({
             //     placeholder: 'Pilih Materi',
             //     allowClear: true,

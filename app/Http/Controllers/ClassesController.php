@@ -53,13 +53,17 @@ class ClassesController extends Controller
      */
     public function create()
     {
+        $jenis = DB::table('tm_class_type AS a')
+            ->select('a.id', 'a.class_type')
+            ->orderBy('a.id', 'asc')
+            ->get();
         $kategori = DB::table('tm_class_category AS a')
             ->select('a.id', 'a.class_category')
             // ->leftJoin('tm_class_category_type AS b', 'b.id', '=', 'a.class_category_type_id')
             ->where('a.is_active', 1)
             ->orderBy('a.id', 'asc')
             ->get();
-        return view('classes.create', compact('kategori'));
+        return view('classes.create', compact('jenis', 'kategori'));
     }
 
     public function studies_selectpicker(Request $request)
