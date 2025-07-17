@@ -58,17 +58,20 @@
                                     <th scope="col" class="px-6 py-3">
                                         Judul
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    {{-- <th scope="col" class="px-6 py-3">
                                         Jenis
-                                    </th>
+                                    </th> --}}
                                     <th scope="col" class="px-6 py-3">
                                         Mulai
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    {{-- <th scope="col" class="px-6 py-3">
                                         Sampai
+                                    </th> --}}
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Jumlah Aktifitas
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-center">
-                                        Jumlah Materi
+                                        Jumlah Peserta
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-center">
                                         Keaktifan
@@ -91,18 +94,21 @@
                                         <td class="px-6 py-4">
                                             {{ $value->class_title }}
                                         </td>
-                                        <td class="px-6 py-4">
+                                        {{-- <td class="px-6 py-4">
                                             {{ $value->category_type }}
-                                        </td>
+                                        </td> --}}
                                         <td class="px-6 py-4">
                                             {{ date('d/m/Y', strtotime($value->start_eff_date)) }}
                                         </td>
-                                        <td class="px-6 py-4">
+                                        {{-- <td class="px-6 py-4">
                                             {{ date('d/m/Y', strtotime($value->end_eff_date)) }}
-                                        </td>
+                                        </td> --}}
                                         <td class="px-6 py-4 text-center">
                                             {{-- {{ $value->jumlah_materi }} --}}
-                                            {{ $value->sum_materi }}
+                                            {{ $value->sum_aktifitas }}
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            {{ $value->sum_peserta }}
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             @if ($value->is_active == 1)
@@ -111,7 +117,7 @@
                                                 <span class="text-rose-600">{{ 'Non-Aktif' }}</span>
                                             @endif
                                         </td>
-                                        @canany(['create sesi kelas', 'edit master kelas', 'delete master kelas'])
+                                        @canany(['edit master kelas', 'delete master kelas'])
                                         <td class="px-6 py-4" width="15%">
                                             @if ($value->is_active == 1)
                                                 @if ($value->is_released == 0)
@@ -119,9 +125,9 @@
                                                     @can('edit master kelas')
                                                     <button type="button" class="font-medium text-blue-600 dark:text-green-500 hover:underline release" data-id="{{ $value->id }}">Rilis</button>
                                                     @endcan
-                                                    @can('create sesi kelas')
+                                                    {{-- @can('create sesi kelas')
                                                     <a type="button" class="font-medium text-blue-400 dark:text-blue-200 hover:underline" href="{{ route('class_sessions.create', $value->id) }}">Sesi</a>
-                                                    @endcan
+                                                    @endcan --}}
                                                     @can('edit master kelas')
                                                     <a type="button" class="font-medium text-blue-600 dark:text-blue-500 hover:underline" href="{{ route('classes.edit', $value->id) }}">Edit</a>
                                                     @endcan
@@ -131,7 +137,7 @@
                                                 </div>
                                                 @else
                                                 <div class="text-center">
-                                                    <span class="font-medium text-emerald-600">- RELEASED -</span>
+                                                    <span class="font-medium text-grey-600">Sudah dirilis</span>
                                                 </div>
                                                 @endif
                                             @else
@@ -177,7 +183,7 @@
                                                     </table>
                                                 </div>
                                                 <div class="col-span-2 grid grid-cols-1 gap-2">
-                                                    @php
+                                                    {{-- @php
                                                         $studies = explode(',', $value->studies);
                                                         $tests = explode(',', $value->tests);
                                                     @endphp
@@ -210,7 +216,7 @@
                                                             </tr>
                                                         </tbody>
                                                     </table>
-                                                    @endif
+                                                    @endif --}}
                                                 </div>
                                             </div>
                                         </td>

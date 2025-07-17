@@ -128,13 +128,34 @@
                                 @enderror
                             </div>
 
+                            <div class="my-1">
+                                <x-input-label for="training_center" :value="__('Training Center')"></x-input-label>
+                                <x-select-option id="training_center" name="training_center">
+                                    <x-slot name="options">
+                                        <option class="disabled" value="null" selected disabled>
+                                            Pilih Training Center ...
+                                        </option>
+                                        @forelse ($tc as $index => $item)
+                                            <option value="{{ $item->id }}" {{ old('training_center') == $item->id ? 'selected' : '' }}>
+                                                {{ $item->tc_name }}
+                                            </option>
+                                        @empty
+                                            {{-- do nothing --}}
+                                        @endforelse
+                                    </x-slot>
+                                </x-select-option>
+                                @error('training_center')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
                             <div>
                                 <x-input-label for="deskripsi_kelas" :value="__('Deskripsi')" />
                                 <x-textarea-input id="deskripsi_kelas" name="deskripsi_kelas" class="mt-1 block w-full">{{ old('deskripsi_kelas') }}</x-textarea-input>
                             </div>
                         </div>
                         <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-aktifitas" role="tabpanel" aria-labelledby="aktifitas-tab">
-                            <div id="div_class_session_table" class="my-1">
+                            <div id="div_class_activity_table" class="my-1">
                                 <div class="my-4">
                                     <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
                                         <div>
@@ -153,10 +174,13 @@
                                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                                             @enderror
                                         </div>
+                                        {{-- <div class="flex justify-center items-center">
+                                            <button type="button" id="start_schedule_lock" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Kunci</button>
+                                        </div> --}}
                                     </div>
                                 </div>
                                 <div id="activity_section">
-                                        <div class="my-4">
+                                    <div class="my-4">
                                         @can('create aktifitas kelas')
                                         <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_class_activity">
                                             + Aktifitas
@@ -179,6 +203,9 @@
                                                     <th scope="col" class="px-6 py-3 text-center">
                                                         Instruktur
                                                     </th>
+                                                    {{-- <th scope="col" class="px-6 py-3 text-center">
+                                                        Durasi
+                                                    </th> --}}
                                                     @canany(['edit master kelas','delete master kelas'])
                                                     <th scope="col" class="px-6 py-3 text-center" width="10%">
                                                         Aksi
@@ -404,7 +431,6 @@
         }
     });
     $(document).off('click', '#importExcel').on('click', '#importExcel', function(){
-        // console.log($('[name="file"]')[0].files[0]);
         let formData = new FormData();
         formData.append('file', $('[name="file"]')[0].files[0]);
         formData.append('_token', $('meta[name="csrf-token"]').attr('content')); // Add the CSRF token
@@ -456,5 +482,95 @@
                 })
             }
         });
+    });
+    $(document).off('change', '[name="activity_type[]"]').on('change', '[name="activity_type[]"]', function(){
+        var activity_type = $(this).val();
+        var table_row = $(this).closest('tr');
+        tinySkeleton(table_row.find('div.activity_cell'));
+        switch(activity_type){
+            case 'materi':
+                $.ajax({
+                    async: true,
+                    type: "GET",
+                    url: "{{route('classes.all_studies')}}",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response);
+                        table_row.find('div.activity_cell').empty().html('<select style="width: 100%; height: 100px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="activity[]" type="text"></select>');
+                        var html = '';
+                        for(var keys in response){
+                            html += '<option value="'+response[keys].id+'" data-tipe="1">'+response[keys].study_material_title+'</option>';
+                        }
+                        table_row.find('select[name="activity[]"]').append(html);
+                        table_row.find('select[name="activity[]"]').select2({
+                            placeholder: "Pilih materi...",
+                            allowClear: true
+                        });
+                    }
+                });
+            break;
+            case 'tes':
+                $.ajax({
+                    async: true,
+                    type: "GET",
+                    url: "{{route('classes.all_tests')}}",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response);
+                        table_row.find('div.activity_cell').empty().html('<select style="width: 100%; height: 100px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="activity[]" type="text"></select>');
+                        var html = '';
+                        for(var keys in response){
+                            html += '<option value="'+response[keys].id+'" data-tipe="1">'+response[keys].test_name+'</option>';
+                        }
+                        table_row.find('select[name="activity[]"]').append(html);
+                        table_row.find('select[name="activity[]"]').select2({
+                            placeholder: "Pilih tes...",
+                            allowClear: true
+                        });
+                    }
+                });
+            break;
+        }
+    });
+    $(document).off('change', '[name="activity[]"]').on('change', '[name="activity[]"]', function(){
+        // alert('ini ketrigger');
     })
+    // $(document).off('click', '#start_schedule_lock').on('click', '#start_schedule_lock', function(){
+    //     var tanggal_mulai = $('[name="class_start"]').val();
+    //     var jam_mulai = $('[name="time_class_start"]').val();
+    //     if(tanggal_mulai != '' && jam_mulai != ''){
+    //         $('[name="class_start"]').attr('readOnly', true);
+    //         $('[name="time_class_start"]').attr('readOnly', true);
+    //         $('[name="class_start"], [name="time_class_start"]').on('focus click', function (e) {
+    //             e.preventDefault();
+    //             e.stopImmediatePropagation();
+    //         });
+    //         $('#activity_section').removeClass('hidden');
+    //     }else{
+    //         Swal.fire({
+    //             icon: 'warning',
+    //             title: 'Perhatian!',
+    //             text: 'Silahkan mengisi tanggal dan jam mulai dengan lengkap.',
+    //             allowOutsideClick: false,
+    //             confirmButtonText: 'Nggih'
+    //         });
+    //         $('#activity_section').addClass('hidden');
+    //     }
+    // });
+    // $(document).off('blur', '.start_schedule').on('blur', '.start_schedule', function(){
+    //     // alert('ini ketrigger');
+    //     var tanggal_mulai = $('[name="class_start"]').val();
+    //     var jam_mulai = $('[name="time_class_start"]').val();
+    //     if(tanggal_mulai != '' && jam_mulai != ''){
+    //         $('#activity_section').removeClass('hidden');
+    //     }else{
+    //         $('#activity_section').addClass('hidden');
+    //     }
+    // });
 </script>

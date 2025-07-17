@@ -15,7 +15,7 @@ class TestSessionsController extends Controller
         $existedTest = DB::table('tr_emp_test AS a')
             ->where([
                 'a.emp_nip' => $nip,
-                'a.test_sch_id' => $scheduleId,
+                'a.activity_id' => $scheduleId,
             ])
             ->first();
         if ($existedTest != null) {
@@ -85,7 +85,7 @@ class TestSessionsController extends Controller
         // inserting data in emp_test
         $insertData = [
             'emp_nip' => $nip,
-            'test_sch_id' => $scheduleId,
+            'activity_id' => $scheduleId,
             'time_started' => Carbon::now(),
             'time_end' => $endTime,
         ];
@@ -170,11 +170,12 @@ class TestSessionsController extends Controller
             // ngecek apakah udah tes terakhir ato belum
             $classId = DB::table('tr_emp_test AS b')
                 ->select('d.class_id', 'g.category_type')
-                ->leftJoin('t_session_material_schedule AS c', 'c.id', '=', 'b.test_sch_id')
-                ->leftJoin('t_class_session AS d', 'd.id', '=', 'c.class_session_id')
-                ->leftJoin('t_class_header AS e', 'e.id', '=', 'd.class_id')
+                // ->leftJoin('t_session_material_schedule AS c', 'c.id', '=', 'b.test_sch_id')
+                ->leftJoin('t_class_activity AS c', 'c.id', '=', 'b.activity_id')
+                // ->leftJoin('t_class_session AS d', 'd.id', '=', 'c.class_session_id')
+                ->leftJoin('t_class_header AS e', 'e.id', '=', 'c.class_header_id')
                 ->leftJoin('tm_class_category AS f', 'f.id', '=', 'e.class_category_id')
-                ->leftJoin('tm_class_category_type AS g', 'g.id', '=', 'f.class_category_type_id')
+                // ->leftJoin('tm_class_category_type AS g', 'g.id', '=', 'f.class_category_type_id')
                 ->where('b.id', $request->testScheduleId)
                 ->first();
             $tests = DB::table('tr_enrollment AS a')
@@ -184,38 +185,38 @@ class TestSessionsController extends Controller
                     'b.class_title',
                     'b.class_desc',
                     'b.start_eff_date',
-                    'b.end_eff_date',
+                    'b.start_eff_time',
                     'd.enrollment_status',
                     'b.is_released',
-                    DB::raw('GROUP_CONCAT(DISTINCT c.id) AS session_ids'),
-                    DB::raw('GROUP_CONCAT(c.session_name) AS session_name'),
+                    // DB::raw('GROUP_CONCAT(DISTINCT c.id) AS session_ids'),
+                    // DB::raw('GROUP_CONCAT(c.session_name) AS session_name'),
                     DB::raw('COUNT(e.id) AS all_test'),
                     DB::raw('COUNT(e.emp_test_id) AS test_done')
                 ])
                 ->leftJoin('t_class_header AS b', 'b.id', '=', 'a.class_id')
-                ->leftJoin('t_class_session AS c', 'c.class_id', '=', 'b.id')
+                ->leftJoin('t_class_activity AS c', 'c.class_header_id', '=', 'b.id')
                 ->leftJoin('tm_enrollment_status AS d', 'd.id', '=', 'a.enrollment_status_id')
-                ->leftJoinSub(
-                    DB::table('t_session_material_schedule AS a')
-                        ->select([
-                            'a.id',
-                            DB::raw('GROUP_CONCAT(DISTINCT a.class_session_id) AS class_session_id'),
-                            DB::raw('GROUP_CONCAT(DISTINCT a.material_id) AS material_ids'),
-                            DB::raw('GROUP_CONCAT(DISTINCT c.emp_test_id) AS emp_test_id'),
-                            DB::raw('GROUP_CONCAT(DISTINCT c.question_id) AS question_ids')
-                        ])
-                        ->leftJoin('tr_emp_test AS b', function ($join) {
-                            $join->on('b.test_sch_id', '=', 'a.id')
-                                ->where('b.emp_nip', '=', Auth::user()->nip);
-                        })
-                        ->leftJoin('tr_emp_answer AS c', 'c.emp_test_id', '=', 'b.id')
-                        ->where('a.material_type', 2)
-                        ->groupBy('a.id'),
-                    'e',
-                    'e.class_session_id',
-                    '=',
-                    'c.id'
-                )
+                // ->leftJoinSub(
+                //     DB::table('t_session_material_schedule AS a')
+                //         ->select([
+                //             'a.id',
+                //             DB::raw('GROUP_CONCAT(DISTINCT a.class_session_id) AS class_session_id'),
+                //             DB::raw('GROUP_CONCAT(DISTINCT a.material_id) AS material_ids'),
+                //             DB::raw('GROUP_CONCAT(DISTINCT c.emp_test_id) AS emp_test_id'),
+                //             DB::raw('GROUP_CONCAT(DISTINCT c.question_id) AS question_ids')
+                //         ])
+                //         ->leftJoin('tr_emp_test AS b', function ($join) {
+                //             $join->on('b.test_sch_id', '=', 'a.id')
+                //                 ->where('b.emp_nip', '=', Auth::user()->nip);
+                //         })
+                //         ->leftJoin('tr_emp_answer AS c', 'c.emp_test_id', '=', 'b.id')
+                //         ->where('a.material_type', 2)
+                //         ->groupBy('a.id'),
+                //     'e',
+                //     'e.class_session_id',
+                //     '=',
+                //     'c.id'
+                // )
                 ->where('a.emp_nip', Auth::user()->nip)
                 ->where('a.class_id', $classId->class_id)
                 ->groupBy('a.id')
@@ -229,81 +230,99 @@ class TestSessionsController extends Controller
                     */
                     $accumulatedFinalScore = 0;
 
-                    switch ($classId->category_type) {
-                        case "Training Class":
-                            $testCategoryId = 3; // ngambil post test nya aja...
-                            $tableAlias = 'f'; // ngambil persentase dari jadwal yang material type nya materi bukan tes (left join)
-                            break;
-                        case "Pre-test Class":
-                            $testCategoryId = 1; // ngambil pre test nya untuk pre-class aja...
-                            $tableAlias = 'b'; // ngambil persentase dari jadwal yang material type nya tes yang pre-test (langsung aja)
-                            break;
-                    }
+                    // switch ($classId->category_type) {
+                    //     case "Training Class":
+                    //         $testCategoryId = 3; // ngambil post test nya aja...
+                    //         $tableAlias = 'f'; // ngambil persentase dari jadwal yang material type nya materi bukan tes (left join)
+                    //         break;
+                    //     case "Pre-test Class":
+                    //         $testCategoryId = 1; // ngambil pre test nya untuk pre-class aja...
+                    //         $tableAlias = 'b'; // ngambil persentase dari jadwal yang material type nya tes yang pre-test (langsung aja)
+                    //         break;
+                    // }
 
-                    $allTests = DB::table('t_class_session AS a')
-                        ->selectRaw('
-                                b.id,
-                                b.material_id,
-                                c.test_name,
-                                e.test_score,
-                                ' . $tableAlias . '.material_percentage,
-                                CEILING((' . $tableAlias . '.material_percentage/100) * e.test_score) AS final_score
-                            ')
-                        ->leftJoin('t_session_material_schedule AS b', function ($join) {
-                            $join->on('b.class_session_id', '=', 'a.id')
-                                ->where('b.material_type', '=', 2);
-                        })
-                        ->leftJoin('tm_test AS c', 'c.id', '=', 'b.material_id')
-                        ->leftJoin('tm_test_category AS d', 'd.id', '=', 'c.test_cat_id')
-                        ->leftJoin('tr_emp_test AS e', 'e.test_sch_id', '=', 'b.id')
-                        ->leftJoinSub(
-                            DB::table('t_class_session AS a')
-                                ->selectRaw('
-                                        b.class_session_id,
-                                        b.material_id,
-                                        b.material_percentage,
-                                        c.test_id
-                                    ')
-                                ->leftJoin('t_session_material_schedule AS b', function ($join) {
-                                    $join->on('b.class_session_id', '=', 'a.id')
-                                        ->where('b.material_type', '=', 1);
-                                })
-                                ->leftJoin('t_test_with_materials_list AS c', 'c.study_materials_id', '=', 'b.material_id')
-                                ->leftJoin('tm_test AS d', 'd.id', '=', 'c.test_id')
-                                ->leftJoin('tm_test_category AS e', 'e.id', '=', 'd.test_cat_id')
-                                ->where('a.class_id', '=', $classId->class_id)
-                                ->where('e.id', '=', $testCategoryId),
-                            'f',
-                            function ($join) {
-                                $join->on('f.test_id', '=', 'b.material_id');
-                            }
-                        )
-                        ->where('a.class_id', $classId->class_id)
-                        ->where('d.id', $testCategoryId)
+                    $allTests = DB::table('t_class_activity AS a')
+                        ->leftJoin('tm_test AS b', 'b.id', '=', 'a.activity_id')
+                        ->leftJoin('tr_emp_test AS c', 'c.activity_id', '=', 'a.id')
+                        ->where('a.activity_type', 'tes')
+                        ->select('
+                            a.id,
+                            b.id AS material_id,
+                            b.test_name,
+                            c.test_score
+                        ')
                         ->get();
 
-                    foreach ($allTests as $test) {
-                        $accumulatedFinalScore += $test->final_score;
-                    }
+                    // $allTests = DB::table('t_class_activity AS a')
+                    //     ->selectRaw('
+                    //             b.id,
+                    //             b.material_id,
+                    //             c.test_name,
+                    //             e.test_score,
+                    //             ' . $tableAlias . '.material_percentage,
+                    //             CEILING((' . $tableAlias . '.material_percentage/100) * e.test_score) AS final_score
+                    //         ')
+                    //     // ->leftJoin('t_session_material_schedule AS b', function ($join) {
+                    //     //     $join->on('b.class_session_id', '=', 'a.id')
+                    //     //         ->where('b.material_type', '=', 2);
+                    //     // })
+                    //     ->leftJoin('tm_test AS c', 'c.id', '=', 'b.material_id')
+                    //     ->leftJoin('tm_test_category AS d', 'd.id', '=', 'c.test_cat_id')
+                    //     ->leftJoin('tr_emp_test AS e', 'e.activity_id', '=', 'b.id')
+                    //     ->leftJoinSub(
+                    //         DB::table('t_class_session AS a')
+                    //             ->selectRaw('
+                    //                     b.class_session_id,
+                    //                     b.material_id,
+                    //                     b.material_percentage,
+                    //                     c.test_id
+                    //                 ')
+                    //             ->leftJoin('t_session_material_schedule AS b', function ($join) {
+                    //                 $join->on('b.class_session_id', '=', 'a.id')
+                    //                     ->where('b.material_type', '=', 1);
+                    //             })
+                    //             ->leftJoin('t_test_with_materials_list AS c', 'c.study_materials_id', '=', 'b.material_id')
+                    //             ->leftJoin('tm_test AS d', 'd.id', '=', 'c.test_id')
+                    //             ->leftJoin('tm_test_category AS e', 'e.id', '=', 'd.test_cat_id')
+                    //             ->where('a.class_id', '=', $classId->class_id)
+                    //             ->where('e.id', '=', $testCategoryId),
+                    //         'f',
+                    //         function ($join) {
+                    //             $join->on('f.test_id', '=', 'b.material_id');
+                    //         }
+                    //     )
+                    //     ->where('a.class_id', $classId->class_id)
+                    //     ->where('d.id', $testCategoryId)
+                    //     ->get();
 
-                    // semua kelas standard nya 80
-                    if ($accumulatedFinalScore >= 80) {
-                        // update jadi lulus
-                        DB::table('tr_enrollment AS a')
-                            ->where('a.id', $tests->enrollment_id)
-                            ->update([
-                                'a.class_score' => $accumulatedFinalScore,
-                                'a.enrollment_status_id' => 3
-                            ]);
-                    } else {
-                        // update jadi gagal
-                        DB::table('tr_enrollment AS a')
-                            ->where('a.id', $tests->enrollment_id)
-                            ->update([
-                                'a.class_score' => $accumulatedFinalScore,
-                                'a.enrollment_status_id' => 4
-                            ]);
-                    }
+                    // foreach ($allTests as $test) {
+                    //     $accumulatedFinalScore += $test->final_score;
+                    // }
+
+                    // // semua kelas standard nya 80
+                    // if ($accumulatedFinalScore >= 80) {
+                    //     // update jadi lulus
+                    //     DB::table('tr_enrollment AS a')
+                    //         ->where('a.id', $tests->enrollment_id)
+                    //         ->update([
+                    //             'a.class_score' => $accumulatedFinalScore,
+                    //             'a.enrollment_status_id' => 3
+                    //         ]);
+                    // } else {
+                    //     // update jadi gagal
+                    //     DB::table('tr_enrollment AS a')
+                    //         ->where('a.id', $tests->enrollment_id)
+                    //         ->update([
+                    //             'a.class_score' => $accumulatedFinalScore,
+                    //             'a.enrollment_status_id' => 4
+                    //         ]);
+                    // }
+                    DB::table('tr_enrollment AS a')
+                        ->where('a.id', $tests->enrollment_id)
+                        ->update([
+                            // 'a.class_score' => $accumulatedFinalScore,
+                            'a.enrollment_status_id' => 3
+                        ]);
                 } else {
                     // update jadi on-going
                     DB::table('tr_enrollment AS a')
@@ -323,7 +342,7 @@ class TestSessionsController extends Controller
 
     public function testResult($nip, $studentTestId, $role)
     {
-        $testResultDetail = DB::table('tr_emp_test as a')
+        $testResultDetail = DB::table('tr_emp_test AS a')
             ->select([
                 'a.id as studentTestId',
                 'a.emp_nip',
@@ -345,23 +364,63 @@ class TestSessionsController extends Controller
                 'g.emp_test_id',
                 'g.question_id',
                 'g.answer_id',
-                'i.class_id'
+                'b.class_header_id AS class_id'
+                // 'i.class_id'
             ])
-            ->leftJoin('t_session_material_schedule as b', 'b.id', '=', 'a.test_sch_id')
-            ->leftJoin('tm_test as c', 'c.id', '=', 'b.material_id')
-            ->leftJoin('test_has_questions as d', 'd.test_id', '=', 'c.id')
-            ->leftJoin('tm_question_bank as e', 'e.id', '=', 'd.question_id')
-            ->leftJoin('tm_answer_bank as f', 'f.question_id', '=', 'e.id')
+            ->leftJoin('t_class_activity AS b', 'b.id', '=', 'a.activity_id')
+            ->leftJoin('tm_test AS c', 'c.id', '=', 'b.activity_id')
+            ->leftJoin('test_has_questions AS d', 'd.test_id', '=', 'c.id')
+            ->leftJoin('tm_question_bank AS e', 'e.id', '=', 'd.question_id')
+            ->leftJoin('tm_answer_bank AS f', 'f.question_id', '=', 'e.id')
             ->leftJoin('tr_emp_answer as g', function ($join) {
                 $join->on('g.emp_test_id', '=', 'a.id')
                     ->on('g.question_id', '=', 'e.id')
                     ->on('g.answer_id', '=', 'f.id');
             })
             ->leftJoin(config('custom.employee_db') . '.emp_employee as h', 'h.nip', '=', 'a.emp_nip')
-            ->leftJoin('t_class_session AS i', 'i.id', '=', 'b.class_session_id')
             ->where('a.emp_nip', '=', $nip)
             ->where('a.id', '=', $studentTestId)
             ->get();
+
+        // $testResultDetail = DB::table('tr_emp_test as a')
+        //     ->select([
+        //         'a.id as studentTestId',
+        //         'a.emp_nip',
+        //         'h.Employee_name',
+        //         'a.time_started',
+        //         'a.time_end',
+        //         'b.id as materialId',
+        //         'c.id as testid',
+        //         'c.test_name',
+        //         'c.test_desc',
+        //         'c.pass_point',
+        //         'e.id as questionId',
+        //         'e.question',
+        //         'e.points',
+        //         'f.id as answerId',
+        //         'f.answer',
+        //         'f.correct_status',
+        //         'g.id as studentAnswerId',
+        //         'g.emp_test_id',
+        //         'g.question_id',
+        //         'g.answer_id',
+        //         'i.class_id'
+        //     ])
+        //     ->leftJoin('t_session_material_schedule as b', 'b.id', '=', 'a.test_sch_id')
+        //     ->leftJoin('tm_test as c', 'c.id', '=', 'b.material_id')
+        //     ->leftJoin('test_has_questions as d', 'd.test_id', '=', 'c.id')
+        //     ->leftJoin('tm_question_bank as e', 'e.id', '=', 'd.question_id')
+        //     ->leftJoin('tm_answer_bank as f', 'f.question_id', '=', 'e.id')
+        //     ->leftJoin('tr_emp_answer as g', function ($join) {
+        //         $join->on('g.emp_test_id', '=', 'a.id')
+        //             ->on('g.question_id', '=', 'e.id')
+        //             ->on('g.answer_id', '=', 'f.id');
+        //     })
+        //     ->leftJoin(config('custom.employee_db') . '.emp_employee as h', 'h.nip', '=', 'a.emp_nip')
+        //     ->leftJoin('t_class_session AS i', 'i.id', '=', 'b.class_session_id')
+        //     ->where('a.emp_nip', '=', $nip)
+        //     ->where('a.id', '=', $studentTestId)
+        //     ->get();
 
         $testResult = DB::table('tr_emp_answer as a')
             ->selectRaw('

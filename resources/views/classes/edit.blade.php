@@ -41,11 +41,224 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 {{-- {{dd(Input::all())}} --}}
-                <form method="POST" action="{{ route('classes.update', $item->id) }}" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('classes.update', $item->class_id) }}" class="mt-6 space-y-6">
                     @csrf
                     {{-- @method('put') --}}
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="border-b border-gray-200 dark:border-gray-700">
+                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab" data-tabs-toggle="#default-styled-tab-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500" data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300" role="tablist">
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="detail-styled-tab" data-tabs-target="#styled-detail" type="button" role="tab" aria-controls="detail" aria-selected="false">Detail</button>
+                            </li>
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="aktifitas-styled-tab" data-tabs-target="#styled-aktifitas" type="button" role="tab" aria-controls="aktifitas" aria-selected="false">Aktifitas</button>
+                            </li>
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="peserta-styled-tab" data-tabs-target="#styled-peserta" type="button" role="tab" aria-controls="peserta" aria-selected="false">Peserta</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="default-styled-tab-content">
+                        <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-detail" role="tabpanel" aria-labelledby="detail-tab">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="my-1">
+                                    <x-input-label for="nama_kelas" :value="__('Nama')" />
+                                    <x-text-input id="nama_kelas" name="nama_kelas" type="text" class="mt-1 block w-full" value="{{ $item->class_title }}"/>
+                                    @error('nama_kelas')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="my-1">
+                                    <x-input-label for="jenis_kelas" :value="__('Jenis')"></x-input-label>
+                                    <x-select-option id="jenis_kelas" name="jenis_kelas">
+                                        <x-slot name="options">
+                                            <option class="disabled" value="null" selected disabled>
+                                                Pilih Jenis Kelas ...
+                                            </option>
+                                            @forelse ($jenis as $key => $value)
+                                                <option value="{{ $value->id }}" data-type="{{ $value->class_type }}" {{ $value->id == $item->class_type_id ? 'selected' : '' }}>
+                                                    {{ $value->class_type }}
+                                                </option>
+                                            @empty
+                                            @endforelse
+                                        </x-slot>
+                                    </x-select-option>
+                                    @error('jenis_kelas')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="my-1">
+                                <x-input-label for="kategori_kelas" :value="__('Kategori')"></x-input-label>
+                                <x-select-option id="kategori_kelas" name="kategori_kelas">
+                                    <x-slot name="options">
+                                        <option class="disabled" value="null" selected disabled>
+                                            Pilih Kategori ...
+                                        </option>
+                                        @forelse ($kategori as $key => $value)
+                                            <option value="{{ $value->id }}" {{ $value->id == $item->class_category_id ? 'selected' : '' }}>
+                                                {{ $value->class_category }}
+                                            </option>
+                                        @empty
+                                        @endforelse
+                                    </x-slot>
+                                </x-select-option>
+                                @error('kategori_kelas')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="my-1">
+                                <x-input-label for="training_center" :value="__('Training Center')"></x-input-label>
+                                <x-select-option id="training_center" name="training_center">
+                                    <x-slot name="options">
+                                        <option class="disabled" value="null" selected disabled>
+                                            Pilih Training Center ...
+                                        </option>
+                                         @forelse ($tc as $key => $value)
+                                            <option value="{{ $value->id }}" {{ $value->id == $item->training_center_id ? 'selected' : '' }}>
+                                                {{ $value->tc_name }}
+                                            </option>
+                                        @empty
+                                        @endforelse
+                                        {{-- @forelse ($tc as $index => $item)
+                                            <option value="{{ $item->id }}" {{ old('training_center') == $item->id ? 'selected' : '' }}>
+                                                {{ $item->tc_name }}
+                                            </option>
+                                        @empty
+                                        @endforelse --}}
+                                    </x-slot>
+                                </x-select-option>
+                                @error('training_center')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <x-input-label for="deskripsi_kelas" :value="__('Deskripsi')" />
+                                <x-textarea-input id="deskripsi_kelas" name="deskripsi_kelas" class="mt-1 block w-full">{{ $item->class_desc }}</x-textarea-input>
+                            </div>
+                        </div>
+                        <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-aktifitas" role="tabpanel" aria-labelledby="aktifitas-tab">
+                            <div id="div_class_activity_table" class="my-1">
+                                <div class="my-4">
+                                    <div class="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
+                                        <div>
+                                            <div>
+                                                <x-input-label for="class_start" :value="__('Rencana tanggal mulai kelas')"></x-input-label>
+                                                <x-text-input id="class_start" datepicker datepicker-autohide datepicker-orientation="bottom right" datepicker-format="dd-mm-yyyy" name="class_start" type="text" class="mt-1 block w-full datepicker" value="{{ date('d-m-Y', strtotime($item->start_eff_date)) }}" />
+                                                @error('class_start')
+                                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <x-input-label for="time_class_start" :value="__('Rencana jam mulai kelas')" />
+                                            <x-text-input id="time_class_start" name="time_class_start" type="text" class="mt-1 block w-full timepicker" value="{{ date('H:i', strtotime($item->start_eff_time)) }}"/>
+                                            @error('time_class_start')
+                                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        {{-- <div class="flex justify-center items-center">
+                                            <button type="button" id="start_schedule_lock" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Kunci</button>
+                                        </div> --}}
+                                    </div>
+                                </div>
+                                <div id="activity_section">
+                                    <div class="my-4">
+                                        @can('create aktifitas kelas')
+                                        <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_class_activity">
+                                            + Aktifitas
+                                        </button>
+                                        @endcan
+                                    </div>
+                                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                                        <table id="class_activity_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                                <tr>
+                                                    <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                                        #
+                                                    </th>
+                                                    <th scope="col" class="px-6 py-3 text-center" width="20%">
+                                                        Jenis
+                                                    </th>
+                                                    <th scope="col" class="px-6 py-3 text-center">
+                                                        Aktifitas
+                                                    </th>
+                                                    <th scope="col" class="px-6 py-3 text-center">
+                                                        Instruktur
+                                                    </th>
+                                                    {{-- <th scope="col" class="px-6 py-3 text-center">
+                                                        Durasi
+                                                    </th> --}}
+                                                    @canany(['edit master kelas','delete master kelas'])
+                                                    <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                                        Aksi
+                                                    </th>
+                                                    @endcanany
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="row_no_data">
+                                                    <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden p-4 rounded-lg dark:bg-gray-800" id="styled-peserta" role="tabpanel" aria-labelledby="peserta-tab">
+                            <div class="my-1">
+                                <div class="my-4 ">
+                                    @can('register peserta kelas')
+                                    <button type="button" class="bg-blue-500 hover:bg-blue-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-blue-500 hover:border-transparent rounded add_dynaTable" id="add_participant">
+                                        + Peserta
+                                    </button>
+                                    <button type="button" class="bg-green-500 hover:bg-green-500 text-sm text-white hover:text-white font-semibold mx-1 py-1 px-3 border border-green-500 hover:border-transparent rounded float-right" id="import_participants" data-modal-target="uploadParticipants-modal" data-modal-toggle="uploadParticipants-modal">
+                                        + Import Peserta
+                                    </button>
+                                    @endcan
+                                </div>
+                                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                                    <table id="participant_table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                                    #
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Nama Peserta
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    NIP
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Divisi
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center">
+                                                    Status
+                                                </th>
+                                                @canany(['edit sesi kelas','delete sesi kelas'])
+                                                <th scope="col" class="px-6 py-3 text-center" width="10%">
+                                                    Aksi
+                                                </th>
+                                                @endcanany
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="row_no_data">
+                                                <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- <div class="grid grid-cols-2 gap-4">
                         <div class="my-1">
                             <x-input-label for="nama_kelas" :value="__('Nama')" />
                             <x-text-input id="nama_kelas" name="nama_kelas" type="text" class="mt-1 block w-full" value="{{ $item->class_title }}"/>
@@ -65,7 +278,6 @@
                                             {{ $value->class_category }}
                                         </option>
                                     @empty
-                                        {{-- do nothing --}}
                                     @endforelse
                                 </x-slot>
                             </x-select-option>
@@ -146,7 +358,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> --}}
 
 
                     <div class="flex items-center gap-4">
@@ -165,30 +377,6 @@
 <script>
     var participantsCollection = [];
     $(document).ready(function () {
-        // $(document).find('[name="kategori_kelas"]').val('{{$item->class_category_id}}').trigger('change');
-        // var category_type = $('[name="kategori_kelas"]').find('option:selected').data('category-type');
-        // var id_materials = "{{$item->id_materials}}".split(',');
-        // var studies = "{{$item->studies}}".split(',');
-        // switch(category_type){
-        //     case "Pre-test Class":
-        //         var jumlah_soal = "{{$item->jumlah_soal}}".split(',');
-        //         for(var i=0; i<id_materials.length; i++){
-        //             $('button#add_pretest').trigger('click');
-        //             // $('#pretests_table tbody tr:last').find('select[name="materials[]"]').append('<option value="'+id_materials[i]+'">'+studies[i]+'</option>');
-        //             $('#pretests_table tbody tr:last').find('select[name="materials[]"]').val(id_materials[i]).trigger('change');
-        //             $('#pretests_table tbody tr:last').find('td:eq(2)').html(jumlah_soal[i]);
-        //             $('#pretests_table tbody tr:last').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Tes">');
-        //         }
-        //     break;
-        //     case "Training Class":
-        //         for(var i=0; i<id_materials.length; i++){
-        //             $('button#add_studies').trigger('click');
-        //             // $('#studies_table tbody tr:last').find('select[name="materials[]"]').append('<option value="'+id_materials[i]+'">'+studies[i]+'</option>');
-        //             $('#studies_table tbody tr:last').find('select[name="materials[]"]').val(id_materials[i]).trigger('change');
-        //             $('#studies_table tbody tr:last').find('td:eq(2)').append('<input type="hidden" name="material_types[]" value="Materi">');
-        //         }
-        //     break;
-        // }
         var students = @json($students);
         // console.log(students);
         for(var keys in students){
@@ -200,6 +388,74 @@
             $(document).find('#participant_table tbody tr:last').find('button.remove_row').removeClass('remove_row').addClass('cancel_student');
 
             participantsCollection.push(students[keys].emp_nip);
+        }
+
+        var activities = @json($activities);
+        // console.log(activities);
+
+        /* yang di halama edit asyncActivity masternya dibikin false supaya load master dulu baru diisi supaya ngga rancu datanya */
+        window.asyncActivity = false;
+        for(var keys in activities){
+            $('button#add_class_activity').trigger('click');
+            $(document).find('#class_activity_table tbody tr:last').find('[name="activity_type[]"]').val(activities[keys].activity_type).trigger('change');
+            $(document).find('#class_activity_table tbody tr:last').find('[name="activity[]"]').val(activities[keys].activity_id).trigger('change');
+            $(document).find('#class_activity_table tbody tr:last').find('[name="trainer[]"]').val(activities[keys].trainer_id).trigger('change');
+        }
+        delete window.asyncActivity;
+    });
+    $(document).off('change', '[name="activity_type[]"]').on('change', '[name="activity_type[]"]', function(){
+        var activity_type = $(this).val();
+        var table_row = $(this).closest('tr');
+        tinySkeleton(table_row.find('div.activity_cell'));
+        switch(activity_type){
+            case 'materi':
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "{{route('classes.all_studies')}}",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response);
+                        table_row.find('div.activity_cell').empty().html('<select style="width: 100%; height: 100px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="activity[]" type="text"></select>');
+                        var html = '';
+                        for(var keys in response){
+                            html += '<option value="'+response[keys].id+'" data-tipe="1">'+response[keys].study_material_title+'</option>';
+                        }
+                        table_row.find('select[name="activity[]"]').append(html);
+                        table_row.find('select[name="activity[]"]').select2({
+                            placeholder: "Pilih materi...",
+                            allowClear: true
+                        });
+                    }
+                });
+            break;
+            case 'tes':
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "{{route('classes.all_tests')}}",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+                        // console.log(response);
+                        table_row.find('div.activity_cell').empty().html('<select style="width: 100%; height: 100px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="activity[]" type="text"></select>');
+                        var html = '';
+                        for(var keys in response){
+                            html += '<option value="'+response[keys].id+'" data-tipe="1">'+response[keys].test_name+'</option>';
+                        }
+                        table_row.find('select[name="activity[]"]').append(html);
+                        table_row.find('select[name="activity[]"]').select2({
+                            placeholder: "Pilih tes...",
+                            allowClear: true
+                        });
+                    }
+                });
+            break;
         }
     });
     $(document).off('change', 'select[name="peserta[]"]').on('change', 'select[name="peserta[]"]', function(){

@@ -29,7 +29,7 @@ class StudiesController extends Controller
             ->leftJoin(DB::raw('(SELECT
                 a.id, GROUP_CONCAT(b.name) AS pembelajaran, GROUP_CONCAT(c.filename) AS attachments, SEC_TO_TIME( SUM( TIME_TO_SEC(c.estimated_time) ) ) AS total_waktu
                 FROM tm_study_material_header AS a
-                LEFT JOIN tm_study_material_detail AS b ON b.header_id = a.id
+                LEFT JOIN tm_study_material_detail AS b ON b.header_id = a.id AND b.is_active = 1
                 LEFT JOIN tm_study_material_attachments AS c ON c.study_material_detail_id = b.id
                 GROUP BY a.id) AS f'), 'f.id', '=', 'a.id')
             ->leftJoin('tm_study_material_attachments AS g', 'g.study_material_detail_id', '=', 'f.id')

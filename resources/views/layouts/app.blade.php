@@ -311,17 +311,20 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
             var row_html =  '<tr>'+
                                 '<td class="row_index text-center"></td>'+
                                 '<td class="p-2">'+
-                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full">'+
-                                        '<option>Tes</option>'+
-                                        '<option>Materi</option>'+
+                                    '<select name="activity_type[]" style="width: 150px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full">'+
+                                        '<option value="materi">Materi</option>'+
+                                        '<option value="tes">Tes</option>'+
                                     '</select>'+
                                 '</td>'+
                                 '<td class="p-2">'+
-                                    '<select style="width: 100%; height: 100px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="materials[]" type="text"></select>'+
+                                    '<div class="activity_cell"></div>'+
                                 '</td>'+
                                 '<td class="p-2 text-center">'+
-                                    '<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="trainer[]" type="text"></select>'+
+                                    '<div class="trainer_cell"></div>'+
                                 '</td>'+
+                                // '<td class="p-2 text-center">'+
+                                //     '<div class="duration_cell"></div>'+
+                                // '</td>'+
                                 '<td class="text-center">'+
                                     '<button type="button" class="font-medium text-red-400 dark:text-red-200 hover:underline remove_row">Hapus</button>'+
                                 '</td>'+
@@ -344,6 +347,8 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
     }
     table.find('tbody').append(row_html);
     update_dynaTable_index(table);
+    var lastRow = table.find('tbody tr').last();
+    var lastRowIndex = lastRow.index();
     switch(table_id){
         case 'participant_table':
             table.find('tbody tr:last').find('select[name="peserta[]"]').select2({
@@ -382,8 +387,15 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
             //
         break;
         case 'class_activity_table':
-            $.ajax({
-                async: false,
+            tinySkeleton(table.find('tbody tr:last').find('div.activity_cell'));
+            tinySkeleton(table.find('tbody tr:last').find('div.trainer_cell'));
+            if (typeof window.asyncActivity !== 'undefined') {
+                var async = window.asyncActivity;
+            }else{
+                var async = true;
+            }
+            var studiesRequest = $.ajax({
+                async: async,
                 type: "GET",
                 url: "{{route('classes.all_studies')}}",
                 data: {
@@ -392,19 +404,20 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
                 dataType: "JSON",
                 success: function (response) {
                     // console.log(response);
+                    table.find('tbody tr:eq('+lastRowIndex+')').find('div.activity_cell').empty().html('<select style="width: 100%; height: 100px;" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="activity[]" type="text"></select>');
                     var html = '';
                     for(var keys in response){
                         html += '<option value="'+response[keys].id+'" data-tipe="1">'+response[keys].study_material_title+'</option>';
                     }
-                    table.find('tbody tr:last').find('select[name="materials[]"]').append(html);
-                    table.find('tbody tr:last').find('select[name="materials[]"]').select2({
+                    table.find('tbody tr:eq('+lastRowIndex+')').find('select[name="activity[]"]').append(html);
+                    table.find('tbody tr:eq('+lastRowIndex+')').find('select[name="activity[]"]').select2({
                         placeholder: "Pilih materi...",
                         allowClear: true
                     });
                 }
             });
-            $.ajax({
-                async: false,
+            var trainersRequest = $.ajax({
+                async: async,
                 type: "GET",
                 url: "{{route('classes.all_trainers')}}",
                 data: {
@@ -413,50 +426,18 @@ $(document).off('click', '.add_dynaTable').on('click', '.add_dynaTable', functio
                 dataType: "JSON",
                 success: function (response) {
                     // console.log(response);
+                    table.find('tbody tr:eq('+lastRowIndex+')').find('div.trainer_cell').empty().html('<select style="width: 100%" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full" name="trainer[]" type="text"></select>');
                     var html = '';
                     for(var keys in response){
                         html += '<option value="'+response[keys].id+'">'+response[keys].Employee_name+'</option>';
                     }
-                    table.find('tbody tr:last').find('select[name="trainer[]"]').append(html);
-                    table.find('tbody tr:last').find('select[name="trainer[]"]').select2({
+                    table.find('tbody tr:eq('+lastRowIndex+')').find('select[name="trainer[]"]').append(html);
+                    table.find('tbody tr:eq('+lastRowIndex+')').find('select[name="trainer[]"]').select2({
                     placeholder: "Pilih trainer...",
                         allowClear: true
                     });
                 }
             });
-
-            // table.find('tbody tr:last').find('select[name="materials[]"]').select2({
-            //     placeholder: 'Pilih Materi',
-            //     allowClear: true,
-            //     minimumInputLength: 3, // only start searching when the user has input 3 or more characters
-            //     ajax: {
-            //         async: false,
-            //         url: "{{ route('classes.studies_selectpicker') }}",
-            //         dataType: "JSON",
-            //         type: "POST",
-            //         quietMillis: 50,
-            //         delay: 250,
-            //         data: function (term) {
-            //             return {
-            //                 term: term,
-            //                 _token: '{{ csrf_token() }}'
-            //             };
-            //         },
-            //         processResults: function (data) {
-            //             return {
-            //                 results: $.map(data, function (item) {
-            //                     return {
-            //                         id: item.id,
-            //                         text: item.study_material_title,
-            //                         pretest_postest: item.pretest_postest,
-            //                         tipe: item.tipe,
-            //                     }
-            //                 })
-            //             };
-            //         },
-            //         cache: true
-            //     }
-            // })
         break;
         case 'pretests_table':
             table.find('tbody tr:last').find('select[name="materials[]"]').select2({

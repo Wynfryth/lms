@@ -13,24 +13,55 @@ class ClassroomsController extends Controller
         switch ($role) {
             case "Student":
                 $class = DB::table('t_class_header as a')
-                    ->select('a.id AS classId', 'a.class_title', 'b.id AS sessionId', 'b.session_name', 'f.Employee_name as trainer_name', 'd.location_type', 'e.tc_name', 'a.is_released')
-                    ->leftJoin('t_class_session as b', 'b.class_id', '=', 'a.id')
-                    ->leftJoin('tm_trainer_data as c', 'c.id', '=', 'b.trainer_id')
-                    ->leftJoin('tm_location_type as d', 'd.id', '=', 'b.loc_type_id')
-                    ->leftJoin('tm_training_center as e', 'e.id', '=', 'b.tc_id')
-                    ->leftJoin(config('custom.employee_db') . '.emp_employee as f', 'f.nip', '=', 'c.nip')
+                    ->select(
+                        'a.id AS classId',
+                        'a.class_title',
+                        'b.id AS activityId',
+                        'sm.id AS studyId',
+                        'sm.study_material_title',
+                        't.id AS testId',
+                        't.test_name',
+                        // '',
+                        'a.is_released',
+                        DB::raw("CASE
+                            WHEN sm.id IS NOT NULL THEN 'Materi'
+                            WHEN t.id IS NOT NULL THEN 'Tes'
+                            ELSE NULL
+                        END AS activity_type")
+                    )
+                    ->leftJoin('t_class_activity AS b', 'a.id', '=', 'b.class_header_id')
+
+                    // Join to tm_study_material_header if activity_type = 'materi'
+                    ->leftJoin('tm_study_material_header as sm', function ($join) {
+                        $join->on('b.activity_id', '=', 'sm.id')
+                            ->where('b.activity_type', '=', 'materi');
+                    })
+
+                    // Join to tm_test if activity_type = 'tes'
+                    ->leftJoin('tm_test as t', function ($join) {
+                        $join->on('b.activity_id', '=', 't.id')
+                            ->where('b.activity_type', '=', 'tes');
+                    })
+
                     ->where('a.id', $class_id)
-                    ->orderBy('b.session_order', 'asc')
+                    ->orderBy('b.activity_order', 'asc')
                     ->get();
                 break;
             case "Instructor":
                 $class = DB::table('t_class_header as a')
-                    ->select('a.id AS classId', 'a.class_title', 'b.id AS sessionId', 'b.session_name', 'f.Employee_name as trainer_name', 'd.location_type', 'e.tc_name', 'a.is_released')
-                    ->leftJoin('t_class_session as b', 'b.class_id', '=', 'a.id')
-                    ->leftJoin('tm_trainer_data as c', 'c.id', '=', 'b.trainer_id')
-                    ->leftJoin('tm_location_type as d', 'd.id', '=', 'b.loc_type_id')
-                    ->leftJoin('tm_training_center as e', 'e.id', '=', 'b.tc_id')
-                    ->leftJoin(config('custom.employee_db') . '.emp_employee as f', 'f.nip', '=', 'c.nip')
+                    ->select('a.id AS classId', 'a.class_title', 'b.id AS sessionId', 'b.session_name', 'a.is_released')
+                    ->leftJoin('t_class_activity AS b', 'a.id', '=', 'b.class_header_id')
+                    // Join to tm_study_material_header if activity_type = 'materi'
+                    ->leftJoin('tm_study_material_header as sm', function ($join) {
+                        $join->on('b.activity_id', '=', 'sm.id')
+                            ->where('b.activity_type', '=', 'materi');
+                    })
+
+                    // Join to tm_test if activity_type = 'tes'
+                    ->leftJoin('tm_test as t', function ($join) {
+                        $join->on('b.activity_id', '=', 't.id')
+                            ->where('b.activity_type', '=', 'tes');
+                    })
                     ->where(
                         [
                             'a.id' => $class_id,
@@ -55,6 +86,7 @@ class ClassroomsController extends Controller
         return $classSessions;
     }
 
+    /* NOT USING SESSION ANYMORE. THIS FUNCTION MAYBE DEPRECATED!! */
     public function getSessionSchedule($sessionId, $role)
     {
         switch ($role) {
@@ -69,15 +101,15 @@ class ClassroomsController extends Controller
                         'b.id AS schedule_id',
                         'b.start_eff_date',
                         'b.end_eff_date',
-                        'f.Employee_name AS trainer',
-                        'g.location_type',
+                        // 'f.Employee_name AS trainer',
+                        // 'g.location_type',
                         'c.id AS study_id',
                         'c.study_material_title',
                         'd.id AS test_id',
                         'd.test_name',
                         'd.pass_point',
                         'd.is_released AS test_is_released',
-                        'h.type',
+                        // 'h.type',
                         'i.id AS emp_test_id',
                         'j.result_point'
                     )
@@ -97,10 +129,10 @@ class ClassroomsController extends Controller
                         $join->on('d.id', '=', 'b.material_id')
                             ->where('b.material_type', '=', 2);
                     })
-                    ->leftJoin('tm_trainer_data AS e', 'e.id', '=', 'a.trainer_id')
-                    ->leftJoin(config('custom.employee_db') . '.emp_employee AS f', 'f.nip', '=', 'e.nip')
-                    ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
-                    ->leftJoin('class_material_types AS h', 'h.id', '=', 'b.material_type')
+                    // ->leftJoin('tm_trainer_data AS e', 'e.id', '=', 'a.trainer_id')
+                    // ->leftJoin(config('custom.employee_db') . '.emp_employee AS f', 'f.nip', '=', 'e.nip')
+                    // ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
+                    // ->leftJoin('class_material_types AS h', 'h.id', '=', 'b.material_type')
                     ->leftJoin('tr_emp_test AS i', function ($join) {
                         $nip = Auth::user()->nip;
                         $join->on('i.test_sch_id', '=', 'b.id')
@@ -138,15 +170,15 @@ class ClassroomsController extends Controller
                         'b.id AS schedule_id',
                         'b.start_eff_date',
                         'b.end_eff_date',
-                        'f.Employee_name AS trainer',
-                        'g.location_type',
+                        // 'f.Employee_name AS trainer',
+                        // 'g.location_type',
                         'c.id AS study_id',
                         'c.study_material_title',
                         'd.id AS test_id',
                         'd.test_name',
                         'd.pass_point',
                         'd.is_released AS test_is_released',
-                        'h.type',
+                        // 'h.type',
                     )
                     ->selectRaw(DB::raw(
                         '(SELECT COUNT(*) FROM t_session_material_schedule WHERE class_session_id = a.id) AS session_schedule_count,
@@ -164,9 +196,9 @@ class ClassroomsController extends Controller
                         $join->on('d.id', '=', 'b.material_id')
                             ->where('b.material_type', '=', 2);
                     })
-                    ->leftJoin('tm_trainer_data AS e', 'e.id', '=', 'a.trainer_id')
-                    ->leftJoin(config('custom.employee_db') . '.emp_employee AS f', 'f.nip', '=', 'e.nip')
-                    ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
+                    // ->leftJoin('tm_trainer_data AS e', 'e.id', '=', 'a.trainer_id')
+                    // ->leftJoin(config('custom.employee_db') . '.emp_employee AS f', 'f.nip', '=', 'e.nip')
+                    // ->leftJoin('tm_location_type AS g', 'g.id', '=', 'a.loc_type_id')
                     ->leftJoin('class_material_types AS h', 'h.id', '=', 'b.material_type')
                     // ->leftJoin('tr_emp_test AS i', function ($join) {
                     //     $nip = Auth::user()->nip;
@@ -198,4 +230,6 @@ class ClassroomsController extends Controller
 
         return view('classrooms.classSession', compact('sessionSchedules', 'role'));
     }
+
+    public function getEmpTestScore($nip, $activityId) {}
 }

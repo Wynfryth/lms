@@ -62,17 +62,18 @@
                                     <th scope="col" class="px-6 py-3">
                                         Deskripsi
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    {{-- <th scope="col" class="px-6 py-3">
                                         Pre-Test
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Post-Test
-                                    </th>
+                                    </th> --}}
                                     <th scope="col" class="px-6 py-3">
                                         Keaktifan
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Total Durasi
+                                        {{-- Total Durasi --}}
+                                        Durasi
                                     </th>
                                     @canany(['edit bank materi', 'delete bank materi'])
                                     <th scope="col" class="px-6 py-3 text-center">
@@ -83,6 +84,7 @@
                             </thead>
                             <tbody>
                                 @forelse ($studies as $index => $value)
+                                    @if ($value->is_active == '1')
                                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {{ $index + $studies->firstItem() }}
@@ -93,7 +95,7 @@
                                         <td class="px-6 py-4">
                                             {{ $value->study_material_desc }}
                                         </td>
-                                        <td class="px-6 py-4">
+                                        {{-- <td class="px-6 py-4">
                                             @if (in_array('2', explode(',',$value->kategori_tes)))
                                                 <svg class="w-6 h-6 text-green-500 dark:text-green-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                                     <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"/>
@@ -114,7 +116,7 @@
                                                     <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
                                                 </svg>
                                             @endif
-                                        </td>
+                                        </td> --}}
                                         <td class="px-6 py-4">
                                             @if ($value->is_active == 1)
                                                 <span class="text-emerald-600">{{ 'Aktif' }}</span>
@@ -167,6 +169,7 @@
                                         </td>
                                         @endcanany
                                     </tr>
+                                    @endif
                                 @empty
                                     <tr class="row_no_data">
                                         <td class="text-center py-1" colspan="100%"><span class="text-red-500">Tidak ada data.</span></td>
